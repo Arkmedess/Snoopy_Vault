@@ -1,0 +1,14 @@
+{
+  "version": 4,
+  "homepages": {
+    "Main Homepage": {
+      "defaultView": "00_Home/Home.md",
+      "hasRibbonIcon": true,
+      "openOnStartup": true,
+      "value": "Home",
+      "kind": "File",
+      "commands": []
+    }
+  },
+  "separateMobile": false
+}

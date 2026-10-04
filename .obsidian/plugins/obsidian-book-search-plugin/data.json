@@ -1,0 +1,8 @@
+{
+  "folder": "04_Leituras/Livros",
+  "fileNameFormat": "{{title}} - {{author}}",
+  "templateFile": "99_Meta/Templates/Template - Livro.md",
+  "serviceProvider": "google",
+  "localePreference": "default"
+}
+

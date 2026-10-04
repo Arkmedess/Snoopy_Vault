@@ -1,0 +1,579 @@
+/* ==========================================================================
+   Tema Abyssal Snoopy - Integração Global no Obsidian & Dashboard Minimalista
+   Preto Profundo (#070709), Cantos Arredondados, Pomodoro Circular & Kanban DnD
+   Tipografia Padronizada (14.5px Títulos de Seção, 14px Corpo/Cards, 12px Metas)
+   Banner Panorâmico sem Deformação
+   ========================================================================== */
+
+:root {
+  --abyssal-bg: #070709;
+  --abyssal-panel: #0d0d12;
+  --abyssal-card: #121218;
+  --abyssal-card-hover: #181822;
+  --abyssal-border: rgba(255, 255, 255, 0.08);
+  --abyssal-border-hover: rgba(255, 255, 255, 0.24);
+  --abyssal-text: #ffffff;
+  --abyssal-text-body: #e4e4e7;
+  --abyssal-muted: #a1a1aa;
+  --abyssal-faint: #71717a;
+  --abyssal-green-done: #86efac;
+  --abyssal-green-bright: #4ade80;
+  --heat-empty: #262633;
+}
+
+/* --------------------------------------------------------------------------
+   1. EXPANSÃO TEMÁTICA GLOBAL NO OBSIDIAN (Unificação das Barras Laterais & UI)
+   -------------------------------------------------------------------------- */
+.theme-dark {
+  --background-primary: #070709 !important;
+  --background-primary-alt: #0d0d12 !important;
+  --background-secondary: #0a0a0f !important;
+  --background-secondary-alt: #070709 !important;
+  --background-modifier-border: rgba(255, 255, 255, 0.07) !important;
+  --tab-background-active: #0d0d12 !important;
+  --divider-color: rgba(255, 255, 255, 0.06) !important;
+  --titlebar-background: #070709 !important;
+  --titlebar-background-focused: #070709 !important;
+  --status-bar-background: #070709 !important;
+  --nav-item-background-hover: rgba(255, 255, 255, 0.05) !important;
+  --nav-item-background-active: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Scrollbars ultrafinas e discretas */
+::-webkit-scrollbar {
+  width: 5px !important;
+  height: 5px !important;
+}
+::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-radius: 4px !important;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.22) !important;
+}
+
+/* Checkboxes circulares globais */
+.markdown-rendered .task-list-item-checkbox,
+.markdown-source-view.mod-cm6 .task-list-item-checkbox {
+  appearance: none !important;
+  width: 16px !important;
+  height: 16px !important;
+  border-radius: 50% !important;
+  border: 1.5px solid #71717a !important;
+  background: transparent !important;
+  cursor: pointer !important;
+  display: inline-grid !important;
+  place-content: center !important;
+  margin-right: 8px !important;
+  vertical-align: middle !important;
+  transition: all 0.12s ease !important;
+}
+.markdown-rendered .task-list-item-checkbox:checked,
+.markdown-source-view.mod-cm6 .task-list-item-checkbox:checked {
+  background: #86efac !important;
+  border-color: #86efac !important;
+}
+.markdown-rendered .task-list-item-checkbox:checked::before,
+.markdown-source-view.mod-cm6 .task-list-item-checkbox:checked::before {
+  content: "" !important;
+  width: 6px !important;
+  height: 6px !important;
+  border-radius: 50% !important;
+  background: #070709 !important;
+}
+
+/* --------------------------------------------------------------------------
+   2. OCULTAR PROPRIEDADES (FRONTMATTER) E TÍTULO INLINE NO DASHBOARD
+   -------------------------------------------------------------------------- */
+.home-dashboard .inline-title,
+.home-dashboard .metadata-container,
+.home-dashboard .metadata-properties-heading,
+.abyssal-home .inline-title,
+.abyssal-home .metadata-container,
+.abyssal-home .metadata-properties-heading {
+  display: none !important;
+}
+
+/* Ocupar a largura fluida da nota respeitando as barras laterais abertas */
+.home-dashboard .markdown-preview-sizer,
+.home-dashboard.markdown-source-view.mod-cm6 .cm-sizer {
+  --file-line-width: 100% !important;
+  max-width: 100% !important;
+  padding-inline: 14px !important;
+}
+
+.home-dashboard .markdown-preview-view {
+  padding-left: 6px !important;
+  padding-right: 6px !important;
+}
+
+.abyssal-container {
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  color: var(--abyssal-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, var(--font-interface);
+}
+
+/* Títulos de Bloco (H2) Rigorosamente Padronizados */
+.abyssal-section-title {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, var(--font-interface) !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+/* Subtítulos Internos Padronizados */
+.abyssal-sub-title {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, var(--font-interface) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #a1a1aa !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+/* --------------------------------------------------------------------------
+   3. BANNER PANORÂMICO DO SNOOPY (Sem cortes, sem amassar)
+   -------------------------------------------------------------------------- */
+.abyssal-banner-box {
+  width: 100%;
+  background-color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  padding: 6px 12px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.abyssal-banner-box img {
+  width: 100% !important;
+  max-height: 220px !important;
+  height: auto !important;
+  object-fit: contain !important;
+  display: block !important;
+  margin: 0 auto !important;
+  background-color: #ffffff !important;
+}
+
+/* --------------------------------------------------------------------------
+   4. CABEÇALHO COM DATA & PÍLULAS DE AÇÃO RÁPIDA
+   -------------------------------------------------------------------------- */
+.abyssal-header-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 20px;
+}
+
+.abyssal-date-title {
+  font-family: Georgia, serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.abyssal-nav-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.abyssal-nav-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  background: #14141c;
+  border: 1px solid var(--abyssal-border);
+  color: var(--abyssal-text);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.abyssal-nav-pill-btn:hover {
+  background: #222230;
+  color: #ffffff;
+  border-color: var(--abyssal-border-hover);
+}
+
+/* --------------------------------------------------------------------------
+   5. SEÇÃO POMODORO CIRCULAR FLAT & HISTÓRICO EXPANDIDO
+   -------------------------------------------------------------------------- */
+.abyssal-top-grid {
+  display: grid;
+  grid-template-columns: 7fr 5fr;
+  gap: 18px;
+  align-items: stretch;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 950px) {
+  .abyssal-top-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.abyssal-card-box {
+  background: var(--abyssal-panel);
+  border: 1px solid var(--abyssal-border);
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* SVG Circular Ring Flat */
+.circle-progress-bg {
+  stroke: #181822;
+  stroke-width: 7;
+}
+
+.circle-progress-bar {
+  stroke: var(--abyssal-green-bright);
+  stroke-width: 7;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.6s linear, stroke 0.2s ease;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+
+/* Heatmap Quadradinhos */
+.abyssal-heat-grid {
+  display: inline-grid !important;
+  grid-template-rows: repeat(7, 1fr) !important;
+  grid-auto-flow: column !important;
+  gap: 4px !important;
+}
+
+.abyssal-heat-cell {
+  width: 12px;
+  height: 12px;
+  border-radius: 2.5px;
+  transition: transform 0.1s ease;
+  cursor: pointer;
+}
+
+.abyssal-heat-cell:hover {
+  transform: scale(1.35);
+  z-index: 10;
+}
+
+.heat-lvl-0 { background-color: var(--heat-empty); border: 1px solid rgba(255, 255, 255, 0.04); }
+.heat-lvl-1 { background-color: #164e32; }
+.heat-lvl-2 { background-color: #1e7e48; }
+.heat-lvl-3 { background-color: #22c55e; }
+.heat-lvl-4 { background-color: var(--abyssal-green-bright); }
+
+/* Botões Padronizados Flat */
+.abyssal-btn-action {
+  background: #14141c;
+  border: 1px solid var(--abyssal-border);
+  color: #ffffff !important;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.abyssal-btn-action:hover {
+  background: #1e1e28 !important;
+  border-color: var(--abyssal-border-hover) !important;
+  color: #ffffff !important;
+}
+
+.abyssal-btn-primary {
+  background: #ffffff;
+  color: #070709 !important;
+  border: 1px solid #ffffff;
+  border-radius: 6px;
+  padding: 7px 16px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.12s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.abyssal-btn-primary:hover {
+  background: #e4e4e7 !important;
+  color: #070709 !important;
+}
+
+.abyssal-btn-mode {
+  padding: 5px 12px;
+  border-radius: 5px;
+  font-size: 11.5px;
+  font-family: var(--font-monospace);
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #14141a;
+  color: #d4d4d8 !important;
+  transition: all 0.12s ease;
+}
+
+.abyssal-btn-mode:hover, .abyssal-btn-mode.active {
+  background: #20202c !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+/* Pílulas de Fluxo Inteligente */
+.abyssal-flow-pill {
+  background: #181824;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 2px 7px;
+  border-radius: 4px;
+  color: #ffffff !important;
+  font-size: 10.5px;
+  font-weight: 600;
+  display: inline-block;
+  line-height: 1.3;
+}
+
+/* Priority Badges */
+.prio-badge {
+  font-size: 11px;
+  font-family: var(--font-monospace);
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.prio-alta {
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.14);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+}
+.prio-media {
+  color: #60a5fa;
+  background: rgba(96, 165, 250, 0.14);
+  border: 1px solid rgba(96, 165, 250, 0.3);
+}
+.prio-baixa {
+  color: #a1a1aa;
+  background: rgba(161, 161, 170, 0.12);
+  border: 1px solid rgba(161, 161, 170, 0.25);
+}
+
+/* --------------------------------------------------------------------------
+   6. KANBAN MINIMALISTA DE PROJETOS (DRAG & DROP)
+   -------------------------------------------------------------------------- */
+.abyssal-kanban-section {
+  background: var(--abyssal-panel);
+  border: 1px solid var(--abyssal-border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.abyssal-kanban-cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 800px) {
+  .abyssal-kanban-cols {
+    grid-template-columns: 1fr;
+  }
+}
+
+.abyssal-kanban-col {
+  background: var(--abyssal-card);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+/* Botão + de Ação Rápida no Cabeçalho da Coluna */
+.abyssal-col-add-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #a1a1aa !important;
+  border-radius: 4px;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  transition: all 0.12s ease;
+}
+
+.abyssal-col-add-btn:hover {
+  background: #222230 !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Container de Cards do Kanban com Rolagem Vertical Fixo */
+.abyssal-kanban-cards-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 380px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+}
+
+.abyssal-kanban-card {
+  background: #171720;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 14px;
+  cursor: grab;
+  transition: all 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  user-select: none;
+}
+
+.abyssal-kanban-card:active {
+  cursor: grabbing;
+}
+
+.abyssal-kanban-card:hover {
+  background: #1e1e2a !important;
+  border-color: var(--abyssal-border-hover) !important;
+  transform: translateY(-2px);
+}
+
+/* Badge/Link da nota de origem no To-Do Prioritário */
+.abyssal-todo-source {
+  font-size: 11px;
+  font-family: var(--font-monospace);
+  color: #60a5fa !important;
+  background: rgba(96, 165, 250, 0.08);
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  border-radius: 4px;
+  padding: 1px 7px;
+  cursor: pointer;
+  text-decoration: none !important;
+  white-space: nowrap;
+  transition: all 0.12s ease;
+  flex-shrink: 0;
+}
+
+.abyssal-todo-source:hover {
+  background: rgba(96, 165, 250, 0.18) !important;
+  color: #93c5fd !important;
+  border-color: rgba(96, 165, 250, 0.4) !important;
+}
+
+/* --------------------------------------------------------------------------
+   7. GRID DUPLO INFERIOR: HABITS & LEITURAS / ESTUDOS
+   -------------------------------------------------------------------------- */
+.abyssal-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 800px) {
+  .abyssal-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Capas de Livros */
+.abyssal-books-shelf {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.abyssal-book-item {
+  width: 88px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: transform 0.15s ease;
+}
+
+.abyssal-book-item:hover {
+  transform: translateY(-2px);
+}
+
+.abyssal-book-cover {
+  width: 88px;
+  height: 126px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: #181822;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  transition: border-color 0.15s ease;
+}
+
+.abyssal-book-item:hover .abyssal-book-cover {
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+/* Cards de Matérias */
+.abyssal-subject-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+  gap: 12px;
+}
+
+.abyssal-subject-card {
+  background: #14141c;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.abyssal-subject-card:hover {
+  background: #1b1b26;
+  border-color: var(--abyssal-border-hover);
+  transform: translateY(-2px);
+}
