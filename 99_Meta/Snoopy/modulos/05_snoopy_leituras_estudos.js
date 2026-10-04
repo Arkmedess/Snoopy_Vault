@@ -43,16 +43,45 @@ return {
       });
     }
 
-    // Leitura da Matéria da Vez no Ciclo
-    let cicloIdx = 0;
+    // 1.1. Métricas do Dia (Pomodoro + Histórico de Estudos)
+    let minutosHoje = 0;
+    let questoesHoje = 0;
     try {
       const cicloFile = app.vault.getAbstractFileByPath("99_Meta/ciclo-estudos.json");
       if (cicloFile) {
         const raw = await app.vault.read(cicloFile);
         const parsed = JSON.parse(raw);
         if (typeof parsed.disciplinaAtualIdx === 'number') cicloIdx = parsed.disciplinaAtualIdx;
+        if (parsed.historicoDiario && parsed.historicoDiario[todayStr]) {
+          minutosHoje += Number(parsed.historicoDiario[todayStr].minutosFoco) || 0;
+          questoesHoje += Number(parsed.historicoDiario[todayStr].questoesFeitas) || 0;
+        }
       }
     } catch(e) {}
+
+    // Pomodoros de hoje da nota diária
+    const dailyPageHoje = dv.page(`"01_Inbox/Diário/${todayStr}"`);
+    if (dailyPageHoje && dailyPageHoje.pomodoros) {
+      const pMin = Number(dailyPageHoje.pomodoros) * 25;
+      if (pMin > minutosHoje) minutosHoje = pMin;
+    }
+
+    const minutosHojeTxt = minutosHoje >= 60 ? `${Math.floor(minutosHoje / 60)}h${minutosHoje % 60 ? `${minutosHoje % 60}m` : ''}` : `${minutosHoje}m`;
+
+    // Mini Faixa de KPIs de Hoje
+    const kpiRowEstudos = estudosCol.createEl('div', {
+      attr: { style: 'display: grid; grid-template-columns: 1fr 1fr; gap: 8px;' }
+    });
+    kpiRowEstudos.innerHTML = `
+      <div style="background: var(--background-secondary-alt); border: 1px solid var(--background-modifier-border); border-radius: 6px; padding: 6px 10px; display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 10.5px; font-family: monospace; color: var(--text-muted);">⏱️ Foco Hoje</span>
+        <span style="font-size: 12px; font-weight: 800; color: var(--text-normal); font-family: monospace;">${minutosHojeTxt}</span>
+      </div>
+      <div style="background: var(--background-secondary-alt); border: 1px solid var(--background-modifier-border); border-radius: 6px; padding: 6px 10px; display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 10.5px; font-family: monospace; color: var(--text-muted);">📝 Questões</span>
+        <span style="font-size: 12px; font-weight: 800; color: var(--text-normal); font-family: monospace;">${questoesHoje}</span>
+      </div>
+    `;
 
     const materiasLista = [...estudos];
     if (materiasLista.length > 0) {
@@ -128,52 +157,83 @@ return {
       });
     }
 
-    const shelf = leiturasCol.createEl('div', { 
-      cls: 'abyssal-books-shelf',
-      attr: { style: 'display: flex; gap: 14px; overflow-x: auto; padding-bottom: 4px;' }
-    });
-
-    const livros = dv.pages('"04_Leituras/Livros"')
+    const todosLivros = dv.pages('"04_Leituras/Livros"')
       .where(l => !l.file.name.includes("Template"))
-      .sort(l => l.file.mtime, 'desc')
-      .slice(0, 4);
+      .sort(l => l.file.mtime, 'desc');
 
-    if (livros.length === 0) {
-      shelf.innerHTML = '<div style="color: var(--text-muted); font-size: 12px; font-family: monospace; padding: 18px 0; text-align: center; width: 100%;">Nenhum livro cadastrado. Use "+ BUSCAR NA NUVEM" para adicionar!</div>';
-    } else {
-      livros.forEach(b => {
-        const item = shelf.createEl('div', { 
-          cls: 'abyssal-book-item',
-          attr: { style: 'width: 82px; flex-shrink: 0;' }
-        });
-        item.addEventListener('click', () => app.workspace.openLinkText(b.file.path, "", false));
+    const listaLivros = [...todosLivros];
 
-        const img = item.createEl('img', { cls: 'abyssal-book-cover', attr: { style: 'width: 82px; height: 118px; border-radius: 5px; object-fit: cover; border: 1px solid var(--background-modifier-border);' } });
-        img.src = b.cover || "https://images.pexels.com/photos/10254198/pexels-photo-10254198.jpeg";
-        img.onerror = () => {
-          img.src = "https://images.pexels.com/photos/10254198/pexels-photo-10254198.jpeg";
-        };
-        
-        item.createEl('div', { 
-          text: b.title || b.file.name, 
-          attr: { style: 'font-size: 11.5px; font-weight: 600; color: var(--text-normal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;' } 
-        });
-
-        const cur = Number(b.current_page) || 0;
-        const tot = Number(b.total_pages) || 0;
-        const pct = tot > 0 ? Math.round((cur / tot) * 100) : 0;
-
-        const bookProg = item.createEl('div');
-        bookProg.innerHTML = `
-          <div style="display: flex; justify-content: space-between; font-size: 10px; font-family: monospace; color: var(--text-muted); margin-bottom: 2px;">
-            <span>${tot > 0 ? `${cur}/${tot}p` : 'Lendo'}</span>
-            <span style="color: var(--text-normal); font-weight: bold;">${pct}%</span>
-          </div>
-          <div class="abyssal-prog-track" style="height: 4px; width: 100%;">
-            <div class="abyssal-prog-fill" style="width: ${pct}%; background: var(--text-normal);"></div>
-          </div>
-        `;
+    if (listaLivros.length === 0) {
+      const emptyShelf = leiturasCol.createEl('div', {
+        attr: { style: 'color: var(--text-muted); font-size: 12px; font-family: monospace; padding: 24px 0; text-align: center; width: 100%;' },
+        text: 'Nenhum livro cadastrado. Use "+ BUSCAR NA NUVEM" para adicionar!'
       });
+    } else {
+      // Livro em Destaque (Preferencialmente em status "Lendo")
+      const livroLendo = listaLivros.find(l => String(l.status).toLowerCase().includes('lendo')) || listaLivros[0];
+      const curL = Number(livroLendo.current_page) || 0;
+      const totL = Number(livroLendo.total_pages) || 100;
+      const pctL = totL > 0 ? Math.round((curL / totL) * 100) : 0;
+      const paginasRest = Math.max(0, totL - curL);
+
+      // Mini Hero Box KOReader
+      const miniHero = leiturasCol.createEl('div', {
+        attr: {
+          style: 'background: var(--background-secondary-alt); border: 1px solid var(--background-modifier-border); border-radius: 8px; padding: 10px 12px; display: grid; grid-template-columns: 56px 1fr; gap: 12px; align-items: center; cursor: pointer;'
+        }
+      });
+      miniHero.onclick = () => app.workspace.openLinkText(livroLendo.file.path, "", false);
+
+      const coverSrc = livroLendo.cover || "https://images.pexels.com/photos/10254198/pexels-photo-10254198.jpeg";
+      miniHero.innerHTML = `
+        <img src="${coverSrc}" style="width: 56px; height: 80px; border-radius: 4px; object-fit: cover; border: 1px solid var(--background-modifier-border); box-shadow: 0 2px 8px rgba(0,0,0,0.35);" onerror="this.src='https://images.pexels.com/photos/10254198/pexels-photo-10254198.jpeg';" />
+        <div style="display: flex; flex-direction: column; gap: 3px; overflow: hidden;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 10px; font-family: monospace; color: var(--interactive-accent, #60a5fa); font-weight: 700; text-transform: uppercase;">▶ Lendo Agora</span>
+            <span class="prio-badge prio-media" style="font-size: 9.5px; padding: 1px 6px;">${pctL}%</span>
+          </div>
+          <div style="font-size: 12.5px; font-weight: 700; color: var(--text-normal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            ${livroLendo.title || livroLendo.file.name}
+          </div>
+          <div style="font-size: 11px; font-style: italic; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            ${livroLendo.author || 'Autor desconhecido'}
+          </div>
+          <div style="margin-top: 2px;">
+            <div class="abyssal-prog-track" style="height: 4px; width: 100%;">
+              <div class="abyssal-prog-fill" style="width: ${pctL}%; background: var(--text-normal);"></div>
+            </div>
+            <div style="font-size: 9.5px; font-family: monospace; color: var(--text-muted); margin-top: 2px;">
+              ${curL}/${totL} págs • restam ${paginasRest} págs
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Mini Estante das outras capas abaixo
+      const outrosLivros = listaLivros.filter(l => l.file.path !== livroLendo.file.path).slice(0, 4);
+      if (outrosLivros.length > 0) {
+        const shelf = leiturasCol.createEl('div', { 
+          cls: 'abyssal-books-shelf',
+          attr: { style: 'display: flex; gap: 10px; overflow-x: auto; padding-top: 2px;' }
+        });
+
+        outrosLivros.forEach(b => {
+          const item = shelf.createEl('div', { 
+            cls: 'abyssal-book-item',
+            attr: { style: 'width: 58px; flex-shrink: 0; cursor: pointer;' }
+          });
+          item.addEventListener('click', () => app.workspace.openLinkText(b.file.path, "", false));
+
+          const bImg = item.createEl('img', { cls: 'abyssal-book-cover', attr: { style: 'width: 58px; height: 84px; border-radius: 4px; object-fit: cover; border: 1px solid var(--background-modifier-border);' } });
+          bImg.src = b.cover || "https://images.pexels.com/photos/10254198/pexels-photo-10254198.jpeg";
+          bImg.onerror = () => { bImg.src = "https://images.pexels.com/photos/10254198/pexels-photo-10254198.jpeg"; };
+
+          item.createEl('div', { 
+            text: b.title || b.file.name, 
+            attr: { style: 'font-size: 10px; font-weight: 600; color: var(--text-normal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; margin-top: 3px;' } 
+          });
+        });
+      }
     }
 
     // =========================================================================
