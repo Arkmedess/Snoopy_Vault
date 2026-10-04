@@ -1,6 +1,6 @@
 ---
 title: "Planejamento de Estudos"
-status: "Concluído"
+status: "Em Andamento"
 priority: "Média"
 start_date: 2026-10-05
 due_date: 2026-10-20

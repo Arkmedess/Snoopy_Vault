@@ -1,6 +1,6 @@
 ---
 title: "Estruturar Meu Vault"
-status: "Em Andamento"
+status: "Concluído"
 priority: "Alta"
 start_date: 2026-10-03
 due_date: 2026-10-10
