@@ -17,7 +17,7 @@ tags:
 ---
 
 ## 🎯 Foco Principal de Hoje
-- 
+- [ ] Definir entrega de maior impacto de hoje 📅 {{date}} ⏫
 
 ---
 
@@ -28,3 +28,7 @@ tags:
 
 ## 💭 Revisão do Dia
 - 
+
+---
+
+[[00_Home/Home|← Voltar ao Painel Principal]]

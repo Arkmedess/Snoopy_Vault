@@ -2,7 +2,7 @@
 title: "{{title}}"
 disciplina: ""
 modulo: ""
-data: {{date}}
+date: {{date}}
 status: "Revisar"
 tags:
   - estudo
@@ -35,11 +35,15 @@ Pergunta ou termo aqui::Resposta ou definição correspondente
 
 ---
 
-## ❓ Dúvidas & Pontos a Aprofundar
-- [ ] 
+## ❓ Dúvidas & Exercícios de Aprofundamento
+- [ ] Revisar conceitos e praticar exercícios 📅 {{date}} 🔼 
 
 ---
 
 ## 🔗 Referências & Links de Apoio
 - [[Notas Relacionadas]]
 - Artigos e vídeos: 
+
+---
+
+[[00_Home/Home|← Voltar ao Painel Principal]]

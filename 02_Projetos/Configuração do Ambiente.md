@@ -22,5 +22,5 @@ tags:
 ---
 
 ## 📋 Lista de Entregas & Tarefas
-- [x] Instalar Apex Dashboard e utilidades 📅 2026-10-03
+- [x] Configurar Abyssal Dashboard e utilidades 📅 2026-10-03
 - [x] Configurar templates e atalhos de pastas 📅 2026-10-03 ✅ 2026-10-03

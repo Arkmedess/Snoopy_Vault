@@ -40,3 +40,7 @@ tags:
 *(Dica: use `Conceito::Definição` para criar flashcards automáticos de revisão)*
 - 
 
+---
+
+[[00_Home/Home|← Voltar ao Painel Principal]]
+

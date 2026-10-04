@@ -40,4 +40,4 @@ O que é acoplamento em software?::É o nível de dependência ou entrelaçament
 ---
 
 ## ❓ Dúvidas & Próximos Passos
-- [ ] Praticar diagramação com o modelo C4
+- [x] Praticar diagramação com o modelo C4

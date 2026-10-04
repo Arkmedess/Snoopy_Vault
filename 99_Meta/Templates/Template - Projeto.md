@@ -22,9 +22,9 @@ tags:
 ---
 
 ## 📋 Lista de Entregas & Tarefas
-*(Dica: adicione datas de vencimento no formato `📅 AAAA-MM-DD`)*
+*(Dica: use a sintaxe do Tasks como `📅 AAAA-MM-DD` e prioridades `⏫`, `🔼`, `🔽`)*
 
-- [ ] Definir etapas principais do projeto 📅 {{date}}
+- [ ] Definir etapas principais do projeto 📅 {{date}} ⏫
 - [ ] 
 
 ---
@@ -38,4 +38,8 @@ tags:
 ## 📓 Diário de Bordo & Atualizações
 ### {{date}} - Criação do Projeto
 - Projeto inicializado.
+
+---
+
+[[00_Home/Home|← Voltar ao Painel Principal]]
 

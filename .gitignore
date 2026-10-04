@@ -1,6 +1,7 @@
 # Configurações de estado de janela/abas locais do Obsidian (evita conflitos entre usuários)
 .obsidian/cache/
 .obsidian/.trash/
+.obsidian/workspace.json
 
 # Backups temporários e lixeira
 .dashboard-backup/

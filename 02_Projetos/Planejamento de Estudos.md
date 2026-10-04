@@ -1,6 +1,6 @@
 ---
 title: "Planejamento de Estudos"
-status: "Em Andamento"
+status: "Concluído"
 priority: "Média"
 start_date: 2026-10-05
 due_date: 2026-10-20
@@ -22,5 +22,5 @@ tags:
 ---
 
 ## 📋 Lista de Entregas & Tarefas
-- [ ] Listar matérias prioritárias 📅 2026-10-05
-- [ ] Definir rotina de revisões espaçadas 📅 2026-10-08
+- [x] Listar matérias prioritárias 📅 2026-10-05
+- [x] Definir rotina de revisões espaçadas 📅 2026-10-08
