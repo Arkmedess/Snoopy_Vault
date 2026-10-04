@@ -38,9 +38,9 @@ O **Snoopy Vault** equilibra estética, foco e simplicidade: uma **página inici
 - **🍅 Pomodoro Focus Cockpit:** Temporizador circular flat em SVG (170px) com alternância fluida entre Foco e Pausa, ajuste direto de minutos e fluxo inteligente em 3 etapas (*Foco → Anotação → Pausa Automática*).
 - **📝 Captura Ágil & Flashcards:** Ao término de cada foco (ou via botões de 1-clique), consolide o aprendizado e crie flashcards (`::`) automaticamente na nota diária (`01_Inbox/Diário/AAAA-MM-DD.md`).
 - **🌱 Histórico & Jardim Botânico:** Acompanhe a constância com um avatar que germina e evolui (de *Semente* a *Árvore*) conforme os ciclos do dia são concluídos, além de mapa de calor de 11 semanas com estatísticas de pico e sequência.
-- **📋 Kanban Interativo de Projetos:** Quadro visual com suporte nativo a *Drag & Drop*, badges de prioridade (*Alta*, *Média*, *Baixa*), barra de tarefas concluídas, datas de prazo vinculadas ao diário/calendário, rolagem vertical contida (`max-height: 380px`) e adição dinâmica de colunas (`+ STATUS`).
-- **🎯 Daily Tracker Sincronizado:** Acompanhe hábitos diários com checkboxes circulares, cálculo de progresso percentual e adição instantânea de novas metas (`+ META`) sincronizadas com a nota diária de hoje.
-- **✅ To-Do Prioritário com Rastreabilidade:** Visualização das tarefas pendentes do cofre com indicador clicável apontando diretamente para a nota de origem (`📄 NomeDaNota`).
+- **📋 Kanban Multi-Escopo & Controle Tátil Mobile:** Quadro visual com suporte a Projetos e Estudos, controle tátil com botão `⋮` para telas sensíveis ao toque (Obsidian Mobile via Git), cálculo dinâmico de progresso e detecção de tarefas atrasadas.
+- **✅ Central de Tarefas Relacional (To-Do ↔ Kanban):** Gestão de tarefas com abas de prazo (*Hoje*, *Próximas*, *Todas*), suporte à sintaxe do plugin *Tasks* (`📅` e `⏫`), seletor híbrido de iniciativa (gravação direta no projeto ou no diário) e badges clicáveis de escopo.
+- **📚 Subdashboards Sob Demanda (Estilo Estudei):** Arquitetura *Hub & Spoke* com carregamento leve. O `03_Estudos/Painel de Estudos.md` introduz ciclo de rotação contínua de disciplinas, métricas de assertividade em sessões de questões e monitoramento de flashcards.
 - **📖 Reading & Matérias:** Carrossel visual de livros com barra de progresso por páginas lidas e catálogo de disciplinas de estudo em grade.
 
 ---
@@ -50,18 +50,24 @@ O **Snoopy Vault** equilibra estética, foco e simplicidade: uma **página inici
 ```text
 Snoopy_Vault/
 ├── 00_Home/                 # Painel central de navegação e foco
-│   └── Home.md              # Dashboard vivo em DataviewJS
+│   └── Home.md              # Dashboard vivo em DataviewJS (Hub central)
 ├── 01_Inbox/                # Entrada rápida e notas diárias
 │   └── Diário/              # Notas diárias (AAAA-MM-DD.md)
 ├── 02_Projetos/             # Projetos ativos gerenciados pelo Kanban
 ├── 03_Estudos/              # Matérias, cursos e anotações acadêmicas
+│   └── Painel de Estudos.md # Subdashboard especializado (Ciclo & Questões)
 ├── 04_Leituras/             # Gestão de referências
 │   └── Livros/              # Fichas de leitura com capas e progresso
 ├── 05_Arquivo/              # Projetos e notas finalizados
-├── 99_Meta/                 # Metadados do ecossistema
+├── 99_Meta/                 # Metadados e código modular do ecossistema
 │   ├── Attachments/         # Capas, banners e capturas de tela
-│   ├── Templates/           # Modelos de notas (Projeto, Estudo, Livro, Diário)
-│   └── kanban-columns.json  # Configuração de status dinâmicos do Kanban
+│   ├── Snoopy/              # Módulos independentes e orquestrador
+│   │   ├── home/view.js     # Orquestrador do Home
+│   │   ├── modulos/         # 01 a 05 (Banner, Pomodoro, Kanban, To-Do, Leituras)
+│   │   └── subdashboards/   # Subdashboards sob demanda (Estudos, etc.)
+│   ├── Templates/           # Modelos de notas (Projeto, Estudo, Livro, Diário, Inbox)
+│   ├── kanban-columns.json  # Configuração de status dinâmicos do Kanban
+│   └── ⚙️ Configurações.md  # Painel de preferências visuais e tempos de foco
 ├── .obsidian/               # Configuração do cofre
 │   ├── snippets/            # 05_Abyssal_Snoopy.css (Design System)
 │   ├── community-plugins.json # Plugins ativos
