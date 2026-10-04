@@ -522,6 +522,23 @@ return {
       completedCyclesToday++;
       mapaFoco[todayStr] = completedCyclesToday;
       await salvarPomodoroNaNotaDiaria();
+
+      // Sincroniza automaticamente com o histórico do Framework de Estudos
+      try {
+        const cicloPath = "99_Meta/ciclo-estudos.json";
+        const cFile = app.vault.getAbstractFileByPath(cicloPath);
+        if (cFile) {
+          const raw = await app.vault.read(cFile);
+          const cState = JSON.parse(raw);
+          if (!cState.historicoDiario) cState.historicoDiario = {};
+          if (!cState.historicoDiario[todayStr]) {
+            cState.historicoDiario[todayStr] = { minutosFoco: 0, questoesFeitas: 0, questoesAcertos: 0 };
+          }
+          cState.historicoDiario[todayStr].minutosFoco += focusMin;
+          await app.vault.modify(cFile, JSON.stringify(cState, null, 2));
+        }
+      } catch(e) {}
+
       atualizarJardim();
       gerarHistoricoPomo();
       abrirModalAnotacao(false);

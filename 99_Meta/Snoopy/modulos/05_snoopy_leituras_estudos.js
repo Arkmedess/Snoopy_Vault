@@ -124,7 +124,7 @@ return {
     if (linkPainelLeituras) {
       linkPainelLeituras.addEventListener('click', (e) => {
         e.preventDefault();
-        app.workspace.openLinkText("04_Leituras/Livros", "", false);
+        app.workspace.openLinkText("04_Leituras/Painel de Leituras.md", "", false);
       });
     }
 
