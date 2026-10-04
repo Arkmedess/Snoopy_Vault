@@ -20,9 +20,9 @@ return {
       <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
         <span class="abyssal-section-title">INICIATIVAS EM ANDAMENTO</span>
         <div id="kanban-scope-pills" style="display: flex; gap: 6px;">
-          <button id="scope-btn-projetos" class="abyssal-btn-mode active" style="padding: 2px 8px; font-size: 11px;">🎯 Projetos</button>
-          <button id="scope-btn-estudos" class="abyssal-btn-mode" style="padding: 2px 8px; font-size: 11px;">📚 Estudos</button>
-          <button id="scope-btn-todos" class="abyssal-btn-mode" style="padding: 2px 8px; font-size: 11px;">🌐 Todos</button>
+          <button id="scope-btn-projetos" class="abyssal-btn-mode active" style="padding: 2px 8px; font-size: 11px;">Projetos</button>
+          <button id="scope-btn-estudos" class="abyssal-btn-mode" style="padding: 2px 8px; font-size: 11px;">Estudos</button>
+          <button id="scope-btn-todos" class="abyssal-btn-mode" style="padding: 2px 8px; font-size: 11px;">Todos</button>
         </div>
       </div>
       <div style="display: flex; align-items: center; gap: 8px;">

@@ -35,12 +35,12 @@ return {
 
     const navPillsRow = headerRow.createEl('div', { cls: 'abyssal-nav-pills' });
     const navItems = [
-      { label: '📅 HOJE', action: 'daily' },
-      { label: '📚 ESTUDOS', action: 'sub_estudos' },
-      { label: '⚡ INBOX', folder: '01_Inbox', tpl: '99_Meta/Templates/Template - Inbox.md', prefix: 'Nota Rápida' },
-      { label: '📁 + PROJETO', folder: '02_Projetos', tpl: '99_Meta/Templates/Template - Projeto.md', prefix: 'Novo Projeto' },
-      { label: '📖 + LEITURA', folder: '04_Leituras/Livros', tpl: '99_Meta/Templates/Template - Livro.md', prefix: 'Novo Livro' },
-      { label: '⚙️ CONFIG', action: 'config' }
+      { label: 'HOJE', action: 'daily' },
+      { label: 'ESTUDOS', action: 'sub_estudos' },
+      { label: 'INBOX', folder: '01_Inbox', tpl: '99_Meta/Templates/Template - Inbox.md', prefix: 'Nota Rápida' },
+      { label: '+ PROJETO', folder: '02_Projetos', tpl: '99_Meta/Templates/Template - Projeto.md', prefix: 'Novo Projeto' },
+      { label: '+ LEITURA', folder: '04_Leituras/Livros', tpl: '99_Meta/Templates/Template - Livro.md', prefix: 'Novo Livro' },
+      { label: 'CONFIG', action: 'config' }
     ];
 
     navItems.forEach(item => {

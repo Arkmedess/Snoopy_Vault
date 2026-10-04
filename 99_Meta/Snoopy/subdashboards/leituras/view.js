@@ -44,7 +44,7 @@ function abrirModalProgresso(livro) {
 
   modalBox.innerHTML = `
     <div style="display: flex; justify-content: space-between; align-items: center;">
-      <span style="font-size: 14px; font-weight: bold; color: #ffffff;">📖 Atualizar Progresso</span>
+      <span style="font-size: 14px; font-weight: bold; color: #ffffff;">Atualizar Progresso</span>
       <button id="modal-close-prog" style="background: none; border: none; color: #71717a; cursor: pointer; font-size: 14px;">✕</button>
     </div>
     <div style="font-size: 12px; color: #a1a1aa;">${livro.title || livro.file.name}</div>
@@ -131,7 +131,7 @@ function abrirModalBuscaNuvem() {
   
   modalBox.innerHTML = `
     <div style="display: flex; justify-content: space-between; align-items: center;">
-      <span style="font-size: 14px; font-weight: bold; color: #ffffff;">📖 Buscar Livro na Nuvem (Bookshelf)</span>
+      <span style="font-size: 14px; font-weight: bold; color: #ffffff;">Buscar Livro no Bookshelf</span>
       <button id="modal-close-search" style="background: none; border: none; color: #71717a; cursor: pointer; font-size: 14px;">✕</button>
     </div>
     <div style="font-size: 11px; font-family: monospace; color: #a1a1aa;">Digite o título ou autor (busca online Open Library):</div>
@@ -263,7 +263,7 @@ function renderBookshelfCompleto() {
       <button id="btn-back-home" class="abyssal-btn-action" style="font-size: 11px; padding: 4px 10px;">← HOME</button>
       <div>
         <div style="font-size: 15px; font-weight: 700; color: var(--text-normal); text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px;">
-          <span>📖</span> BOOKSHELF KO-READER • ESTANTE PESSOAL
+          BOOKSHELF
         </div>
         <div style="font-size: 11px; font-family: monospace; color: var(--text-muted);">${listaLivros.length} livros no acervo</div>
       </div>

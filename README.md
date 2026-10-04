@@ -35,13 +35,13 @@ O **Snoopy Vault** equilibra estética, foco e simplicidade: uma **página inici
 
 ## O que ele entrega
 
-- **🍅 Pomodoro Focus Cockpit:** Temporizador circular flat em SVG (170px) com alternância fluida entre Foco e Pausa, ajuste direto de minutos e fluxo inteligente em 3 etapas (*Foco → Anotação → Pausa Automática*).
+- **🍅 Pomodoro Focus Cockpit:** Temporizador circular flat em SVG (170px) com alternância fluida entre Foco e Pausa, ajuste direto de minutos e fluxo inteligente em 3 etapas (*Foco → Anotação → Pausa Automática*), sincronizando minutos líquidos com o histórico de estudos.
 - **📝 Captura Ágil & Flashcards:** Ao término de cada foco (ou via botões de 1-clique), consolide o aprendizado e crie flashcards (`::`) automaticamente na nota diária (`01_Inbox/Diário/AAAA-MM-DD.md`).
 - **🌱 Histórico & Jardim Botânico:** Acompanhe a constância com um avatar que germina e evolui (de *Semente* a *Árvore*) conforme os ciclos do dia são concluídos, além de mapa de calor de 11 semanas com estatísticas de pico e sequência.
 - **📋 Kanban Multi-Escopo & Controle Tátil Mobile:** Quadro visual com suporte a Projetos e Estudos, controle tátil com botão `⋮` para telas sensíveis ao toque (Obsidian Mobile via Git), cálculo dinâmico de progresso e detecção de tarefas atrasadas.
 - **✅ Central de Tarefas Relacional (To-Do ↔ Kanban):** Gestão de tarefas com abas de prazo (*Hoje*, *Próximas*, *Todas*), suporte à sintaxe do plugin *Tasks* (`📅` e `⏫`), seletor híbrido de iniciativa (gravação direta no projeto ou no diário) e badges clicáveis de escopo.
-- **📚 Subdashboards Sob Demanda (Estilo Estudei):** Arquitetura *Hub & Spoke* com carregamento leve. O `03_Estudos/Painel de Estudos.md` introduz ciclo de rotação contínua de disciplinas, métricas de assertividade em sessões de questões e monitoramento de flashcards.
-- **📖 Reading & Matérias:** Carrossel visual de livros com barra de progresso por páginas lidas e catálogo de disciplinas de estudo em grade.
+- **📚 Framework de Estudos (Estilo Estudei):** Subdashboard sob demanda com 4 abas especializadas: Painel de Controle (Donut SVG por matéria e Gráfico de Linha/Área SVG dos últimos 7 dias sincronizado com o Pomodoro), Meu Planner semanal de blocos, Central de Revisões Espaçadas (1d ➔ 7d ➔ 14d ➔ 30d) e Ciclo Contínuo de Disciplinas.
+- **📖 Bookshelf (Estilo KOReader):** Subdashboard de leituras inspirado no plugin Bookshelf do KOReader, com Hero Card superior em 3D, sinopse editorial, abas de e-reader (*Home*, *Recent*, *Quero Ler*, *Favourites*), Shelf Grid com marcadores de fita (*ribbons*) e busca online instantânea via Open Library API sem necessidade de pacotes locais.
 
 ---
 

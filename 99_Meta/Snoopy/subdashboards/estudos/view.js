@@ -77,7 +77,7 @@ function abrirModalSessao(materiaPreSelecionada = null) {
 
   modalBox.innerHTML = `
     <div style="display: flex; justify-content: space-between; align-items: center;">
-      <span style="font-size: 14px; font-weight: bold; color: #ffffff;">⏱️ Registrar Estudo & Questões</span>
+      <span style="font-size: 14px; font-weight: bold; color: #ffffff;">Registrar Estudo & Questões</span>
       <button id="modal-close-sess" style="background: none; border: none; color: #71717a; cursor: pointer; font-size: 14px;">✕</button>
     </div>
 
@@ -237,7 +237,7 @@ function renderFrameworkEstudos() {
       <button id="btn-back-home" class="abyssal-btn-action" style="font-size: 11px; padding: 4px 10px;">← HOME</button>
       <div>
         <div style="font-size: 15px; font-weight: 700; color: var(--text-normal); text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px;">
-          <span>📚</span> FRAMEWORK DE ESTUDOS • ESTUDEI
+          FRAMEWORK DE ESTUDOS
         </div>
         <div style="font-size: 11px; font-family: monospace; color: var(--text-muted);">${materias.length} disciplinas cadastradas</div>
       </div>
@@ -259,10 +259,10 @@ function renderFrameworkEstudos() {
   });
 
   const abas = [
-    { id: 'painel', label: '📊 PAINEL DE CONTROLE (Métricas & Donut)' },
-    { id: 'planner', label: '📅 MEU PLANNER (Cronograma)' },
-    { id: 'revisoes', label: '🔄 REVISÕES ESPAÇADAS' },
-    { id: 'ciclo', label: '🎯 CICLO DE ESTUDOS' }
+    { id: 'painel', label: 'PAINEL DE CONTROLE' },
+    { id: 'planner', label: 'MEU PLANNER' },
+    { id: 'revisoes', label: 'REVISÕES ESPAÇADAS' },
+    { id: 'ciclo', label: 'CICLO DE ESTUDOS' }
   ];
 
   abas.forEach(aba => {
@@ -693,7 +693,7 @@ function renderAbaMeuPlanner() {
 
     modalBox.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-size: 14px; font-weight: bold; color: #ffffff;">📅 Agendar Bloco de Estudo</span>
+        <span style="font-size: 14px; font-weight: bold; color: #ffffff;">Agendar Bloco de Estudo</span>
         <button id="modal-close-plan" style="background: none; border: none; color: #71717a; cursor: pointer; font-size: 14px;">✕</button>
       </div>
 

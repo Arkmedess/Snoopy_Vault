@@ -30,7 +30,7 @@ return {
 
     estudosHeader.innerHTML = `
       <a id="link-painel-estudos" class="abyssal-section-title-link" title="Abrir Subdashboard Completo de Estudos (Framework Estudei)">
-        <span>📚</span> ESTUDOS & CICLO ATIVO <span style="font-size: 11px; opacity: 0.6;">↗</span>
+        ESTUDOS & CICLO ATIVO <span style="font-size: 11px; opacity: 0.6;">↗</span>
       </a>
       <span style="font-size: 11px; font-family: monospace; color: var(--text-muted);">${estudos.length} matérias</span>
     `;
@@ -144,7 +144,7 @@ return {
 
     leiturasHeader.innerHTML = `
       <a id="link-painel-leituras" class="abyssal-section-title-link" title="Abrir pasta de leituras">
-        <span>📖</span> BOOKSHELF KO-READER <span style="font-size: 11px; opacity: 0.6;">↗</span>
+        BOOKSHELF <span style="font-size: 11px; opacity: 0.6;">↗</span>
       </a>
       <button id="btn-buscar-livro-nuvem" class="abyssal-nav-pill-btn" style="padding: 2px 8px; font-size: 10.5px;" title="Buscar metadados de livro na nuvem via API">+ BUSCAR NA NUVEM</button>
     `;
@@ -248,7 +248,7 @@ return {
       
       modalBox.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span style="font-size: 14px; font-weight: bold; color: #ffffff;">📖 Buscar Livro na Nuvem (Bookshelf)</span>
+          <span style="font-size: 14px; font-weight: bold; color: #ffffff;">Buscar Livro no Bookshelf</span>
           <button id="modal-close-book" style="background: none; border: none; color: #71717a; cursor: pointer; font-size: 14px;">✕</button>
         </div>
         <div style="font-size: 11px; font-family: monospace; color: #a1a1aa;">Digite o título ou autor (busca online via Open Library):</div>

@@ -4,6 +4,9 @@ disciplina: "Engenharia de Software"
 modulo: "Fundamentos"
 data: 2026-10-03
 status: "Revisar"
+minutos_foco: 120
+questoes_feitas: 25
+questoes_acertos: 22
 tags:
   - estudo
 ---
