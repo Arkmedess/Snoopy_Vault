@@ -6,10 +6,10 @@ return {
   id: 'snoopy_daily_tracker',
   titulo: 'Hábitos & Central de Tarefas',
   async render(ctx) {
-    const { bottomGrid, app, dv, todayStr, dailyPath, garantirNotaDiaria } = ctx;
+    const { root, app, dv, todayStr, dailyPath, garantirNotaDiaria } = ctx;
 
-    // Coluna Esquerda do Grid Inferior
-    const leftBottom = bottomGrid.createEl('div', { cls: 'abyssal-card-box', attr: { style: 'display: flex; flex-direction: column; gap: 14px;' } });
+    // Bloco Inferior: Hábitos Diários & Central de Tarefas em Largura Total
+    const leftBottom = root.createEl('div', { cls: 'abyssal-card-box', attr: { style: 'display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px;' } });
 
     // =========================================================================
     // 1. FAIXA COMPACTA: HÁBITOS DO DIA

@@ -305,6 +305,93 @@ async function renderPainelCompleto() {
   }
 
   // =========================================================================
+  // BLOCO 0: MÉTRICAS GLOBAIS & GRÁFICOS DE RETENÇÃO (FRAMEWORK ESTUDEI)
+  // =========================================================================
+  let totalFeitasGlobal = 0;
+  let totalAcertosGlobal = 0;
+  let totalFlashcardsGlobal = 0;
+
+  for (const m of materias) {
+    totalFeitasGlobal += Number(m.questoes_feitas) || 0;
+    totalAcertosGlobal += Number(m.questoes_acertos) || 0;
+    try {
+      const fFile = app.vault.getAbstractFileByPath(m.file.path);
+      if (fFile) {
+        const raw = await app.vault.read(fFile);
+        const matches = raw.match(/::/g);
+        if (matches) totalFlashcardsGlobal += matches.length;
+      }
+    } catch(e) {}
+  }
+
+  const pctGlobal = totalFeitasGlobal > 0 ? Math.round((totalAcertosGlobal / totalFeitasGlobal) * 100) : 0;
+  const materiasParaRevisar = materias.filter(m => String(m.status).toLowerCase() === 'revisar');
+
+  const analyticsBox = mainContainer.createEl('div', { cls: 'abyssal-card-box', attr: { style: 'display: flex; flex-direction: column; gap: 14px;' } });
+  
+  const analyticsHeader = analyticsBox.createEl('div', {
+    attr: { style: 'display: flex; justify-content: space-between; align-items: center;' }
+  });
+  analyticsHeader.innerHTML = `
+    <span class="abyssal-section-title">PAINEL DE PERFORMANCE & RETENÇÃO</span>
+    <span style="font-size: 11px; font-family: monospace; color: var(--text-muted);">Estatísticas Consolidadas</span>
+  `;
+
+  // Grid de KPIs
+  const kpiGrid = analyticsBox.createEl('div', {
+    attr: { style: 'display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px;' }
+  });
+
+  const kpis = [
+    { label: 'TAXA GERAL DE ACERTO', val: totalFeitasGlobal > 0 ? `${pctGlobal}%` : 'Sem dados', sub: `${totalAcertosGlobal}/${totalFeitasGlobal} questões`, color: pctGlobal >= 75 ? '#86efac' : 'var(--text-normal)' },
+    { label: 'MATÉRIAS NO CICLO', val: materias.length, sub: 'Disciplinas ativas', color: 'var(--text-normal)' },
+    { label: 'FLASHCARDS ATIVOS', val: totalFlashcardsGlobal, sub: 'No Spaced Repetition', color: 'var(--interactive-accent, #60a5fa)' },
+    { label: 'REVISÕES PENDENTES', val: materiasParaRevisar.length, sub: materiasParaRevisar.length > 0 ? 'Exigem reforço' : 'Em dia', color: materiasParaRevisar.length > 0 ? '#fca5a5' : '#86efac' }
+  ];
+
+  kpis.forEach(k => {
+    const kCard = kpiGrid.createEl('div', {
+      attr: { style: 'background: var(--background-secondary-alt); border: 1px solid var(--background-modifier-border); border-radius: 6px; padding: 10px 12px; display: flex; flex-direction: column; gap: 3px;' }
+    });
+    kCard.innerHTML = `
+      <span style="font-size: 10px; font-family: monospace; color: var(--text-muted); font-weight: 700; letter-spacing: 0.05em;">${k.label}</span>
+      <span style="font-size: 18px; font-weight: 800; color: ${k.color}; line-height: 1.2;">${k.val}</span>
+      <span style="font-size: 10.5px; font-family: monospace; color: var(--text-muted);">${k.sub}</span>
+    `;
+  });
+
+  // Gráfico de Barras de Assertividade por Disciplina (SVG puro)
+  const materiasComDados = materias.filter(m => Number(m.questoes_feitas) > 0);
+  if (materiasComDados.length > 0) {
+    const chartBox = analyticsBox.createEl('div', {
+      attr: { style: 'padding-top: 10px; border-top: 1px solid var(--background-modifier-border); display: flex; flex-direction: column; gap: 8px;' }
+    });
+    chartBox.innerHTML = `
+      <div style="font-size: 11px; font-family: monospace; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">
+        📊 Assertividade por Disciplina (Meta: 80%)
+      </div>
+    `;
+
+    materiasComDados.forEach(m => {
+      const f = Number(m.questoes_feitas) || 0;
+      const a = Number(m.questoes_acertos) || 0;
+      const pct = Math.round((a / f) * 100);
+      const row = chartBox.createEl('div', {
+        attr: { style: 'display: flex; flex-direction: column; gap: 3px;' }
+      });
+      row.innerHTML = `
+        <div style="display: flex; justify-content: space-between; font-size: 11px; font-family: monospace;">
+          <span style="color: var(--text-normal); font-weight: 600;">${m.title || m.file.name}</span>
+          <span style="color: ${pct >= 80 ? '#86efac' : pct >= 60 ? 'var(--text-normal)' : '#fca5a5'}; font-weight: bold;">${pct}% (${a}/${f})</span>
+        </div>
+        <div class="abyssal-prog-track" style="height: 6px; width: 100%; position: relative;">
+          <div class="abyssal-prog-fill" style="width: ${pct}%; background: ${pct >= 80 ? '#86efac' : pct >= 60 ? 'var(--text-normal)' : '#fca5a5'};"></div>
+        </div>
+      `;
+    });
+  }
+
+  // =========================================================================
   // BLOCO 1: CICLO DE ROTAÇÃO ATIVO (ESTILO ESTUDEI)
   // =========================================================================
   const cicloBox = mainContainer.createEl('div', { cls: 'abyssal-card-box' });

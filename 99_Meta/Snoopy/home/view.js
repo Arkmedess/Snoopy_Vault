@@ -136,9 +136,9 @@ ctx.config = config;
 const modulosSnoopy = [
   "99_Meta/Snoopy/modulos/01_snoopy_banner_cabecalho.js",
   "99_Meta/Snoopy/modulos/02_snoopy_cockpit_pomodoro.js",
+  "99_Meta/Snoopy/modulos/05_snoopy_leituras_estudos.js",
   "99_Meta/Snoopy/modulos/03_snoopy_kanban_projetos.js",
-  "99_Meta/Snoopy/modulos/04_snoopy_daily_tracker.js",
-  "99_Meta/Snoopy/modulos/05_snoopy_leituras_estudos.js"
+  "99_Meta/Snoopy/modulos/04_snoopy_daily_tracker.js"
 ];
 
 // 7. Execução Modular dos Componentes
