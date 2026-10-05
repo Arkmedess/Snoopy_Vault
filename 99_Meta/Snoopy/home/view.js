@@ -108,10 +108,10 @@ let config = {
   tema_preset: "abyssal",
   modulos_ativos: [
     "snoopy_banner_cabecalho",
-    "snoopy_cockpit_pomodoro",
-    "snoopy_kanban_projetos",
     "snoopy_daily_tracker",
-    "snoopy_leituras_estudos"
+    "snoopy_cockpit_pomodoro",
+    "snoopy_leituras_estudos",
+    "snoopy_kanban_projetos"
   ]
 };
 
@@ -135,10 +135,10 @@ ctx.config = config;
 // 6. Lista Ordenada de Módulos Oficiais Snoopy Vault
 const modulosSnoopy = [
   "99_Meta/Snoopy/modulos/01_snoopy_banner_cabecalho.js",
+  "99_Meta/Snoopy/modulos/04_snoopy_daily_tracker.js",
   "99_Meta/Snoopy/modulos/02_snoopy_cockpit_pomodoro.js",
   "99_Meta/Snoopy/modulos/05_snoopy_leituras_estudos.js",
-  "99_Meta/Snoopy/modulos/03_snoopy_kanban_projetos.js",
-  "99_Meta/Snoopy/modulos/04_snoopy_daily_tracker.js"
+  "99_Meta/Snoopy/modulos/03_snoopy_kanban_projetos.js"
 ];
 
 // 7. Execução Modular dos Componentes

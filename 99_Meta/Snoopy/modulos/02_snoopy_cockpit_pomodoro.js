@@ -42,6 +42,62 @@ return {
       </div>
     `;
 
+    // Banner Reativo de Foco Selecionado (Conectado à Central de Tarefas)
+    const targetBanner = pomoBox.createEl('div', {
+      cls: 'snoopy-pomodoro-target',
+      attr: {
+        id: 'snoopy-pomodoro-target-box',
+        style: 'display: none; background: #14141e; border: 1px solid rgba(134, 239, 172, 0.25); border-radius: 6px; padding: 7px 11px; justify-content: space-between; align-items: center; margin: 8px 0 4px 0;'
+      }
+    });
+
+    targetBanner.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
+        <span style="font-size: 14px;">🎯</span>
+        <div style="overflow: hidden;">
+          <div style="font-size: 9.5px; font-weight: 700; color: #86efac; letter-spacing: 0.05em; font-family: monospace;">FOCO SELECIONADO:</div>
+          <div id="snoopy-target-name" style="font-size: 12px; font-weight: 700; color: #ffffff; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">-</div>
+        </div>
+      </div>
+      <div style="display: flex; gap: 5px; flex-shrink: 0;">
+        <button id="snoopy-btn-target-done" class="abyssal-btn-action" style="padding: 2px 7px; font-size: 10.5px; color: #86efac;">✓ Feito</button>
+        <button id="snoopy-btn-target-clear" class="abyssal-btn-action" style="padding: 2px 5px; font-size: 10.5px; color: #a1a1aa;">✕</button>
+      </div>
+    `;
+
+    const targetNameEl = targetBanner.querySelector('#snoopy-target-name');
+    const btnTargetDone = targetBanner.querySelector('#snoopy-btn-target-done');
+    const btnTargetClear = targetBanner.querySelector('#snoopy-btn-target-clear');
+
+    if (btnTargetClear) {
+      btnTargetClear.addEventListener('click', (e) => {
+        e.preventDefault();
+        targetBanner.style.display = 'none';
+        if (targetNameEl) targetNameEl.textContent = '-';
+        new Notice('Alvo de foco liberado.');
+      });
+    }
+
+    if (btnTargetDone) {
+      btnTargetDone.addEventListener('click', (e) => {
+        e.preventDefault();
+        const nomeAtual = targetNameEl ? targetNameEl.textContent : '';
+        targetBanner.style.display = 'none';
+        new Notice(`✓ Concluído: "${nomeAtual}"!`);
+      });
+    }
+
+    window.snoopySetPomodoroFocus = function(titulo, tag) {
+      if (targetBanner && targetNameEl) {
+        targetBanner.style.display = 'flex';
+        targetNameEl.textContent = titulo;
+        pomoBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        pomoBox.style.boxShadow = '0 0 20px rgba(134, 239, 172, 0.25)';
+        setTimeout(() => { pomoBox.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.4)'; }, 2000);
+        new Notice(`🎯 Pomodoro apontado para: ${titulo}`);
+      }
+    };
+
     // Centro do Pomodoro: Anel SVG + Controles Agrupados
     const pomoCenter = pomoBox.createEl('div', { 
       attr: { style: 'display: grid; grid-template-columns: 5fr 7fr; gap: 20px; align-items: center; padding: 14px 0;' } 

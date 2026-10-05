@@ -191,7 +191,7 @@ return {
         </div>
 
         <div>
-          <div style="font-size: 11px; font-family: monospace; color: #a1a1aa; margin-bottom: 4px;">Prazo Final (Opcional):</div>
+          <div style="font-size: 11px; font-family: monospace; color: #a1a1aa; margin-bottom: 4px;">Prazo Final (DD-MM-YYYY):</div>
           <input id="modal-item-due" type="date" style="width: 100%; background: #181824; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 6px; color: #ffffff; font-size: 11.5px; outline: none;">
         </div>
 
@@ -254,18 +254,20 @@ return {
             const targetPath = `${folder}/${rawTitle}.md`;
             const tplFile = app.vault.getAbstractFileByPath(tplPath);
             let content = "";
+            const dueFormatado = due ? formatarParaDDMMYYYY(due) : '';
+            const todayFormatado = formatarParaDDMMYYYY(todayStr);
 
             if (tplFile) {
               const rawTpl = await app.vault.read(tplFile);
               content = rawTpl.replace(/{{title}}/g, rawTitle)
-                              .replace(/{{date}}/g, todayStr)
+                              .replace(/{{date}}/g, todayFormatado)
                               .replace(/status:\s*["'][^"']+["']/, `status: "${colStatus}"`)
                               .replace(/priority:\s*["'][^"']+["']/, `priority: "${prio}"`);
-              if (due) {
-                content = content.replace(/due_date:\s*([^\n]*)/, `due_date: ${due}`);
+              if (dueFormatado) {
+                content = content.replace(/due_date:\s*([^\n]*)/, `due_date: ${dueFormatado}`);
               }
             } else {
-              content = `---\ntitle: "${rawTitle}"\nstatus: "${colStatus}"\npriority: "${prio}"\ndue_date: ${due}\ntags: [${tipo}]\n---\n\n# ${rawTitle}\n\n`;
+              content = `---\ntitle: "${rawTitle}"\nstatus: "${colStatus}"\npriority: "${prio}"\ndue_date: ${dueFormatado}\ntags: [${tipo}]\n---\n\n# ${rawTitle}\n\n`;
             }
 
             const newFile = await app.vault.create(targetPath, content);
@@ -341,6 +343,19 @@ return {
       });
     }
 
+    function formatarParaDDMMYYYY(dStr) {
+      if (!dStr) return '';
+      const matchIso = String(dStr).match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+      if (matchIso) {
+        return `${matchIso[3].padStart(2, '0')}-${matchIso[2].padStart(2, '0')}-${matchIso[1]}`;
+      }
+      const matchBr = String(dStr).match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
+      if (matchBr) {
+        return `${matchBr[1].padStart(2, '0')}-${matchBr[2].padStart(2, '0')}-${matchBr[3]}`;
+      }
+      return String(dStr);
+    }
+
     function formatarPrazo(dataStr) {
       if (!dataStr) return null;
       let clean = String(dataStr).trim();
@@ -350,14 +365,14 @@ return {
         const y = matchIso[1];
         const m = matchIso[2].padStart(2, '0');
         const d = matchIso[3].padStart(2, '0');
-        return { label: `Prazo: ${d}/${m}/${y}`, isoDate: `${y}-${m}-${d}` };
+        return { label: `Prazo: ${d}-${m}-${y}`, isoDate: `${y}-${m}-${d}` };
       }
       const matchBr = clean.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
       if (matchBr) {
         const d = matchBr[1].padStart(2, '0');
         const m = matchBr[2].padStart(2, '0');
         const y = matchBr[3];
-        return { label: `Prazo: ${d}/${m}/${y}`, isoDate: `${y}-${m}-${d}` };
+        return { label: `Prazo: ${d}-${m}-${y}`, isoDate: `${y}-${m}-${d}` };
       }
       return { label: `Prazo: ${clean}`, isoDate: clean };
     }

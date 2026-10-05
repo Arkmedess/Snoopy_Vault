@@ -8,58 +8,90 @@ return {
   async render(ctx) {
     const { root, app, dv, todayStr, dailyPath, garantirNotaDiaria } = ctx;
 
-    // Bloco Inferior: Hábitos Diários & Central de Tarefas em Largura Total
-    const leftBottom = root.createEl('div', { cls: 'abyssal-card-box', attr: { style: 'display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px;' } });
+    // =========================================================================
+    // MINI-FRAMEWORK SUPERIOR: HUB DIÁRIO 30% HÁBITOS / 70% TAREFAS
+    // =========================================================================
+    const hubGrid = root.createEl('div', { 
+      cls: 'snoopy-daily-hub-grid',
+      attr: { 
+        style: 'display: grid; grid-template-columns: minmax(260px, 30%) 1fr; gap: 16px; margin-bottom: 20px; align-items: stretch;' 
+      } 
+    });
 
-    // =========================================================================
-    // 1. FAIXA COMPACTA: HÁBITOS DO DIA
-    // =========================================================================
-    const habitsSection = leftBottom.createEl('div');
-    const habitsHeader = habitsSection.createEl('div', { 
-      attr: { style: 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;' } 
+    // LADO ESQUERDO (30%): HÁBITOS DIÁRIOS
+    const habitsCard = hubGrid.createEl('div', { 
+      cls: 'abyssal-card-box', 
+      attr: { style: 'display: flex; flex-direction: column; justify-content: space-between; gap: 10px;' } 
+    });
+
+    const habitsTop = habitsCard.createEl('div', {
+      attr: { style: 'display: flex; flex-direction: column; gap: 8px;' }
+    });
+
+    const habitsHeader = habitsTop.createEl('div', { 
+      attr: { style: 'display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px;' } 
     });
 
     habitsHeader.innerHTML = `
-      <div style="display: flex; align-items: center; gap: 8px;">
+      <div style="display: flex; align-items: center; gap: 6px;">
         <span class="abyssal-section-title">HÁBITOS DE HOJE</span>
-        <span style="font-size: 11.5px; font-family: monospace; color: #a1a1aa; cursor: pointer;" title="Abrir nota diária de hoje">01_Inbox/Diário (${todayStr})</span>
       </div>
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <span id="abyssal-habit-pct" style="font-size: 11.5px; font-family: monospace; color: #86efac; font-weight: bold;">0%</span>
-        <button id="abyssal-add-habit-btn" class="abyssal-col-add-btn" style="padding: 2px 8px; font-size: 11px; width: auto; height: auto;" title="Adicionar novo hábito na nota diária">+ HÁBITO</button>
+      <div style="display: flex; align-items: center; gap: 6px;">
+        <span id="abyssal-habit-pct" style="font-size: 11px; font-family: monospace; color: #86efac; font-weight: bold;">0%</span>
       </div>
     `;
 
-    const habitsTrack = habitsSection.createEl('div', { 
+    const habitsTrack = habitsTop.createEl('div', { 
       cls: 'abyssal-prog-track', 
-      attr: { style: 'height: 4px; width: 100%; margin-bottom: 10px;' } 
+      attr: { style: 'height: 3px; width: 100%; margin-bottom: 4px;' } 
     });
     const habitsBar = habitsTrack.createEl('div', { 
       cls: 'abyssal-prog-fill', 
       attr: { style: 'width: 0%; background: #86efac;' } 
     });
 
-    const habitsPillsBox = habitsSection.createEl('div', { 
-      attr: { style: 'display: flex; flex-wrap: wrap; gap: 8px;' } 
+    const habitsPillsBox = habitsTop.createEl('div', { 
+      attr: { style: 'display: flex; flex-direction: column; gap: 6px;' } 
     });
 
     const defaultHabits = ['Leitura 20 min', 'Estudo Algoritmos', 'Pomodoro 4x', 'Exercício Físico'];
 
-    // Modal para novo hábito
+    const habitsFooter = habitsCard.createEl('div', {
+      attr: { style: 'display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px; margin-top: 6px;' }
+    });
+    habitsFooter.innerHTML = `
+      <span style="font-size: 10.5px; font-family: monospace; color: #71717a; cursor: pointer;" title="Abrir nota diária de hoje">01_Inbox/Diário</span>
+      <button id="abyssal-add-habit-btn" class="abyssal-btn-action" style="padding: 2px 8px; font-size: 11px;" title="Adicionar novo hábito">+ HÁBITO</button>
+    `;
+
+    // Modal para novo hábito com suporte a Persistência (Template Diário vs Hoje)
     function abrirModalNovoHabito() {
       const modalBg = document.createElement('div');
-      modalBg.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;';
+      modalBg.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.82); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;';
       
       const modalBox = document.createElement('div');
-      modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 380px; width: 100%; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 12px; font-family: sans-serif;';
+      modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 400px; width: 100%; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.85); display: flex; flex-direction: column; gap: 12px; font-family: sans-serif;';
       
       modalBox.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span style="font-size: 14px; font-weight: bold; color: #ffffff;">🎯 Novo Hábito Diário</span>
+          <span style="font-size: 14px; font-weight: bold; color: #ffffff;">🎯 Cadastrar Hábito</span>
           <button id="modal-close-habit" style="background: none; border: none; color: #71717a; cursor: pointer; font-size: 14px;">✕</button>
         </div>
-        <div style="font-size: 11px; font-family: monospace; color: #a1a1aa;">Adicionar hábito à nota de hoje (${todayStr}):</div>
-        <input id="modal-habit-input" type="text" placeholder="Ex: Hidratação 2L, Vocabulário..." style="width: 100%; background: #181824; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 8px; color: #ffffff; font-size: 12px; outline: none;">
+        <div style="font-size: 11px; font-family: monospace; color: #a1a1aa;">Nome da atividade de disciplina:</div>
+        <input id="modal-habit-input" type="text" placeholder="Ex: Hidratação 2.5L, Meditação..." style="width: 100%; background: #181824; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 8px; color: #ffffff; font-size: 12px; outline: none;">
+        
+        <div style="font-size: 11px; font-family: monospace; color: #a1a1aa; margin-top: 2px;">Escopo de repetição:</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <div id="scope-opt-persistente" style="background: rgba(134,239,172,0.1); border: 1px solid #86efac; border-radius: 6px; padding: 8px; cursor: pointer;">
+            <div style="font-size: 11.5px; font-weight: 700; color: #86efac;">● Persistente</div>
+            <div style="font-size: 9.5px; color: #71717a; margin-top: 2px;">Salva no Template Diário para todos os dias.</div>
+          </div>
+          <div id="scope-opt-hoje" style="background: #14141d; border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 8px; cursor: pointer;">
+            <div style="font-size: 11.5px; font-weight: 700; color: #d4d4d8;">○ Apenas Hoje</div>
+            <div style="font-size: 9.5px; color: #71717a; margin-top: 2px;">Salva somente na nota diária de hoje.</div>
+          </div>
+        </div>
+
         <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px;">
           <button id="modal-cancel-habit" class="abyssal-btn-action" style="font-size: 11px;">Cancelar</button>
           <button id="modal-save-habit" class="abyssal-btn-primary" style="font-size: 11px;">Salvar Hábito</button>
@@ -69,6 +101,30 @@ return {
       modalBg.appendChild(modalBox);
       document.body.appendChild(modalBg);
       
+      let escopoSelecionado = 'persistente';
+      const optPersistente = modalBox.querySelector('#scope-opt-persistente');
+      const optHoje = modalBox.querySelector('#scope-opt-hoje');
+
+      optPersistente.onclick = () => {
+        escopoSelecionado = 'persistente';
+        optPersistente.style.background = 'rgba(134,239,172,0.1)';
+        optPersistente.style.borderColor = '#86efac';
+        optPersistente.querySelector('div').style.color = '#86efac';
+        optHoje.style.background = '#14141d';
+        optHoje.style.borderColor = 'rgba(255,255,255,0.08)';
+        optHoje.querySelector('div').style.color = '#d4d4d8';
+      };
+
+      optHoje.onclick = () => {
+        escopoSelecionado = 'hoje';
+        optHoje.style.background = 'rgba(134,239,172,0.1)';
+        optHoje.style.borderColor = '#86efac';
+        optHoje.querySelector('div').style.color = '#86efac';
+        optPersistente.style.background = '#14141d';
+        optPersistente.style.borderColor = 'rgba(255,255,255,0.08)';
+        optPersistente.querySelector('div').style.color = '#d4d4d8';
+      };
+
       const fechar = () => {
         document.removeEventListener('keydown', handleKey);
         if (modalBg.parentNode) document.body.removeChild(modalBg);
@@ -110,7 +166,20 @@ return {
               updated += `\n\n## Hábitos\n- [ ] ${metaNome}\n`;
             }
             await app.vault.modify(dailyFile, updated);
-            new Notice(`🎯 Novo hábito adicionado: ${metaNome}`);
+
+            // Se for persistente, adiciona também no Template do Diário
+            if (escopoSelecionado === 'persistente') {
+              const tplFile = app.vault.getAbstractFileByPath("99_Meta/Templates/Template - Diário.md");
+              if (tplFile) {
+                const rawTpl = await app.vault.read(tplFile);
+                if (rawTpl.includes('## Hábitos') && !rawTpl.includes(metaNome)) {
+                  const updatedTpl = rawTpl.replace('## Hábitos', `## Hábitos\n- [ ] ${metaNome}`);
+                  await app.vault.modify(tplFile, updatedTpl);
+                }
+              }
+            }
+
+            new Notice(`🎯 Hábito adicionado [${escopoSelecionado.toUpperCase()}]: ${metaNome}`);
             fechar();
             renderHabitos();
           }
@@ -123,7 +192,7 @@ return {
       }, 50);
     }
 
-    const addHabitBtn = habitsHeader.querySelector('#abyssal-add-habit-btn');
+    const addHabitBtn = habitsFooter.querySelector('#abyssal-add-habit-btn');
     if (addHabitBtn) addHabitBtn.addEventListener('click', abrirModalNovoHabito);
 
     async function renderHabitos() {
@@ -200,37 +269,40 @@ return {
     await renderHabitos();
 
     // =========================================================================
-    // 2. CENTRAL DE TAREFAS PRIORITÁRIAS (Com Suporte ao Tasks Plugin)
+    // 2. CENTRAL DE TAREFAS PRIORITÁRIAS (70% - Núcleo de Execução do Ecossistema)
     // =========================================================================
-    const todoSection = leftBottom.createEl('div', { 
-      attr: { style: 'padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; gap: 10px; flex: 1;' } 
+    const tasksCard = hubGrid.createEl('div', { 
+      cls: 'abyssal-card-box', 
+      attr: { style: 'display: flex; flex-direction: column; gap: 10px;' } 
     });
 
-    const todoHeader = todoSection.createEl('div', { 
-      attr: { style: 'display: flex; justify-content: space-between; align-items: center;' } 
+    const todoHeader = tasksCard.createEl('div', { 
+      attr: { style: 'display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px;' } 
     });
 
     todoHeader.innerHTML = `
       <div style="display: flex; align-items: center; gap: 8px;">
         <span class="abyssal-section-title">CENTRAL DE TAREFAS</span>
+        <span style="font-size: 11px; color: #71717a; font-family: monospace;">Núcleo de Execução</span>
       </div>
       <div style="display: flex; align-items: center; gap: 6px;">
         <button id="abyssal-add-task-btn" class="abyssal-nav-pill-btn" style="padding: 2px 9px; font-size: 11px;" title="Adicionar nova tarefa">+ TAREFA</button>
       </div>
     `;
 
-    // Abas de Filtro
-    const tabsRow = todoSection.createEl('div', { 
+    // Abas de Filtro por Período
+    const tabsRow = tasksCard.createEl('div', { 
       attr: { style: 'display: flex; gap: 6px; padding-bottom: 4px; overflow-x: auto;' } 
     });
 
-    let currentTab = 'hoje'; // 'hoje' | 'proximas' | 'todas' | 'concluidas'
+    let currentTab = 'hoje'; // 'hoje' | 'amanha' | 'semana' | 'todas' | 'concluidas'
 
     const tabConfig = [
-      { id: 'hoje', label: '🔥 HOJE & ATRASADAS' },
-      { id: 'proximas', label: '📋 ESTA SEMANA' },
-      { id: 'todas', label: '📥 TODAS' },
-      { id: 'concluidas', label: '✓ CONCLUÍDAS HOJE' }
+      { id: 'hoje', label: '🔥 HOJE' },
+      { id: 'amanha', label: '📅 AMANHÃ' },
+      { id: 'semana', label: '🗓️ ESTA SEMANA' },
+      { id: 'todas', label: '📥 PRÓXIMAS' },
+      { id: 'concluidas', label: '✓ CONCLUÍDAS' }
     ];
 
     const tabBtns = {};
@@ -248,10 +320,15 @@ return {
       });
     });
 
+    // Sub-faixa de Sugestão Inteligente do Ecossistema
+    const recsBar = tasksCard.createEl('div', {
+      attr: { style: 'background: #0d0d14; border: 1px dashed rgba(255,255,255,0.08); border-radius: 6px; padding: 6px 10px; display: none; justify-content: space-between; align-items: center; font-size: 11px;' }
+    });
+
     // Container com lista de tarefas
-    const todoListContainer = todoSection.createEl('div', { 
+    const todoListContainer = tasksCard.createEl('div', { 
       cls: 'abyssal-kanban-cards-box',
-      attr: { style: 'max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-right: 4px;' } 
+      attr: { style: 'max-height: 290px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-right: 4px;' } 
     });
 
     // Helper: calcular data somando dias
@@ -259,6 +336,32 @@ return {
       const d = new Date(dataBaseStr);
       d.setDate(d.getDate() + dias);
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function normalizarParaISO(dStr) {
+      if (!dStr) return null;
+      const matchBR = String(dStr).match(/^(\d{2})-(\d{2})-(\d{4})$/);
+      if (matchBR) {
+        return `${matchBR[3]}-${matchBR[2]}-${matchBR[1]}`;
+      }
+      const matchISO = String(dStr).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (matchISO) {
+        return dStr;
+      }
+      return dStr;
+    }
+
+    function formatarDataDDMMYYYY(dStr) {
+      if (!dStr) return '';
+      const matchISO = String(dStr).match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+      if (matchISO) {
+        return `${matchISO[3].padStart(2, '0')}-${matchISO[2].padStart(2, '0')}-${matchISO[1]}`;
+      }
+      const matchBR = String(dStr).match(/^(\d{1,2})-(\d{1,2})-(\d{4})/);
+      if (matchBR) {
+        return `${matchBR[1].padStart(2, '0')}-${matchBR[2].padStart(2, '0')}-${matchBR[3]}`;
+      }
+      return String(dStr);
     }
 
     // Modal 1: Nova Tarefa com Chips Rápidos de 1 Toque
@@ -305,9 +408,9 @@ return {
         <div>
           <div style="font-size: 11px; font-family: monospace; color: #d4d4d8; font-weight: bold; margin-bottom: 6px;">2. Prazo de Entrega:</div>
           <div id="modal-chips-prazos" style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;">
-            <button type="button" class="chip-prazo-opt" data-prazo="${todayStr}" style="background: var(--interactive-accent, #60a5fa); color: #000000; font-weight: bold; border: 1px solid rgba(255,255,255,0.12); border-radius: 4px; padding: 4px 10px; font-size: 11px; cursor: pointer;">Hoje</button>
-            <button type="button" class="chip-prazo-opt" data-prazo="${amanhãStr}" style="background: rgba(255,255,255,0.06); color: #e4e4e7; border: 1px solid rgba(255,255,255,0.12); border-radius: 4px; padding: 4px 10px; font-size: 11px; cursor: pointer;">Amanhã</button>
-            <button type="button" class="chip-prazo-opt" data-prazo="${semanaStr}" style="background: rgba(255,255,255,0.06); color: #e4e4e7; border: 1px solid rgba(255,255,255,0.12); border-radius: 4px; padding: 4px 10px; font-size: 11px; cursor: pointer;">Esta Semana</button>
+            <button type="button" class="chip-prazo-opt" data-prazo="${todayStr}" style="background: var(--interactive-accent, #60a5fa); color: #000000; font-weight: bold; border: 1px solid rgba(255,255,255,0.12); border-radius: 4px; padding: 4px 10px; font-size: 11px; cursor: pointer;">Hoje (${formatarDataDDMMYYYY(todayStr)})</button>
+            <button type="button" class="chip-prazo-opt" data-prazo="${amanhãStr}" style="background: rgba(255,255,255,0.06); color: #e4e4e7; border: 1px solid rgba(255,255,255,0.12); border-radius: 4px; padding: 4px 10px; font-size: 11px; cursor: pointer;">Amanhã (${formatarDataDDMMYYYY(amanhãStr)})</button>
+            <button type="button" class="chip-prazo-opt" data-prazo="${semanaStr}" style="background: rgba(255,255,255,0.06); color: #e4e4e7; border: 1px solid rgba(255,255,255,0.12); border-radius: 4px; padding: 4px 10px; font-size: 11px; cursor: pointer;">Esta Semana (${formatarDataDDMMYYYY(semanaStr)})</button>
             <button type="button" class="chip-prazo-opt" data-prazo="" style="background: rgba(255,255,255,0.06); color: #e4e4e7; border: 1px solid rgba(255,255,255,0.12); border-radius: 4px; padding: 4px 10px; font-size: 11px; cursor: pointer;">Sem Prazo</button>
           </div>
           <input id="modal-task-date" type="date" value="${todayStr}" style="width: 100%; background: #181824; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 8px; color: #ffffff; font-size: 11.5px; outline: none;">
@@ -338,7 +441,7 @@ return {
         <div>
           <div style="font-size: 11px; font-family: monospace; color: #d4d4d8; font-weight: bold; margin-bottom: 4px;">5. Vínculo / Onde Salvar:</div>
           <select id="modal-task-target" style="width: 100%; background: #181824; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 8px; color: #ffffff; font-size: 11.5px; outline: none;">
-            <option value="daily" selected>📝 Diário de Hoje (${todayStr})</option>
+            <option value="daily" selected>📝 Diário de Hoje (${formatarDataDDMMYYYY(todayStr)})</option>
             ${iniciativas.map(ini => `<option value="${ini.path}">${ini.icone} [${ini.tipo === 'estudo' ? 'Estudo' : 'Projeto'}] ${ini.nome}</option>`).join('')}
           </select>
         </div>
@@ -405,7 +508,7 @@ return {
 
         let taskLine = `- [ ] ${texto}`;
         if (pomos) taskLine += ` ${pomos}`;
-        if (prazo) taskLine += ` 📅 ${prazo}`;
+        if (prazo) taskLine += ` 📅 ${formatarDataDDMMYYYY(prazo)}`;
         if (prio) taskLine += ` ${prio}`;
 
         if (destino === 'daily') {
@@ -499,6 +602,7 @@ return {
 
       modalBox.querySelector('#btn-act-adiar-amanha').onclick = async () => {
         const amanhãStr = somarDias(todayStr, 1);
+        const amanhãFormatado = formatarDataDDMMYYYY(amanhãStr);
         if (filePath) {
           const file = app.vault.getAbstractFileByPath(filePath);
           if (file) {
@@ -510,14 +614,14 @@ return {
             }
             if (idx !== -1) {
               let updatedLine = lines[idx];
-              if (/📅\s*\d{4}-\d{2}-\d{2}/.test(updatedLine)) {
-                updatedLine = updatedLine.replace(/📅\s*\d{4}-\d{2}-\d{2}/, `📅 ${amanhãStr}`);
+              if (/📅\s*(\d{2}-\d{2}-\d{4}|\d{4}-\d{2}-\d{2})/.test(updatedLine)) {
+                updatedLine = updatedLine.replace(/📅\s*(\d{2}-\d{2}-\d{4}|\d{4}-\d{2}-\d{2})/, `📅 ${amanhãFormatado}`);
               } else {
-                updatedLine += ` 📅 ${amanhãStr}`;
+                updatedLine += ` 📅 ${amanhãFormatado}`;
               }
               lines[idx] = updatedLine;
               await app.vault.modify(file, lines.join('\n'));
-              new Notice(`Prazo adiado para ${amanhãStr}!`);
+              new Notice(`Prazo adiado para ${amanhãFormatado}!`);
               fechar();
               renderTarefas();
             }
@@ -566,7 +670,7 @@ return {
           idx = lines.findIndex(l => l.includes(tarefaAtiva.texto));
         }
         if (idx !== -1) {
-          lines[idx] = lines[idx].replace(/- \[ \]/, `- [x] ✅ ${todayStr}`);
+          lines[idx] = lines[idx].replace(/- \[ \]/, `- [x] ✅ ${formatarDataDDMMYYYY(todayStr)}`);
           await app.vault.modify(file, lines.join('\n'));
           new Notice(`✅ Tarefa concluída: ${tarefaAtiva.texto}`);
           renderTarefas();
@@ -592,9 +696,10 @@ return {
       allTasks.forEach(t => {
         const textRaw = t.text;
         
-        // Extrai prazo do plugin Tasks (📅 AAAA-MM-DD)
-        const dateMatch = textRaw.match(/📅\s*(\d{4}-\d{2}-\d{2})/);
-        const dueStr = dateMatch ? dateMatch[1] : null;
+        // Extrai prazo do plugin Tasks (📅 DD-MM-AAAA ou 📅 AAAA-MM-DD)
+        const dateMatch = textRaw.match(/📅\s*(\d{2}-\d{2}-\d{4}|\d{4}-\d{2}-\d{2})/);
+        const rawDueStr = dateMatch ? dateMatch[1] : null;
+        const dueStr = rawDueStr ? normalizarParaISO(rawDueStr) : null;
 
         // Extrai prioridade do Tasks
         let prio = null;
@@ -608,10 +713,10 @@ return {
 
         // Texto limpo da tarefa sem os marcadores
         const cleanText = textRaw
-          .replace(/📅\s*\d{4}-\d{2}-\d{2}/g, '')
+          .replace(/📅\s*(\d{2}-\d{2}-\d{4}|\d{4}-\d{2}-\d{2})/g, '')
           .replace(/[⏫🔼🔽]/g, '')
           .replace(/🍅\s*\d+/g, '')
-          .replace(/✅\s*\d{4}-\d{2}-\d{2}/g, '')
+          .replace(/✅\s*(\d{2}-\d{2}-\d{4}|\d{4}-\d{2}-\d{2})/g, '')
           .replace(/🔁[^\n]+/g, '')
           .trim();
 
@@ -626,6 +731,7 @@ return {
           taskRef: t,
           cleanText,
           dueStr,
+          rawDueStr,
           prio,
           pomosEst,
           statusPrazo,
@@ -633,7 +739,10 @@ return {
         };
 
         if (t.completed) {
-          const concluidaHoje = (t.path && t.path.includes(todayStr)) || textRaw.includes(`✅ ${todayStr}`);
+          const hojeBR = formatarDataDDMMYYYY(todayStr);
+          const concluidaHoje = (t.path && (t.path.includes(todayStr) || t.path.includes(hojeBR))) 
+            || textRaw.includes(`✅ ${todayStr}`) 
+            || textRaw.includes(`✅ ${hojeBR}`);
           if (concluidaHoje) {
             tasksConcluidasHoje.push(taskObj);
           }
@@ -643,12 +752,16 @@ return {
       });
 
       // Filtro por Aba
+      const amanhãStr = somarDias(todayStr, 1);
+      const semanaStr = somarDias(todayStr, 7);
+
       let filtradas = [];
       if (currentTab === 'hoje') {
         filtradas = tasksPendentes.filter(t => t.statusPrazo === 'atrasada' || t.statusPrazo === 'hoje');
-      } else if (currentTab === 'proximas') {
-        const maxStr = somarDias(todayStr, 7);
-        filtradas = tasksPendentes.filter(t => t.statusPrazo === 'futura' && t.dueStr <= maxStr);
+      } else if (currentTab === 'amanha') {
+        filtradas = tasksPendentes.filter(t => t.dueStr === amanhãStr);
+      } else if (currentTab === 'semana') {
+        filtradas = tasksPendentes.filter(t => t.statusPrazo === 'futura' && t.dueStr <= semanaStr);
       } else if (currentTab === 'todas') {
         filtradas = [...tasksPendentes];
       } else if (currentTab === 'concluidas') {
@@ -670,16 +783,72 @@ return {
         });
       }
 
-      // Atualiza contadores nas abas
+      // Atualiza contadores nas abas dinamicamente
       const countHoje = tasksPendentes.filter(t => t.statusPrazo === 'atrasada' || t.statusPrazo === 'hoje').length;
+      const countAmanha = tasksPendentes.filter(t => t.dueStr === amanhãStr).length;
+      const countSemana = tasksPendentes.filter(t => t.statusPrazo === 'futura' && t.dueStr <= semanaStr).length;
+
       if (tabBtns['hoje']) tabBtns['hoje'].textContent = `🔥 HOJE (${countHoje})`;
-      if (tabBtns['todas']) tabBtns['todas'].textContent = `📥 TODAS (${tasksPendentes.length})`;
-      if (tabBtns['concluidas']) tabBtns['concluidas'].textContent = `✓ CONCLUÍDAS HOJE (${tasksConcluidasHoje.length})`;
+      if (tabBtns['amanha']) tabBtns['amanha'].textContent = `📅 AMANHÃ (${countAmanha})`;
+      if (tabBtns['semana']) tabBtns['semana'].textContent = `🗓️ ESTA SEMANA (${countSemana})`;
+      if (tabBtns['todas']) tabBtns['todas'].textContent = `📥 PRÓXIMAS (${tasksPendentes.length})`;
+      if (tabBtns['concluidas']) tabBtns['concluidas'].textContent = `✓ CONCLUÍDAS (${tasksConcluidasHoje.length})`;
+
+      // Sugestão Inteligente do Ciclo de Estudos
+      if (recsBar) {
+        try {
+          const cicloFile = app.vault.getAbstractFileByPath("99_Meta/ciclo-estudos.json");
+          if (cicloFile && currentTab === 'hoje') {
+            const rawCiclo = await app.vault.read(cicloFile);
+            const parsedCiclo = JSON.parse(rawCiclo);
+            if (parsedCiclo && parsedCiclo.disciplinas && parsedCiclo.disciplinas.length > 0) {
+              const idx = parsedCiclo.disciplinaAtualIdx || 0;
+              const matVez = parsedCiclo.disciplinas[idx];
+              if (matVez && matVez.nome) {
+                recsBar.style.display = 'flex';
+                recsBar.innerHTML = `
+                  <div style="display: flex; align-items: center; gap: 6px; overflow: hidden;">
+                    <span style="color: #60a5fa; font-weight: 700; font-family: monospace;">⚡ Sugestão do Ciclo:</span>
+                    <span style="color: #ffffff; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; font-weight: 600;">${matVez.nome}</span>
+                  </div>
+                  <button id="btn-puxar-sugestao" class="abyssal-btn-action" style="padding: 2px 7px; font-size: 10px; color: #60a5fa; flex-shrink: 0;">+ Puxar para Hoje</button>
+                `;
+                const btnPuxar = recsBar.querySelector('#btn-puxar-sugestao');
+                if (btnPuxar) {
+                  btnPuxar.onclick = async () => {
+                    const dailyFile = await garantirNotaDiaria();
+                    const rawDaily = await app.vault.read(dailyFile);
+                    let updated = rawDaily;
+                    const novaTarefa = `- [ ] Estudo: ${matVez.nome} 📅 ${todayStr} ⏫ 🍅 2`;
+                    if (updated.includes('## Tarefas')) {
+                      updated = updated.replace('## Tarefas', `## Tarefas\n${novaTarefa}`);
+                    } else {
+                      updated += `\n\n## Tarefas\n${novaTarefa}\n`;
+                    }
+                    await app.vault.modify(dailyFile, updated);
+                    new Notice(`📚 Tarefa de Estudo adicionada: ${matVez.nome}`);
+                    recsBar.style.display = 'none';
+                    renderTarefas();
+                  };
+                }
+              } else {
+                recsBar.style.display = 'none';
+              }
+            } else {
+              recsBar.style.display = 'none';
+            }
+          } else {
+            recsBar.style.display = 'none';
+          }
+        } catch(e) {
+          recsBar.style.display = 'none';
+        }
+      }
 
       if (filtradas.length === 0) {
         todoListContainer.innerHTML = `
           <div style="font-size: 12px; font-family: monospace; color: var(--text-muted); text-align: center; padding: 24px 0;">
-            ${currentTab === 'hoje' ? '🎉 Nenhuma tarefa atrasada ou para hoje!' : (currentTab === 'concluidas' ? 'Nenhuma tarefa concluída hoje ainda.' : 'Nenhuma tarefa nesta categoria.')}
+            ${currentTab === 'hoje' ? '🎉 Nenhuma tarefa pendente para hoje!' : (currentTab === 'amanha' ? 'Nenhuma tarefa agendada para amanhã.' : (currentTab === 'concluidas' ? 'Nenhuma tarefa concluída hoje ainda.' : 'Nenhuma tarefa nesta categoria.'))}
           </div>
         `;
         return;
@@ -689,6 +858,29 @@ return {
         const t = item.taskRef;
         const filePath = t.path || (t.link ? t.link.path : null);
         const fileName = t.link ? (t.link.display || t.link.path.split('/').pop().replace(/\.md$/, '')) : (filePath ? filePath.split('/').pop().replace(/\.md$/, '') : 'Nota');
+
+        let badgeIcone = '📄 ';
+        let badgeLabel = fileName;
+        let originBadgeStyle = 'background: rgba(255, 255, 255, 0.05); color: #a1a1aa; border: 1px solid rgba(255, 255, 255, 0.08);';
+
+        if (filePath) {
+          if (filePath.startsWith('02_Projetos/')) {
+            badgeIcone = '🎯 ';
+            badgeLabel = `Projeto: ${fileName}`;
+            originBadgeStyle = 'background: rgba(167, 139, 250, 0.15); color: #c4b5fd; border: 1px solid rgba(167, 139, 250, 0.3);';
+          } else if (filePath.startsWith('03_Estudos/')) {
+            badgeIcone = '📚 ';
+            badgeLabel = `Estudo: ${fileName}`;
+            originBadgeStyle = 'background: rgba(96, 165, 250, 0.15); color: #93c5fd; border: 1px solid rgba(96, 165, 250, 0.3);';
+          } else if (filePath.startsWith('04_Leituras/')) {
+            badgeIcone = '📖 ';
+            badgeLabel = `Leitura: ${fileName}`;
+            originBadgeStyle = 'background: rgba(56, 189, 248, 0.15); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.3);';
+          } else if (filePath.startsWith('01_Inbox/Diário/')) {
+            badgeIcone = '📝 ';
+            badgeLabel = `Diário: ${fileName}`;
+          }
+        }
 
         const card = todoListContainer.createEl('div', { 
           cls: 'abyssal-kanban-card',
@@ -723,8 +915,8 @@ return {
 
         if (item.pomosEst) {
           badgesCol.createEl('span', {
-            attr: { style: 'font-size: 10px; font-family: monospace; padding: 1px 5px; border-radius: 3px; background: rgba(239, 68, 68, 0.15); color: #fca5a5;' },
-            text: `🍅 ${item.pomosEst}`
+            attr: { style: 'font-size: 10px; font-family: monospace; padding: 1px 5px; border-radius: 3px; background: rgba(251, 146, 60, 0.15); color: #fdba74;' },
+            text: `⏱️ ${item.pomosEst}p`
           });
         }
 
@@ -737,13 +929,13 @@ return {
             });
           } else if (item.statusPrazo === 'hoje') {
             badgesCol.createEl('span', { 
-              attr: { style: 'font-size: 9.5px; font-family: monospace; font-weight: bold; padding: 1px 6px; border-radius: 4px; background: rgba(96, 165, 250, 0.2); color: #93c5fa;' },
+              attr: { style: 'font-size: 9.5px; font-family: monospace; font-weight: bold; padding: 1px 6px; border-radius: 4px; background: rgba(96, 165, 250, 0.15); color: #93c5fa;' },
               text: '📅 Hoje' 
             });
           } else if (item.dueStr) {
             badgesCol.createEl('span', { 
               attr: { style: 'font-size: 9.5px; font-family: monospace; color: var(--text-muted);' },
-              text: `📅 ${item.dueStr.slice(5).replace('-', '/')}` 
+              text: `📅 ${formatarDataDDMMYYYY(item.dueStr)}` 
             });
           }
 
@@ -754,11 +946,14 @@ return {
           // Botão Foco
           const btnFoco = badgesCol.createEl('button', {
             cls: 'abyssal-btn-primary',
-            attr: { style: 'font-size: 10px; padding: 2px 8px;', title: 'Carregar no Cockpit Pomodoro' },
+            attr: { style: 'font-size: 10.5px; padding: 2px 8px;', title: 'Carregar no Cockpit Pomodoro' },
             text: '▶ Foco'
           });
           btnFoco.onclick = (e) => {
             e.stopPropagation();
+            if (typeof window.snoopySetPomodoroFocus === 'function') {
+              window.snoopySetPomodoroFocus(item.cleanText, badgeLabel);
+            }
             if (typeof window._snoopyDefinirTarefaFoco === 'function') {
               window._snoopyDefinirTarefaFoco({
                 texto: item.cleanText,
@@ -791,22 +986,12 @@ return {
             attr: { style: 'display: flex; justify-content: space-between; align-items: center; padding-top: 3px; border-top: 1px solid rgba(255,255,255,0.04); font-size: 10.5px; font-family: monospace;' } 
           });
 
-          let badgeIcone = '📄 ';
-          let badgeLabel = fileName;
-          if (filePath.startsWith('02_Projetos/')) {
-            badgeIcone = '🎯 ';
-            badgeLabel = `Projeto: ${fileName}`;
-          } else if (filePath.startsWith('03_Estudos/')) {
-            badgeIcone = '📚 ';
-            badgeLabel = `Estudo: ${fileName}`;
-          } else if (filePath.startsWith('01_Inbox/Diário/')) {
-            badgeIcone = '📝 ';
-            badgeLabel = `Diário: ${fileName}`;
-          }
-
           const linkEl = rowBottom.createEl('a', { 
             cls: 'abyssal-todo-source',
-            attr: { title: `Abrir nota: ${filePath}` },
+            attr: { 
+              title: `Abrir nota: ${filePath}`,
+              style: `${originBadgeStyle} padding: 1px 6px; border-radius: 3px; text-decoration: none; cursor: pointer;`
+            },
             text: `${badgeIcone}${badgeLabel}` 
           });
           linkEl.addEventListener('click', (e) => {

@@ -16,6 +16,19 @@ const now = new Date();
 const padTime = (n) => String(n).padStart(2, '0');
 const todayStr = `${now.getFullYear()}-${padTime(now.getMonth() + 1)}-${padTime(now.getDate())}`;
 
+function formatarDataBR(dStr) {
+  if (!dStr) return '';
+  const matchIso = String(dStr).match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (matchIso) {
+    return `${matchIso[3].padStart(2, '0')}-${matchIso[2].padStart(2, '0')}-${matchIso[1]}`;
+  }
+  const matchBr = String(dStr).match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
+  if (matchBr) {
+    return `${matchBr[1].padStart(2, '0')}-${matchBr[2].padStart(2, '0')}-${matchBr[3]}`;
+  }
+  return String(dStr);
+}
+
 // ---------------------------------------------------------------------------
 // 1. ESTADO E PERSISTÊNCIA REAL
 // ---------------------------------------------------------------------------
@@ -1477,7 +1490,7 @@ function renderAbaMeuPlanner(todasDisciplinas) {
 
     modalBox.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-size: 14px; font-weight: bold; color: #ffffff;">Agendar Estudo • ${dataInicial}</span>
+        <span style="font-size: 14px; font-weight: bold; color: #ffffff;">Agendar Estudo • ${formatarDataBR(dataInicial)}</span>
         <button id="modal-close-plan" style="background: none; border: none; color: #71717a; cursor: pointer; font-size: 14px;">✕</button>
       </div>
 
@@ -1533,7 +1546,7 @@ function renderAbaMeuPlanner(todasDisciplinas) {
       estadoAtual.planner[dataVal].push({ materia: matVal, tempo: tempoVal, tipo: tipoVal });
 
       await salvarEstadoEstudos(estadoAtual);
-      new Notice(`Bloco agendado para ${dataVal}!`);
+      new Notice(`Bloco agendado para ${formatarDataBR(dataVal)}!`);
       fechar();
       renderFrameworkEstudos();
     };
@@ -1551,7 +1564,7 @@ function renderAbaMeuPlanner(todasDisciplinas) {
 
     modalBox.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-size: 14px; font-weight: bold; color: #ffffff;">Bloco de Estudo • ${dia}</span>
+        <span style="font-size: 14px; font-weight: bold; color: #ffffff;">Bloco de Estudo • ${formatarDataBR(dia)}</span>
         <button id="modal-close-mbloco" style="background: none; border: none; color: #71717a; cursor: pointer; font-size: 14px;">✕</button>
       </div>
 
@@ -1643,7 +1656,7 @@ function renderAbaRevisoes(todasDisciplinas) {
     row.innerHTML = `
       <div style="display: flex; align-items: center; gap: 10px;">
         <span style="font-size: 10px; font-family: monospace; padding: 2px 6px; border-radius: 4px; background: rgba(96, 165, 250, 0.15); color: #93c5fd; font-weight: bold;">
-          ${rev.proximaRevisao === todayStr ? 'HOJE' : rev.proximaRevisao}
+          ${rev.proximaRevisao === todayStr ? 'HOJE' : formatarDataBR(rev.proximaRevisao)}
         </span>
         <span class="prio-badge prio-media" style="font-size: 9.5px;">${badgeIntervalo}</span>
         <div style="display: flex; flex-direction: column;">

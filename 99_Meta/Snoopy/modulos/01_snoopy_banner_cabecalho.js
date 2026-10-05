@@ -28,9 +28,11 @@ return {
       cls: 'abyssal-date-title', 
       text: formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1) 
     });
+    const pad = (n) => String(n).padStart(2, '0');
+    const dataNumericaBR = `${pad(now.getDate())}-${pad(now.getMonth() + 1)}-${now.getFullYear()}`;
     dateBox.createEl('div', { 
-      text: 'Espaço Central de Foco • Abyssal Snoopy Edition', 
-      attr: { style: 'font-size: 13px; font-family: monospace; color: #a1a1aa; margin-top: 4px;' } 
+      text: `${dataNumericaBR} • Espaço Central de Foco • Abyssal Snoopy Edition`, 
+      attr: { style: 'font-size: 12.5px; font-family: monospace; color: #a1a1aa; margin-top: 4px;' } 
     });
 
     const navPillsRow = headerRow.createEl('div', { cls: 'abyssal-nav-pills' });
