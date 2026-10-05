@@ -343,16 +343,21 @@ return {
 
     function formatarPrazo(dataStr) {
       if (!dataStr) return null;
-      const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-      const clean = String(dataStr).trim();
-      const parts = clean.split(/[-/]/);
-      if (parts.length === 3) {
-        const y = parts[0].length === 4 ? parts[0] : parts[2];
-        const mNum = parseInt(parts[1], 10);
-        const d = (parts[0].length === 4 ? parts[2] : parts[0]).padStart(2, '0');
-        const mNome = meses[mNum - 1] || parts[1];
-        const isoDate = `${y}-${String(mNum).padStart(2, '0')}-${d}`;
-        return { label: `Prazo: ${d} ${mNome}`, isoDate };
+      let clean = String(dataStr).trim();
+      if (clean.includes('T')) clean = clean.split('T')[0];
+      const matchIso = clean.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+      if (matchIso) {
+        const y = matchIso[1];
+        const m = matchIso[2].padStart(2, '0');
+        const d = matchIso[3].padStart(2, '0');
+        return { label: `Prazo: ${d}/${m}/${y}`, isoDate: `${y}-${m}-${d}` };
+      }
+      const matchBr = clean.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
+      if (matchBr) {
+        const d = matchBr[1].padStart(2, '0');
+        const m = matchBr[2].padStart(2, '0');
+        const y = matchBr[3];
+        return { label: `Prazo: ${d}/${m}/${y}`, isoDate: `${y}-${m}-${d}` };
       }
       return { label: `Prazo: ${clean}`, isoDate: clean };
     }

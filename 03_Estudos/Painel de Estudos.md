@@ -3,8 +3,9 @@ title: "Painel de Estudos"
 tags:
   - dashboard
   - estudos
-banner: "99_Meta/Attachments/snoopy_panoramic.jpg"
-banner_icon: "📚"
+cssclasses:
+  - home-dashboard
+  - abyssal-home
 ---
 
 ```dataviewjs

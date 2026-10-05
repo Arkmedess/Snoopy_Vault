@@ -1,16 +1,25 @@
 ---
 title: "{{title}}"
-disciplina: ""
-modulo: ""
+area: "Geral"
+categoria: "Geral"
 date: {{date}}
-status: "Revisar"
+status: "Ativo"
+minutos_foco: 0
+questoes_feitas: 0
+questoes_acertos: 0
+provas: []
 tags:
   - estudo
 ---
 
-# 📚 {{title}}
+# {{title}}
 
-> **Disciplina:** `{{disciplina}}` | **Data:** {{date}} | **Status:** `Revisar`
+> **Área:** `Geral` | **Data:** {{date}} | **Status:** `Ativo`
+
+---
+
+## Provas, Simulados & PDFs
+- Nenhum PDF anexado ainda.
 
 ---
 

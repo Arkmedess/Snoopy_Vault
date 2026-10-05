@@ -8,55 +8,22 @@
   "nomeMetaProva": "Concurso / Exame",
   "dataMetaProva": "",
   "historicoDiario": {
-    "2026-09-29": {
-      "minutosFoco": 60,
-      "questoesFeitas": 15,
-      "questoesAcertos": 13
-    },
-    "2026-09-30": {
-      "minutosFoco": 90,
-      "questoesFeitas": 20,
-      "questoesAcertos": 18
-    },
-    "2026-10-01": {
-      "minutosFoco": 45,
-      "questoesFeitas": 10,
-      "questoesAcertos": 9
-    },
-    "2026-10-02": {
-      "minutosFoco": 120,
-      "questoesFeitas": 30,
-      "questoesAcertos": 27
-    },
-    "2026-10-03": {
-      "minutosFoco": 75,
-      "questoesFeitas": 18,
-      "questoesAcertos": 15
-    },
     "2026-10-04": {
-      "minutosFoco": 50,
-      "questoesFeitas": 12,
-      "questoesAcertos": 11
+      "minutosFoco": 1,
+      "questoesFeitas": 10,
+      "questoesAcertos": 8
     }
   },
   "revisoes": [
     {
       "materiaPath": "03_Estudos/Exemplo - Arquitetura de Software.md",
-      "nome": "Arquitetura de Software",
-      "ultimaRevisao": "2026-10-03",
-      "proximaRevisao": "2026-10-04",
+      "nome": "Exemplo - Arquitetura de Software",
+      "ultimaRevisao": "2026-10-04",
+      "proximaRevisao": "2026-10-05",
       "intervaloDias": 1,
       "tipo": "Teoria + Questões",
       "status": "programada"
     }
   ],
-  "planner": {
-    "2026-10-04": [
-      {
-        "materia": "Arquitetura de Software",
-        "tempo": "1h30m",
-        "tipo": "Teoria + Questões"
-      }
-    ]
-  }
+  "planner": {}
 }

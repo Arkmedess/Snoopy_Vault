@@ -74,11 +74,11 @@ return {
     });
     kpiRowEstudos.innerHTML = `
       <div style="background: var(--background-secondary-alt); border: 1px solid var(--background-modifier-border); border-radius: 6px; padding: 6px 10px; display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-size: 10.5px; font-family: monospace; color: var(--text-muted);">⏱️ Foco Hoje</span>
+        <span style="font-size: 10.5px; font-family: monospace; color: var(--text-muted);">Foco Hoje</span>
         <span style="font-size: 12px; font-weight: 800; color: var(--text-normal); font-family: monospace;">${minutosHojeTxt}</span>
       </div>
       <div style="background: var(--background-secondary-alt); border: 1px solid var(--background-modifier-border); border-radius: 6px; padding: 6px 10px; display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-size: 10.5px; font-family: monospace; color: var(--text-muted);">📝 Questões</span>
+        <span style="font-size: 10.5px; font-family: monospace; color: var(--text-muted);">Questões</span>
         <span style="font-size: 12px; font-weight: 800; color: var(--text-normal); font-family: monospace;">${questoesHoje}</span>
       </div>
     `;
@@ -97,7 +97,7 @@ return {
 
       vezCard.innerHTML = `
         <div style="display: flex; flex-direction: column; gap: 2px; overflow: hidden; padding-right: 8px;">
-          <span style="font-size: 10px; font-family: monospace; font-weight: 700; color: var(--interactive-accent, #60a5fa); text-transform: uppercase;">▶ Matéria da Vez no Ciclo</span>
+          <span style="font-size: 10px; font-family: monospace; font-weight: 700; color: var(--interactive-accent, #60a5fa); text-transform: uppercase;">Matéria da Vez no Ciclo</span>
           <span style="font-size: 13.5px; font-weight: 700; color: var(--text-normal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${materiaVez.title || materiaVez.file.name}</span>
           <span style="font-size: 11px; font-family: monospace; color: var(--text-muted);">${materiaVez.disciplina || 'Geral'} • Status: ${materiaVez.status || 'Em Andamento'}</span>
         </div>

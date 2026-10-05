@@ -1,19 +1,20 @@
 ---
 title: "Arquitetura de Software"
-disciplina: "Engenharia de Software"
-modulo: "Fundamentos"
+area: "Programação"
+categoria: "Programação"
 data: 2026-10-03
-status: "Revisar"
-minutos_foco: 120
-questoes_feitas: 25
-questoes_acertos: 22
+status: "Ativo"
+minutos_foco: 0
+questoes_feitas: 10
+questoes_acertos: 8
+provas: []
 tags:
   - estudo
 ---
 
-# 📚 Arquitetura de Software
+# Arquitetura de Software
 
-> **Disciplina:** `Engenharia de Software` | **Data:** 2026-10-03 | **Status:** `Revisar`
+> **Área:** `Programação` | **Data:** 2026-10-03 | **Status:** `Ativo`
 
 ---
 
@@ -44,3 +45,7 @@ O que é acoplamento em software?::É o nível de dependência ou entrelaçament
 
 ## ❓ Dúvidas & Próximos Passos
 - [x] Praticar diagramação com o modelo C4
+
+
+## 📋 Tarefas
+- [ ] Teste de tarefa 📅 2026-10-13 🔼
