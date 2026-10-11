@@ -15,6 +15,12 @@ modulos_ativos:
 
 # ⚙️ Configurações do Snoopy Vault
 
+```dataviewjs
+await dv.view("99_Meta/Snoopy/subdashboards/configuracoes");
+```
+
+---
+
 Bem-vindo ao painel de configurações da sua área de trabalho! 
 Todas as opções podem ser configuradas no painel **Propriedades** (na barra lateral ou no cabeçalho desta nota) de forma simples e intuitiva, sem necessidade de tocar em código.
 
