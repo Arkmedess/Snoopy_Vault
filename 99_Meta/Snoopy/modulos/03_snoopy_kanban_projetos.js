@@ -1,32 +1,45 @@
 /**
  * Snoopy Vault - Módulo 03: Kanban de Iniciativas (Projetos & Estudos)
- * Gerencia colunas dinâmicas, drag & drop desktop, controle tátil mobile (⋮) e vinculação com tarefas.
+ * Gerencia colunas de progresso reativas, drag & drop HTML5 nativo no Desktop,
+ * suporte touch/mobile via menu de ação rápida (⋮) e sincronização com metadados do Vault.
+ *
+ * @module modulos/03_snoopy_kanban_projetos
  */
 return {
   id: 'snoopy_kanban_projetos',
   titulo: 'Kanban de Iniciativas',
+
+  /**
+   * Ponto de entrada do ciclo de vida de renderização do Módulo 03.
+   *
+   * @param {object} ctx - Contexto compartilhado da dashboard.
+   * @param {HTMLElement} ctx.root - Contêiner raiz DOM.
+   * @param {object} ctx.app - Instância do Obsidian.
+   * @param {object} ctx.dv - Instância do Dataview Inline API.
+   * @param {string} ctx.todayStr - Data atual no formato ISO.
+   * @param {function(HTMLElement, string, object=): HTMLElement} [ctx.renderIcon] - Renderizador de ícones.
+   * @returns {Promise<void>}
+   */
   async render(ctx) {
     const { root, app, dv, todayStr } = ctx;
 
     // SEÇÃO KANBAN
-    const kanbanSection = root.createEl('div', { cls: 'abyssal-kanban-section' });
-    const kanbanHeader = kanbanSection.createEl('div', { 
-      attr: { style: 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;' } 
-    });
+    const kanbanSection = root.createEl('div', { cls: 'snoopy-kanban-section' });
+    const kanbanHeader = kanbanSection.createEl('div', { cls: 'snoopy-card-header' });
 
     let currentScope = 'projetos'; // 'projetos' | 'estudos' | 'todos'
 
     kanbanHeader.innerHTML = `
-      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-        <span class="abyssal-section-title">INICIATIVAS EM ANDAMENTO</span>
-        <div id="kanban-scope-pills" style="display: flex; gap: 6px;">
-          <button id="scope-btn-projetos" class="abyssal-btn-mode active" style="padding: 2px 8px; font-size: 11px;">Projetos</button>
-          <button id="scope-btn-estudos" class="abyssal-btn-mode" style="padding: 2px 8px; font-size: 11px;">Estudos</button>
-          <button id="scope-btn-todos" class="abyssal-btn-mode" style="padding: 2px 8px; font-size: 11px;">Todos</button>
+      <div class="snoopy-toolbar" style="flex-wrap: wrap;">
+        <span class="snoopy-section-title">INICIATIVAS EM ANDAMENTO</span>
+        <div id="kanban-scope-pills" class="snoopy-toolbar">
+          <button id="scope-btn-projetos" class="snoopy-btn-mode snoopy-btn-sm active">Projetos</button>
+          <button id="scope-btn-estudos" class="snoopy-btn-mode snoopy-btn-sm">Estudos</button>
+          <button id="scope-btn-todos" class="snoopy-btn-mode snoopy-btn-sm">Todos</button>
         </div>
       </div>
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <button id="abyssal-add-status-btn" class="abyssal-nav-pill-btn" style="padding: 3px 9px; font-size: 11px;" title="Adicionar nova coluna de status">+ COLUNA</button>
+      <div class="snoopy-toolbar">
+        <button id="snoopy-add-status-btn" class="snoopy-nav-pill-btn snoopy-btn-sm" title="Adicionar nova coluna de status">+ COLUNA</button>
       </div>
     `;
 
@@ -47,7 +60,7 @@ return {
     if (scopeBtnEstudos) scopeBtnEstudos.addEventListener('click', () => setScope('estudos'));
     if (scopeBtnTodos) scopeBtnTodos.addEventListener('click', () => setScope('todos'));
 
-    const kanbanColsGrid = kanbanSection.createEl('div', { cls: 'abyssal-kanban-cols' });
+    const kanbanColsGrid = kanbanSection.createEl('div', { cls: 'snoopy-kanban-cols' });
 
     const defaultCols = [
       { status: 'Em Andamento', label: 'Em Andamento', dotColor: '#ffffff' },
@@ -70,60 +83,30 @@ return {
 
     // Modal Nova Coluna de Status
     function abrirModalNovoStatus() {
-      const modalBg = document.createElement('div');
-      modalBg.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;';
-      
-      const modalBox = document.createElement('div');
-      modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 400px; width: 100%; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 12px; font-family: sans-serif;';
-      
-      modalBox.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span style="font-size: 14px; font-weight: bold; color: #ffffff;">📋 Nova Coluna / Status</span>
-          <button id="modal-close-status" style="background: none; border: none; color: #71717a; cursor: pointer; font-size: 14px;">✕</button>
-        </div>
-        <div style="font-size: 11px; font-family: monospace; color: #a1a1aa;">Nome da nova coluna (ex: Backlog, Em Revisão, Pausado):</div>
-        <input id="modal-status-input" type="text" placeholder="Ex: Backlog" style="width: 100%; background: #181824; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 8px; color: #ffffff; font-size: 12px; outline: none;">
-        <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px;">
-          <button id="modal-cancel-status" class="abyssal-btn-action" style="font-size: 11px;">Cancelar</button>
-          <button id="modal-save-status" class="abyssal-btn-primary" style="font-size: 11px;">Criar Coluna</button>
-        </div>
-      `;
-      
-      modalBg.appendChild(modalBox);
-      document.body.appendChild(modalBg);
-      
-      const fechar = () => {
-        document.removeEventListener('keydown', handleKeyStatus);
-        if (modalBg.parentNode) document.body.removeChild(modalBg);
-      };
+      if (ctx.ModalFactory) {
+        ctx.ModalFactory.abrir({
+          maxWidth: '400px',
+          htmlContent: `
+            <div class="snoopy-card-header">
+              <span class="snoopy-section-title">Nova Coluna / Status</span>
+              <button class="snoopy-modal-close" title="Fechar">✕</button>
+            </div>
+            <div class="snoopy-modal-label">Nome da nova coluna (ex: Backlog, Em Revisão, Pausado):</div>
+            <input id="modal-status-input" class="snoopy-form-input" type="text" placeholder="Ex: Backlog" style="width: 100%;">
+            <div class="snoopy-toolbar" style="justify-content: flex-end; margin-top: 6px;">
+              <button class="snoopy-btn-action snoopy-modal-close snoopy-btn-sm">Cancelar</button>
+              <button id="modal-save-status" class="snoopy-btn-primary snoopy-btn-sm">Criar Coluna</button>
+            </div>
+          `,
+          onMontar: (box) => {
+            const inp = box.querySelector('#modal-status-input');
+            if (inp) setTimeout(() => inp.focus(), 50);
+          },
+          onConfirmar: async (box, fechar) => {
+            const inputEl = box.querySelector('#modal-status-input');
+            const statusNome = inputEl ? inputEl.value.trim() : '';
+            if (!statusNome) return;
 
-      const handleKeyStatus = (e) => {
-        if (e.key === 'Escape') {
-          e.preventDefault();
-          fechar();
-        } else if (e.key === 'Enter') {
-          e.preventDefault();
-          const saveBtn = modalBox.querySelector('#modal-save-status');
-          if (saveBtn) saveBtn.click();
-        }
-      };
-      document.addEventListener('keydown', handleKeyStatus);
-
-      modalBg.addEventListener('click', (e) => {
-        if (e.target === modalBg) fechar();
-      });
-      
-      const closeStatus = modalBox.querySelector('#modal-close-status');
-      if (closeStatus) closeStatus.addEventListener('click', fechar);
-      const cancelStatus = modalBox.querySelector('#modal-cancel-status');
-      if (cancelStatus) cancelStatus.addEventListener('click', fechar);
-      
-      const saveStatus = modalBox.querySelector('#modal-save-status');
-      if (saveStatus) {
-        saveStatus.addEventListener('click', async () => {
-          const inputEl = modalBox.querySelector('#modal-status-input');
-          const statusNome = inputEl ? inputEl.value.trim() : '';
-          if (statusNome) {
             const metaPath = "99_Meta/kanban-columns.json";
             let cols = await carregarColunas();
             if (!cols.some(c => c.status.toLowerCase() === statusNome.toLowerCase())) {
@@ -134,7 +117,7 @@ return {
               } else {
                 await app.vault.create(metaPath, JSON.stringify(cols, null, 2));
               }
-              new Notice(`📋 Coluna "${statusNome}" criada!`);
+              new Notice(`Coluna "${statusNome}" criada!`);
               fechar();
               renderKanban();
             } else {
@@ -143,217 +126,177 @@ return {
           }
         });
       }
-
-      setTimeout(() => {
-        const inputEl = modalBox.querySelector('#modal-status-input');
-        if (inputEl) inputEl.focus();
-      }, 50);
     }
 
-    const addStatusBtn = kanbanHeader.querySelector('#abyssal-add-status-btn');
+    const addStatusBtn = kanbanHeader.querySelector('#snoopy-add-status-btn');
     if (addStatusBtn) addStatusBtn.addEventListener('click', abrirModalNovoStatus);
 
     // Modal Inteligente: Criar Item no Kanban com Detalhamento Opcional
     function abrirModalNovoItem(colStatus) {
-      const modalBg = document.createElement('div');
-      modalBg.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;';
-      
-      const modalBox = document.createElement('div');
-      modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 440px; width: 100%; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 12px; font-family: sans-serif;';
-      
       const tipoPadrao = currentScope === 'estudos' ? 'estudo' : 'projeto';
 
-      modalBox.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span style="font-size: 14px; font-weight: bold; color: #ffffff;">🎯 Novo Item em "${colStatus}"</span>
-          <button id="modal-close-item" style="background: none; border: none; color: #71717a; cursor: pointer; font-size: 14px;">✕</button>
-        </div>
+      if (ctx.ModalFactory) {
+        ctx.ModalFactory.abrir({
+          maxWidth: '440px',
+          htmlContent: `
+            <div class="snoopy-card-header">
+              <span class="snoopy-section-title">Novo Item em "${colStatus}"</span>
+              <button class="snoopy-modal-close" title="Fechar">✕</button>
+            </div>
 
-        <div style="font-size: 11px; font-family: monospace; color: #a1a1aa;">Título do Projeto / Estudo:</div>
-        <input id="modal-item-title" type="text" placeholder="Ex: Algoritmos II, Refatorar Backend..." style="width: 100%; background: #181824; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 8px; color: #ffffff; font-size: 12px; outline: none;">
-        
-        <div style="display: flex; gap: 8px;">
-          <div style="flex: 1;">
-            <div style="font-size: 11px; font-family: monospace; color: #a1a1aa; margin-bottom: 4px;">Tipo / Escopo:</div>
-            <select id="modal-item-type" style="width: 100%; background: #181824; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 6px; color: #ffffff; font-size: 11.5px; outline: none;">
-              <option value="projeto" ${tipoPadrao === 'projeto' ? 'selected' : ''}>🎯 Projeto (02_Projetos)</option>
-              <option value="estudo" ${tipoPadrao === 'estudo' ? 'selected' : ''}>📚 Estudo (03_Estudos)</option>
-            </select>
-          </div>
-          <div style="flex: 1;">
-            <div style="font-size: 11px; font-family: monospace; color: #a1a1aa; margin-bottom: 4px;">Prioridade:</div>
-            <select id="modal-item-prio" style="width: 100%; background: #181824; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 6px; color: #ffffff; font-size: 11.5px; outline: none;">
-              <option value="Alta">Alta</option>
-              <option value="Média" selected>Média</option>
-              <option value="Baixa">Baixa</option>
-            </select>
-          </div>
-        </div>
-
-        <div>
-          <div style="font-size: 11px; font-family: monospace; color: #a1a1aa; margin-bottom: 4px;">Prazo Final (DD-MM-YYYY):</div>
-          <input id="modal-item-due" type="date" style="width: 100%; background: #181824; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 6px; color: #ffffff; font-size: 11.5px; outline: none;">
-        </div>
-
-        <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px;">
-          <button id="modal-cancel-item" class="abyssal-btn-action" style="font-size: 11px;">Cancelar</button>
-          <button id="modal-save-item" class="abyssal-btn-primary" style="font-size: 11px;">Criar Item</button>
-        </div>
-      `;
-      
-      modalBg.appendChild(modalBox);
-      document.body.appendChild(modalBg);
-      
-      const fechar = () => {
-        document.removeEventListener('keydown', handleKey);
-        if (modalBg.parentNode) document.body.removeChild(modalBg);
-      };
-
-      const handleKey = (e) => {
-        if (e.key === 'Escape') {
-          e.preventDefault();
-          fechar();
-        } else if (e.key === 'Enter') {
-          e.preventDefault();
-          const saveBtn = modalBox.querySelector('#modal-save-item');
-          if (saveBtn) saveBtn.click();
-        }
-      };
-      document.addEventListener('keydown', handleKey);
-
-      modalBg.addEventListener('click', (e) => {
-        if (e.target === modalBg) fechar();
-      });
-      
-      const closeBtn = modalBox.querySelector('#modal-close-item');
-      if (closeBtn) closeBtn.addEventListener('click', fechar);
-      const cancelBtn = modalBox.querySelector('#modal-cancel-item');
-      if (cancelBtn) cancelBtn.addEventListener('click', fechar);
-      
-      const saveBtn = modalBox.querySelector('#modal-save-item');
-      if (saveBtn) {
-        saveBtn.addEventListener('click', async () => {
-          const titleEl = modalBox.querySelector('#modal-item-title');
-          const typeEl = modalBox.querySelector('#modal-item-type');
-          const prioEl = modalBox.querySelector('#modal-item-prio');
-          const dueEl = modalBox.querySelector('#modal-item-due');
-          
-          const rawTitle = titleEl ? titleEl.value.trim() : '';
-          const tipo = typeEl ? typeEl.value : 'projeto';
-          const prio = prioEl ? prioEl.value : 'Média';
-          const due = dueEl ? dueEl.value : '';
-
-          if (rawTitle) {
-            const folder = tipo === 'estudo' ? "03_Estudos" : "02_Projetos";
-            const tplPath = tipo === 'estudo' ? "99_Meta/Templates/Template - Estudo.md" : "99_Meta/Templates/Template - Projeto.md";
+            <div class="snoopy-modal-label">Título do Projeto / Estudo:</div>
+            <input id="modal-item-title" class="snoopy-form-input" type="text" placeholder="Ex: Algoritmos II, Refatorar Backend..." style="width: 100%;">
             
-            if (!app.vault.getAbstractFileByPath(folder)) {
-              await app.vault.createFolder(folder).catch(() => {});
-            }
-            
-            const targetPath = `${folder}/${rawTitle}.md`;
-            const tplFile = app.vault.getAbstractFileByPath(tplPath);
-            let content = "";
-            const dueFormatado = due ? formatarParaDDMMYYYY(due) : '';
-            const todayFormatado = formatarParaDDMMYYYY(todayStr);
+            <div style="display: flex; gap: 8px;">
+              <div style="flex: 1;">
+                <div class="snoopy-modal-label">Tipo / Escopo:</div>
+                <select id="modal-item-type" class="snoopy-form-input" style="width: 100%; padding: 6px; font-size: 11.5px;">
+                  <option value="projeto" ${tipoPadrao === 'projeto' ? 'selected' : ''}>Projeto (02_Projetos)</option>
+                  <option value="estudo" ${tipoPadrao === 'estudo' ? 'selected' : ''}>Estudo (03_Estudos)</option>
+                </select>
+              </div>
+              <div style="flex: 1;">
+                <div class="snoopy-modal-label">Prioridade:</div>
+                <select id="modal-item-prio" class="snoopy-form-input" style="width: 100%; padding: 6px; font-size: 11.5px;">
+                  <option value="Alta">Alta</option>
+                  <option value="Média" selected>Média</option>
+                  <option value="Baixa">Baixa</option>
+                </select>
+              </div>
+            </div>
 
-            if (tplFile) {
-              const rawTpl = await app.vault.read(tplFile);
-              content = rawTpl.replace(/{{title}}/g, rawTitle)
-                              .replace(/{{date}}/g, todayFormatado)
-                              .replace(/status:\s*["'][^"']+["']/, `status: "${colStatus}"`)
-                              .replace(/priority:\s*["'][^"']+["']/, `priority: "${prio}"`);
-              if (dueFormatado) {
-                content = content.replace(/due_date:\s*([^\n]*)/, `due_date: ${dueFormatado}`);
+            <div>
+              <div class="snoopy-modal-label">Prazo Final:</div>
+              <input id="modal-item-due" class="snoopy-form-input" type="date" style="width: 100%; padding: 6px; font-size: 11.5px;">
+            </div>
+
+            <div class="snoopy-toolbar" style="justify-content: flex-end; margin-top: 6px;">
+              <button class="snoopy-btn-action snoopy-modal-close snoopy-btn-sm">Cancelar</button>
+              <button id="modal-save-item" class="snoopy-btn-primary snoopy-btn-sm">Criar Item</button>
+            </div>
+          `,
+          onMontar: (box) => {
+            const titleEl = box.querySelector('#modal-item-title');
+            if (titleEl) setTimeout(() => titleEl.focus(), 50);
+          },
+          onConfirmar: async (box, fechar) => {
+            const titleEl = box.querySelector('#modal-item-title');
+            const typeEl = box.querySelector('#modal-item-type');
+            const prioEl = box.querySelector('#modal-item-prio');
+            const dueEl = box.querySelector('#modal-item-due');
+            
+            const rawTitle = titleEl ? titleEl.value.trim() : '';
+            const tipo = typeEl ? typeEl.value : 'projeto';
+            const prio = prioEl ? prioEl.value : 'Média';
+            const due = dueEl ? dueEl.value : '';
+
+            if (rawTitle) {
+              const folder = tipo === 'estudo' ? "03_Estudos" : "02_Projetos";
+              const tplPath = tipo === 'estudo' ? "99_Meta/Templates/Template - Estudo.md" : "99_Meta/Templates/Template - Projeto.md";
+              
+              if (!app.vault.getAbstractFileByPath(folder)) {
+                await app.vault.createFolder(folder).catch(() => {});
               }
-            } else {
-              content = `---\ntitle: "${rawTitle}"\nstatus: "${colStatus}"\npriority: "${prio}"\ndue_date: ${dueFormatado}\ntags: [${tipo}]\n---\n\n# ${rawTitle}\n\n`;
-            }
+              
+              const targetPath = `${folder}/${rawTitle}.md`;
+              const tplFile = app.vault.getAbstractFileByPath(tplPath);
+              let content = "";
+              const dueFormatado = due ? (ctx.DateUtils ? ctx.DateUtils.formatarDDMMYYYY(due) : due) : '';
+              const todayFormatado = ctx.DateUtils ? ctx.DateUtils.formatarDDMMYYYY(todayStr) : todayStr;
 
-            const newFile = await app.vault.create(targetPath, content);
-            new Notice(`🎯 "${rawTitle}" criado em ${colStatus}!`);
-            fechar();
-            await app.workspace.openLinkText(newFile.path, "", false);
-            renderKanban();
+              if (tplFile) {
+                const rawTpl = await app.vault.read(tplFile);
+                content = rawTpl.replace(/{{title}}/g, rawTitle)
+                                .replace(/{{date}}/g, todayFormatado)
+                                .replace(/status:\s*["'][^"']+["']/, `status: "${colStatus}"`)
+                                .replace(/priority:\s*["'][^"']+["']/, `priority: "${prio}"`);
+                if (dueFormatado) {
+                  content = content.replace(/due_date:\s*([^\n]*)/, `due_date: ${dueFormatado}`);
+                }
+              } else {
+                content = `---\ntitle: "${rawTitle}"\nstatus: "${colStatus}"\npriority: "${prio}"\ndue_date: ${dueFormatado}\ntags: [${tipo}]\n---\n\n# ${rawTitle}\n\n`;
+              }
+
+              const newFile = await app.vault.create(targetPath, content);
+              new Notice(`🎯 "${rawTitle}" criado em ${colStatus}!`);
+              fechar();
+              await app.workspace.openLinkText(newFile.path, "", false);
+              renderKanban();
+            }
           }
         });
       }
-
-      setTimeout(() => {
-        const titleEl = modalBox.querySelector('#modal-item-title');
-        if (titleEl) titleEl.focus();
-      }, 50);
     }
 
     // Modal de Ação Tátil Mobile: Mover Status com 1-Toque
     function abrirModalMoverStatus(file, colunas, currentStatus) {
-      const modalBg = document.createElement('div');
-      modalBg.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;';
-      
-      const modalBox = document.createElement('div');
-      modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 320px; width: 100%; padding: 18px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 10px; font-family: sans-serif;';
-      
-      modalBox.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.06);">
-          <span style="font-size: 13px; font-weight: bold; color: #ffffff;">Mover "${file.basename}":</span>
-          <button id="modal-close-move" style="background: none; border: none; color: #71717a; cursor: pointer; font-size: 14px;">✕</button>
-        </div>
-        <div id="modal-move-options" style="display: flex; flex-direction: column; gap: 6px;"></div>
-      `;
-      
-      modalBg.appendChild(modalBox);
-      document.body.appendChild(modalBg);
+      if (ctx.ModalFactory) {
+        ctx.ModalFactory.abrir({
+          maxWidth: '320px',
+          htmlContent: `
+            <div class="snoopy-card-header">
+              <span class="snoopy-section-title">Mover "${file.basename}":</span>
+              <button class="snoopy-modal-close" title="Fechar">✕</button>
+            </div>
+            <div id="modal-move-options" style="display: flex; flex-direction: column; gap: 6px; margin-top: 8px;"></div>
+          `,
+          onMontar: (box, fechar) => {
+            const optBox = box.querySelector('#modal-move-options');
+            colunas.forEach(col => {
+              const isCurrent = col.status.toLowerCase() === currentStatus.toLowerCase();
+              const btn = optBox.createEl('button', {
+                cls: `snoopy-btn-action`,
+                attr: { style: `width: 100%; justify-content: flex-start; padding: 8px 12px; font-size: 12px; ${isCurrent ? 'opacity: 0.5; border-color: #86efac;' : ''}` },
+                text: `${isCurrent ? '✓ ' : '→ '}${col.label}`
+              });
+              if (!isCurrent) {
+                btn.addEventListener('click', async () => {
+                  const raw = await app.vault.read(file);
+                  let updated = raw;
+                  if (/status:\s*["']?([^"'\n]+)["']?/.test(raw)) {
+                    updated = raw.replace(/status:\s*["']?([^"'\n]+)["']?/, `status: "${col.status}"`);
+                  } else if (raw.startsWith('---')) {
+                    updated = raw.replace(/^---\n/, `---\nstatus: "${col.status}"\n`);
+                  } else {
+                    updated = `---\nstatus: "${col.status}"\n---\n\n` + raw;
+                  }
+                  await app.vault.modify(file, updated);
+                  new Notice(`🎯 "${file.basename}" movido para ${col.label}!`);
+                  fechar();
+                  renderKanban();
+                });
+              }
+            });
 
-      const fechar = () => {
-        if (modalBg.parentNode) document.body.removeChild(modalBg);
-      };
+            // Opção de exclusão do card/nota
+            const sepBox = optBox.createEl('div', {
+              attr: { style: 'margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.08);' }
+            });
+            const btnExcluir = sepBox.createEl('button', {
+              cls: 'snoopy-btn-action',
+              attr: {
+                style: 'width: 100%; justify-content: flex-start; padding: 8px 12px; font-size: 12px; color: #f87171; border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.08);'
+              },
+              text: '🗑️ Excluir Card'
+            });
 
-      modalBg.addEventListener('click', (e) => {
-        if (e.target === modalBg) fechar();
-      });
-
-      const closeBtn = modalBox.querySelector('#modal-close-move');
-      if (closeBtn) closeBtn.addEventListener('click', fechar);
-
-      const optBox = modalBox.querySelector('#modal-move-options');
-      colunas.forEach(col => {
-        const isCurrent = col.status.toLowerCase() === currentStatus.toLowerCase();
-        const btn = optBox.createEl('button', {
-          cls: `abyssal-btn-action`,
-          attr: { style: `width: 100%; justify-content: flex-start; padding: 8px 12px; font-size: 12px; ${isCurrent ? 'opacity: 0.5; border-color: #86efac;' : ''}` },
-          text: `${isCurrent ? '✓ ' : '→ '}${col.label}`
+            btnExcluir.addEventListener('click', async () => {
+              try {
+                if (ctx.VaultStore && typeof ctx.VaultStore.excluirArquivo === 'function') {
+                  await ctx.VaultStore.excluirArquivo(app, file.path);
+                } else if (app.vault.trash) {
+                  await app.vault.trash(file, true);
+                }
+                new Notice(`🗑️ "${file.basename}" excluído do Kanban!`);
+                fechar();
+                renderKanban();
+              } catch(err) {
+                new Notice(`Erro ao excluir nota: ${err.message}`);
+              }
+            });
+          }
         });
-        if (!isCurrent) {
-          btn.addEventListener('click', async () => {
-            const raw = await app.vault.read(file);
-            let updated = raw;
-            if (/status:\s*["']?([^"'\n]+)["']?/.test(raw)) {
-              updated = raw.replace(/status:\s*["']?([^"'\n]+)["']?/, `status: "${col.status}"`);
-            } else if (raw.startsWith('---')) {
-              updated = raw.replace(/^---\n/, `---\nstatus: "${col.status}"\n`);
-            } else {
-              updated = `---\nstatus: "${col.status}"\n---\n\n` + raw;
-            }
-            await app.vault.modify(file, updated);
-            new Notice(`🎯 "${file.basename}" movido para ${col.label}!`);
-            fechar();
-            renderKanban();
-          });
-        }
-      });
-    }
-
-    function formatarParaDDMMYYYY(dStr) {
-      if (!dStr) return '';
-      const matchIso = String(dStr).match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
-      if (matchIso) {
-        return `${matchIso[3].padStart(2, '0')}-${matchIso[2].padStart(2, '0')}-${matchIso[1]}`;
       }
-      const matchBr = String(dStr).match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
-      if (matchBr) {
-        return `${matchBr[1].padStart(2, '0')}-${matchBr[2].padStart(2, '0')}-${matchBr[3]}`;
-      }
-      return String(dStr);
     }
 
     function formatarPrazo(dataStr) {
@@ -400,7 +343,7 @@ return {
       });
 
       cols.forEach(col => {
-        const colEl = kanbanColsGrid.createEl('div', { cls: 'abyssal-kanban-col' });
+        const colEl = kanbanColsGrid.createEl('div', { cls: 'snoopy-kanban-col' });
         
         // Drag over / drop para Desktop
         colEl.addEventListener('dragover', (e) => {
@@ -453,14 +396,14 @@ return {
             ${col.label}
           </span>
           <div style="display: flex; align-items: center; gap: 6px;">
-            <span style="font-size: 11px; font-family: monospace; padding: 2px 7px; border-radius: 4px; background: rgba(128,128,128,0.12); color: var(--text-normal); font-weight: bold;">
+            <span class="snoopy-micro" style="padding: 2px 7px; border-radius: 4px; background: rgba(128,128,128,0.12); color: var(--text-normal); font-weight: bold;">
               ${filtered.length}
             </span>
-            <button class="abyssal-col-add-btn" title="Criar novo item em ${col.label}">+</button>
+            <button class="snoopy-col-add-btn" title="Criar novo item em ${col.label}">+</button>
           </div>
         `;
 
-        const addColBtn = colHeader.querySelector('.abyssal-col-add-btn');
+        const addColBtn = colHeader.querySelector('.snoopy-col-add-btn');
         if (addColBtn) {
           addColBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -468,16 +411,16 @@ return {
           });
         }
 
-        const cardsContainer = colEl.createEl('div', { cls: 'abyssal-kanban-cards-box' });
+        const cardsContainer = colEl.createEl('div', { cls: 'snoopy-kanban-cards-box' });
 
         if (filtered.length === 0) {
           cardsContainer.createEl('div', { 
             text: 'Nenhum item nesta coluna', 
-            attr: { style: 'font-size: 11.5px; font-family: monospace; color: var(--text-faint); text-align: center; padding: 24px 0;' } 
+            attr: { class: 'snoopy-meta', style: 'color: var(--text-faint); text-align: center; padding: 24px 0;' } 
           });
         } else {
           filtered.forEach(proj => {
-            const card = cardsContainer.createEl('div', { cls: 'abyssal-kanban-card' });
+            const card = cardsContainer.createEl('div', { cls: 'snoopy-kanban-card' });
             
             // Suporte desktop drag
             card.setAttribute('draggable', 'true');
@@ -510,12 +453,14 @@ return {
             const rightActions = titleRow.createEl('div', { attr: { style: 'display: flex; align-items: center; gap: 5px; flex-shrink: 0;' } });
             rightActions.createEl('span', { cls: `prio-badge ${prioClass}`, text: prioRaw });
 
-            // Botão tátil mobile ⋮
+            // Botão tátil mobile
             const touchBtn = rightActions.createEl('button', {
-              cls: 'abyssal-col-add-btn',
-              text: '⋮',
-              attr: { title: 'Mover status (toque)', style: 'width: 18px; height: 18px; font-size: 13px;' }
+              cls: 'snoopy-col-add-btn',
+              attr: { title: 'Mover status (toque)', style: 'width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center;' }
             });
+            if (ctx.renderIcon) ctx.renderIcon(touchBtn, 'more-vertical', { size: 12 });
+            else touchBtn.textContent = '⋮';
+
             touchBtn.addEventListener('click', (e) => {
               e.stopPropagation();
               const fileRef = app.vault.getAbstractFileByPath(proj.file.path);
@@ -537,15 +482,15 @@ return {
 
             const progRow = card.createEl('div');
             progRow.innerHTML = `
-              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; font-family: monospace; color: var(--text-muted); margin-bottom: 4px;">
+              <div class="snoopy-meta" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                 <div style="display: flex; align-items: center; gap: 6px;">
                   <span>${totalTasks > 0 ? `${completedTasks}/${totalTasks} tarefas` : 'Progresso'}</span>
-                  ${tarefasAtrasadas > 0 ? `<span class="prio-badge prio-alta" style="font-size: 9.5px; padding: 1px 4px;" title="Tarefas com prazo vencido">⚠️ ${tarefasAtrasadas} atrasada${tarefasAtrasadas > 1 ? 's' : ''}</span>` : ''}
+                  ${tarefasAtrasadas > 0 ? `<span class="prio-badge prio-alta" style="font-size: 9.5px; padding: 1px 4px; display: inline-flex; align-items: center; gap: 3px;" title="Tarefas com prazo vencido">${tarefasAtrasadas} atrasada${tarefasAtrasadas > 1 ? 's' : ''}</span>` : ''}
                 </div>
                 <span style="font-weight: bold; color: ${pct === 100 ? '#86efac' : 'var(--text-normal)'};">${pct}%</span>
               </div>
-              <div class="abyssal-prog-track" style="height: 5px; width: 100%;">
-                <div class="abyssal-prog-fill" style="width: ${pct}%; background: ${pct === 100 ? '#86efac' : 'var(--text-normal)'};"></div>
+              <div class="snoopy-prog-track" style="height: 5px; width: 100%;">
+                <div class="snoopy-prog-fill" style="width: ${pct}%; background: ${pct === 100 ? '#86efac' : 'var(--text-normal)'};"></div>
               </div>
             `;
 
@@ -553,7 +498,8 @@ return {
               const info = formatarPrazo(proj.due_date);
               const dueRow = card.createEl('div', { 
                 attr: { 
-                  style: 'display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; font-family: monospace; color: var(--text-muted); padding-top: 4px; border-top: 1px solid var(--background-modifier-border); cursor: pointer;' 
+                  class: 'snoopy-meta',
+                  style: 'display: flex; justify-content: space-between; align-items: center; padding-top: 4px; border-top: 1px solid var(--background-modifier-border); cursor: pointer;' 
                 } 
               });
               
@@ -574,3 +520,4 @@ return {
     renderKanban();
   }
 };
+
