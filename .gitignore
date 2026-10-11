@@ -3,9 +3,15 @@
 .obsidian/.trash/
 .obsidian/workspace.json
 
-# Backups temporários e lixeira
+# Backups do Snoopy Vault e arquivos de instalação local
+99_Meta/.backups/
+*.install.json
 .dashboard-backup/
 .trash/
 *.tmp
 .DS_Store
 Thumbs.db
+
+# Notas diárias locais (permite que cada usuário tenha seu histórico diário sem conflitos no git)
+01_Inbox/Diário/*.md
+!01_Inbox/Diário/.gitkeep
