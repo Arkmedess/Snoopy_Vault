@@ -1,24 +1,60 @@
 /* ==========================================================================
-   Tema Abyssal Snoopy - Integração Global no Obsidian & Dashboard Minimalista
+   Tema Snoopy Vault - Integração Global no Obsidian & Dashboard Minimalista
    Preto Profundo (#070709), Cantos Arredondados, Pomodoro Circular & Kanban DnD
    Tipografia Padronizada (14.5px Títulos de Seção, 14px Corpo/Cards, 12px Metas)
    Banner Panorâmico sem Deformação
    ========================================================================== */
 
 :root {
-  --abyssal-bg: var(--background-primary);
-  --abyssal-panel: var(--background-secondary);
-  --abyssal-card: var(--background-secondary);
-  --abyssal-card-hover: var(--background-secondary-alt);
-  --abyssal-border: var(--background-modifier-border);
-  --abyssal-border-hover: var(--color-base-40, rgba(128, 128, 128, 0.25));
-  --abyssal-text: var(--text-normal);
-  --abyssal-text-body: var(--text-normal);
-  --abyssal-muted: var(--text-muted);
-  --abyssal-faint: var(--text-faint);
-  --abyssal-green-done: var(--text-success, #86efac);
-  --abyssal-green-bright: var(--interactive-accent, #4ade80);
+  /* =========================================================================
+     SISTEMA TIPOGRÁFICO UNIFICADO (Anthropic Sans / Tech Minimal Clean)
+     ========================================================================= */
+  --snoopy-font-sans: "Anthropic Sans", "Styrene B", "Styrene A", "Inter", "Plus Jakarta Sans", "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --snoopy-font-heading: "Anthropic Sans", "Styrene B", "Styrene A", "Inter Display", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --snoopy-font-mono: "JetBrains Mono", "Fira Code", "SF Mono", Menlo, Consolas, monospace;
+
+  /* Superfícies & Cores */
+  --snoopy-bg: var(--snoopy-bg-val, inherit);
+  --snoopy-bg: var(--background-primary);
+  --snoopy-panel: var(--snoopy-panel-val, inherit);
+  --snoopy-panel: var(--background-secondary);
+  --snoopy-card: var(--snoopy-card-val, inherit);
+  --snoopy-card: var(--background-secondary);
+  --snoopy-card-hover: var(--snoopy-card-hover-val, inherit);
+  --snoopy-card-hover: var(--background-secondary-alt);
+  --snoopy-border: var(--snoopy-border-val, inherit);
+  --snoopy-border: var(--background-modifier-border);
+  --snoopy-border-hover: var(--snoopy-border-hover-val, inherit);
+  --snoopy-border-hover: var(--color-base-40, rgba(128, 128, 128, 0.25));
+  --snoopy-text: var(--snoopy-text-val, inherit);
+  --snoopy-text: var(--text-normal);
+  --snoopy-text-body: var(--snoopy-text-body-val, inherit);
+  --snoopy-text-body: var(--text-normal);
+  --snoopy-muted: var(--snoopy-muted-val, inherit);
+  --snoopy-muted: var(--text-muted);
+  --snoopy-faint: var(--snoopy-faint-val, inherit);
+  --snoopy-faint: var(--text-faint);
+  --snoopy-green-done: var(--snoopy-green-done-val, inherit);
+  --snoopy-green-done: var(--text-success, #86efac);
+  --snoopy-green-bright: var(--snoopy-green-bright-val, inherit);
+  --snoopy-green-bright: var(--interactive-accent, #4ade80);
   --heat-empty: var(--background-modifier-form-field, rgba(128, 128, 128, 0.15));
+}
+
+/* Ícones Nativos Lucide */
+.snoopy-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.snoopy-icon svg {
+  width: 100%;
+  height: 100%;
+  stroke-width: 2px;
+  fill: none;
 }
 
 /* --------------------------------------------------------------------------
@@ -29,9 +65,9 @@
   --background-primary-alt: #0d0d12 !important;
   --background-secondary: #0a0a0f !important;
   --background-secondary-alt: #070709 !important;
-  --background-modifier-border: rgba(255, 255, 255, 0.07) !important;
+  --background-modifier-border: rgba(255, 255, 255, 0.12) !important;
   --tab-background-active: #0d0d12 !important;
-  --divider-color: rgba(255, 255, 255, 0.06) !important;
+  --divider-color: rgba(255, 255, 255, 0.09) !important;
   --titlebar-background: #070709 !important;
   --titlebar-background-focused: #070709 !important;
   --status-bar-background: #070709 !important;
@@ -91,9 +127,9 @@
 .home-dashboard .inline-title,
 .home-dashboard .metadata-container,
 .home-dashboard .metadata-properties-heading,
-.abyssal-home .inline-title,
-.abyssal-home .metadata-container,
-.abyssal-home .metadata-properties-heading {
+.snoopy-home .inline-title,
+.snoopy-home .metadata-container,
+.snoopy-home .metadata-properties-heading {
   display: none !important;
 }
 
@@ -110,18 +146,18 @@
   padding-right: 6px !important;
 }
 
-.abyssal-container {
+.snoopy-container {
   width: 100%;
   max-width: 1320px;
   margin: 0 auto;
-  color: var(--abyssal-text);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, var(--font-interface);
+  color: var(--snoopy-text);
+  font-family: var(--snoopy-font-sans);
 }
 
 /* Títulos de Bloco (H2) Rigorosamente Padronizados */
-.abyssal-section-title {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, var(--font-interface) !important;
-  font-size: 15px !important;
+.snoopy-section-title {
+  font-family: var(--snoopy-font-heading) !important;
+  font-size: 18px !important;
   font-weight: 700 !important;
   color: #ffffff !important;
   text-transform: uppercase !important;
@@ -129,19 +165,40 @@
 }
 
 /* Subtítulos Internos Padronizados */
-.abyssal-sub-title {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, var(--font-interface) !important;
-  font-size: 11px !important;
+.snoopy-sub-title {
+  font-family: var(--snoopy-font-heading) !important;
+  font-size: 14px !important;
   font-weight: 700 !important;
-  color: #a1a1aa !important;
+  color: var(--snoopy-muted) !important;
   text-transform: uppercase !important;
   letter-spacing: 0.05em !important;
 }
 
+/* Utilitários Tipográficos Modulares Centralizados */
+.snoopy-meta {
+  font-family: var(--snoopy-font-mono) !important;
+  font-size: 14px;
+  color: var(--snoopy-muted);
+}
+
+.snoopy-micro {
+  font-family: var(--snoopy-font-mono) !important;
+  font-size: 12.5px;
+  letter-spacing: 0.03em;
+}
+
+.snoopy-modal-label {
+  font-family: var(--snoopy-font-sans) !important;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--snoopy-muted);
+  margin-bottom: 4px;
+}
+
 /* Títulos de Seção como Hiperlinks Interativos */
-.abyssal-section-title-link {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, var(--font-interface) !important;
-  font-size: 14.5px !important;
+.snoopy-section-title-link {
+  font-family: var(--snoopy-font-heading) !important;
+  font-size: 18px !important;
   font-weight: 700 !important;
   color: var(--text-normal) !important;
   text-transform: uppercase !important;
@@ -154,14 +211,14 @@
   transition: color 0.15s ease !important;
 }
 
-.abyssal-section-title-link:hover {
+.snoopy-section-title-link:hover {
   color: var(--interactive-accent, #60a5fa) !important;
   text-decoration: underline !important;
   text-underline-offset: 3px !important;
 }
 
 /* Vitrine de Estudos & Leituras (Lado a Lado acima do Kanban) */
-.abyssal-showcase-grid {
+.snoopy-showcase-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
@@ -169,7 +226,7 @@
 }
 
 @media (max-width: 860px) {
-  .abyssal-showcase-grid {
+  .snoopy-showcase-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -177,7 +234,7 @@
 /* --------------------------------------------------------------------------
    3. BANNER PANORÂMICO DO SNOOPY (Sem cortes, sem amassar)
    -------------------------------------------------------------------------- */
-.abyssal-banner-box {
+.snoopy-banner-box {
   width: 100%;
   background-color: #ffffff !important;
   border: 1px solid rgba(255, 255, 255, 0.16);
@@ -191,7 +248,7 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
-.abyssal-banner-box img {
+.snoopy-banner-box img {
   width: 100% !important;
   max-height: 220px !important;
   height: auto !important;
@@ -204,7 +261,7 @@
 /* --------------------------------------------------------------------------
    4. CABEÇALHO COM DATA & PÍLULAS DE AÇÃO RÁPIDA
    -------------------------------------------------------------------------- */
-.abyssal-header-row {
+.snoopy-header-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -215,35 +272,35 @@
   margin-bottom: 20px;
 }
 
-.abyssal-date-title {
+.snoopy-date-title {
   font-family: Georgia, serif;
-  font-size: 1.8rem;
+  font-size: 2.25rem;
   font-weight: 700;
   color: #ffffff;
   letter-spacing: -0.01em;
 }
 
-.abyssal-nav-pills {
+.snoopy-nav-pills {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
 
 /* Botões de Ação Rápida Monocromáticos (Clean, Minimalista, Flat) */
-.abyssal-container .abyssal-nav-pill-btn,
-button.abyssal-nav-pill-btn,
-.abyssal-nav-pill-btn {
+.snoopy-container .snoopy-nav-pill-btn,
+button.snoopy-nav-pill-btn,
+.snoopy-nav-pill-btn {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
   gap: 6px !important;
-  padding: 4px 11px !important;
+  padding: 5px 13px !important;
   border-radius: 6px !important;
   background-color: var(--text-normal) !important;
   background: var(--text-normal) !important;
   border: 1px solid var(--text-normal) !important;
   color: var(--background-primary) !important;
-  font-size: 11.5px !important;
+  font-size: 14.5px !important;
   font-weight: 600 !important;
   letter-spacing: 0.02em !important;
   cursor: pointer !important;
@@ -254,17 +311,17 @@ button.abyssal-nav-pill-btn,
   line-height: 1.3 !important;
 }
 
-.abyssal-container .abyssal-nav-pill-btn:hover,
-button.abyssal-nav-pill-btn:hover,
-.abyssal-nav-pill-btn:hover {
+.snoopy-container .snoopy-nav-pill-btn:hover,
+button.snoopy-nav-pill-btn:hover,
+.snoopy-nav-pill-btn:hover {
   opacity: 0.88 !important;
   box-shadow: none !important;
   transform: none !important;
 }
 
-.abyssal-container .abyssal-nav-pill-btn:active,
-button.abyssal-nav-pill-btn:active,
-.abyssal-nav-pill-btn:active {
+.snoopy-container .snoopy-nav-pill-btn:active,
+button.snoopy-nav-pill-btn:active,
+.snoopy-nav-pill-btn:active {
   opacity: 0.75 !important;
   box-shadow: none !important;
   transform: none !important;
@@ -273,7 +330,7 @@ button.abyssal-nav-pill-btn:active,
 /* --------------------------------------------------------------------------
    5. SEÇÃO POMODORO CIRCULAR FLAT & HISTÓRICO EXPANDIDO
    -------------------------------------------------------------------------- */
-.abyssal-top-grid {
+.snoopy-top-grid {
   display: grid;
   grid-template-columns: 7fr 5fr;
   gap: 18px;
@@ -282,20 +339,25 @@ button.abyssal-nav-pill-btn:active,
 }
 
 @media (max-width: 950px) {
-  .abyssal-top-grid {
+  .snoopy-top-grid {
     grid-template-columns: 1fr;
   }
 }
 
-.abyssal-card-box {
-  background: var(--abyssal-panel);
-  border: 1px solid var(--abyssal-border);
-  border-radius: 12px;
+.snoopy-card-box {
+  background: var(--snoopy-panel);
+  border: 1px solid rgba(255, 255, 255, 0.13) !important;
+  border-radius: 10px !important;
   padding: 18px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35) !important;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  transition: border-color 0.15s ease !important;
+}
+
+.snoopy-card-box:hover {
+  border-color: rgba(255, 255, 255, 0.20) !important;
 }
 
 /* SVG Circular Ring Flat */
@@ -305,7 +367,7 @@ button.abyssal-nav-pill-btn:active,
 }
 
 .circle-progress-bar {
-  stroke: var(--abyssal-green-bright);
+  stroke: var(--snoopy-green-bright);
   stroke-width: 7;
   stroke-linecap: round;
   transition: stroke-dashoffset 0.6s linear, stroke 0.2s ease;
@@ -314,14 +376,14 @@ button.abyssal-nav-pill-btn:active,
 }
 
 /* Heatmap Quadradinhos */
-.abyssal-heat-grid {
+.snoopy-heat-grid {
   display: inline-grid !important;
   grid-template-rows: repeat(3, 1fr) !important;
   grid-auto-flow: column !important;
   gap: 5px !important;
 }
 
-.abyssal-heat-cell {
+.snoopy-heat-cell {
   width: 15px;
   height: 15px;
   border-radius: 3.5px;
@@ -329,7 +391,7 @@ button.abyssal-nav-pill-btn:active,
   cursor: pointer;
 }
 
-.abyssal-heat-cell:hover {
+.snoopy-heat-cell:hover {
   transform: scale(1.35);
   z-index: 10;
 }
@@ -338,17 +400,144 @@ button.abyssal-nav-pill-btn:active,
 .heat-lvl-1 { background-color: #164e32; }
 .heat-lvl-2 { background-color: #1e7e48; }
 .heat-lvl-3 { background-color: #22c55e; }
-.heat-lvl-4 { background-color: var(--abyssal-green-bright); }
+.heat-lvl-4 { background-color: var(--snoopy-green-bright); }
 
 /* Botões Padronizados Flat & Minimalistas (Compatíveis com Dark/Light) */
-.abyssal-container .abyssal-btn-action,
-button.abyssal-btn-action {
+.snoopy-container .snoopy-btn-action,
+button.snoopy-btn-action {
   background: var(--background-modifier-form-field, rgba(128, 128, 128, 0.08)) !important;
   border: 1px solid var(--background-modifier-border) !important;
   color: var(--text-normal) !important;
   border-radius: 6px !important;
+  padding: 6px 14px !important;
+  font-size: 14.5px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: background 0.12s ease, border-color 0.12s ease, opacity 0.12s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  box-shadow: none !important;
+  transform: none !important;
+  user-select: none !important;
+}
+
+.snoopy-container .snoopy-btn-action:hover,
+button.snoopy-btn-action:hover {
+  background: var(--background-modifier-hover, rgba(128, 128, 128, 0.16)) !important;
+  border-color: var(--color-base-40, rgba(128, 128, 128, 0.25)) !important;
+  color: var(--text-normal) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.snoopy-container .snoopy-btn-primary,
+button.snoopy-btn-primary {
+  background: var(--text-normal) !important;
+  color: var(--background-primary) !important;
+  border: 1px solid var(--text-normal) !important;
+  border-radius: 6px !important;
+  padding: 6px 16px !important;
+  font-size: 14.5px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: opacity 0.12s ease, background 0.12s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  box-shadow: none !important;
+  transform: none !important;
+  user-select: none !important;
+}
+
+.snoopy-container .snoopy-btn-primary:hover,
+button.snoopy-btn-primary:hover {
+  opacity: 0.88 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.snoopy-container .snoopy-btn-mode,
+.snoopy-container .snoopy-btn-tab,
+button.snoopy-btn-mode,
+button.snoopy-btn-tab {
   padding: 5px 12px !important;
-  font-size: 11.5px !important;
+  border-radius: 5px !important;
+  font-size: 14px !important;
+  font-family: var(--snoopy-font-sans) !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  border: 1px solid var(--background-modifier-border) !important;
+  background: transparent !important;
+  color: var(--text-muted) !important;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease !important;
+  box-shadow: none !important;
+  transform: none !important;
+  user-select: none !important;
+}
+
+.snoopy-container .snoopy-btn-mode:hover,
+.snoopy-container .snoopy-btn-tab:hover,
+button.snoopy-btn-mode:hover,
+button.snoopy-btn-tab:hover {
+  background: var(--background-modifier-hover, rgba(128, 128, 128, 0.12)) !important;
+  color: var(--text-normal) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.snoopy-container .snoopy-btn-mode.active,
+.snoopy-container .snoopy-btn-tab.active,
+button.snoopy-btn-mode.active,
+button.snoopy-btn-tab.active {
+  background: var(--background-modifier-hover, rgba(128, 128, 128, 0.2)) !important;
+  color: var(--text-normal) !important;
+  border-color: var(--color-base-40, rgba(128, 128, 128, 0.35)) !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* Botões de Ícone Compacto & Fechar Modal */
+.snoopy-container .snoopy-btn-icon,
+button.snoopy-btn-icon,
+button.snoopy-modal-close {
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  color: var(--text-muted, #a1a1aa) !important;
+  border-radius: 4px !important;
+  padding: 4px 8px !important;
+  font-size: 16px !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  transition: color 0.12s ease, background 0.12s ease, border-color 0.12s ease !important;
+  box-shadow: none !important;
+  transform: none !important;
+  user-select: none !important;
+}
+
+.snoopy-container .snoopy-btn-icon:hover,
+button.snoopy-btn-icon:hover,
+button.snoopy-modal-close:hover {
+  color: var(--text-normal, #ffffff) !important;
+  background: var(--background-modifier-hover, rgba(255, 255, 255, 0.08)) !important;
+  border-color: var(--background-modifier-border) !important;
+}
+
+/* Botões Destrutivos / Perigo */
+.snoopy-container .snoopy-btn-danger,
+button.snoopy-btn-danger {
+  background: rgba(239, 68, 68, 0.12) !important;
+  border: 1px solid rgba(239, 68, 68, 0.25) !important;
+  color: #fca5a5 !important;
+  border-radius: 6px !important;
+  padding: 6px 14px !important;
+  font-size: 14.5px !important;
   font-weight: 600 !important;
   cursor: pointer !important;
   transition: background 0.12s ease, border-color 0.12s ease !important;
@@ -361,85 +550,60 @@ button.abyssal-btn-action {
   user-select: none !important;
 }
 
-.abyssal-container .abyssal-btn-action:hover,
-button.abyssal-btn-action:hover {
-  background: var(--background-modifier-hover, rgba(128, 128, 128, 0.16)) !important;
-  border-color: var(--color-base-40, rgba(128, 128, 128, 0.25)) !important;
-  color: var(--text-normal) !important;
-  box-shadow: none !important;
-  transform: none !important;
+.snoopy-container .snoopy-btn-danger:hover,
+button.snoopy-btn-danger:hover {
+  background: rgba(239, 68, 68, 0.22) !important;
+  border-color: rgba(239, 68, 68, 0.45) !important;
+  color: #ffffff !important;
 }
 
-.abyssal-container .abyssal-btn-primary,
-button.abyssal-btn-primary {
-  background: var(--text-normal) !important;
-  color: var(--background-primary) !important;
-  border: 1px solid var(--text-normal) !important;
-  border-radius: 6px !important;
-  padding: 5px 14px !important;
-  font-size: 11.5px !important;
-  font-weight: 600 !important;
-  cursor: pointer !important;
-  transition: opacity 0.12s ease !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 6px !important;
-  box-shadow: none !important;
-  transform: none !important;
-  user-select: none !important;
-}
-
-.abyssal-container .abyssal-btn-primary:hover,
-button.abyssal-btn-primary:hover {
-  opacity: 0.88 !important;
-  box-shadow: none !important;
-  transform: none !important;
-}
-
-.abyssal-container .abyssal-btn-mode,
-button.abyssal-btn-mode {
+/* Modificadores de Escala / Tamanho de Botão */
+.snoopy-btn-sm {
   padding: 4px 10px !important;
-  border-radius: 5px !important;
-  font-size: 11px !important;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, var(--font-interface) !important;
-  font-weight: 600 !important;
-  cursor: pointer !important;
-  border: 1px solid var(--background-modifier-border) !important;
-  background: transparent !important;
-  color: var(--text-muted) !important;
-  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease !important;
-  box-shadow: none !important;
-  transform: none !important;
-  user-select: none !important;
+  font-size: 13px !important;
 }
 
-.abyssal-container .abyssal-btn-mode:hover,
-button.abyssal-btn-mode:hover {
-  background: var(--background-modifier-hover, rgba(128, 128, 128, 0.12)) !important;
-  color: var(--text-normal) !important;
-  box-shadow: none !important;
-  transform: none !important;
+.snoopy-btn-md {
+  padding: 6px 14px !important;
+  font-size: 14.5px !important;
 }
 
-.abyssal-container .abyssal-btn-mode.active,
-button.abyssal-btn-mode.active {
-  background: var(--background-modifier-hover, rgba(128, 128, 128, 0.2)) !important;
-  color: var(--text-normal) !important;
-  border-color: var(--color-base-40, rgba(128, 128, 128, 0.35)) !important;
-  font-weight: 700 !important;
-  box-shadow: none !important;
-  transform: none !important;
+.snoopy-btn-lg {
+  padding: 8px 18px !important;
+  font-size: 15.5px !important;
+}
+
+.snoopy-btn-block {
+  width: 100% !important;
+  display: flex !important;
+}
+
+/* Classes Estruturais de Layout */
+.snoopy-card-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding-bottom: 10px !important;
+  border-bottom: 1px solid var(--snoopy-border, rgba(255, 255, 255, 0.08)) !important;
+  margin-bottom: 12px !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+}
+
+.snoopy-toolbar {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
 }
 
 /* Pílulas de Fluxo Inteligente */
-.abyssal-flow-pill {
+.snoopy-flow-pill {
   background: #181824;
   border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 2px 7px;
   border-radius: 4px;
   color: #ffffff !important;
-  font-size: 10.5px;
+  font-size: 13px;
   font-weight: 600;
   display: inline-block;
   line-height: 1.3;
@@ -447,8 +611,8 @@ button.abyssal-btn-mode.active {
 
 /* Priority Badges */
 .prio-badge {
-  font-size: 11px;
-  font-family: var(--font-monospace);
+  font-size: 14px;
+  font-family: var(--snoopy-font-mono);
   font-weight: 700;
   padding: 2px 7px;
   border-radius: 4px;
@@ -474,15 +638,21 @@ button.abyssal-btn-mode.active {
 /* --------------------------------------------------------------------------
    6. KANBAN MINIMALISTA DE PROJETOS (DRAG & DROP)
    -------------------------------------------------------------------------- */
-.abyssal-kanban-section {
-  background: var(--abyssal-panel);
-  border: 1px solid var(--abyssal-border);
-  border-radius: 12px;
+.snoopy-kanban-section {
+  background: var(--snoopy-panel);
+  border: 1px solid rgba(255, 255, 255, 0.13) !important;
+  border-radius: 10px !important;
   padding: 20px;
   margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35) !important;
+  transition: border-color 0.15s ease !important;
 }
 
-.abyssal-kanban-cols {
+.snoopy-kanban-section:hover {
+  border-color: rgba(255, 255, 255, 0.18) !important;
+}
+
+.snoopy-kanban-cols {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 16px;
@@ -490,14 +660,14 @@ button.abyssal-btn-mode.active {
 }
 
 @media (max-width: 800px) {
-  .abyssal-kanban-cols {
+  .snoopy-kanban-cols {
     grid-template-columns: 1fr;
   }
 }
 
-.abyssal-kanban-col {
-  background: var(--abyssal-card);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+.snoopy-kanban-col {
+  background: var(--snoopy-card);
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
   border-radius: 8px;
   padding: 14px;
   display: flex;
@@ -507,17 +677,17 @@ button.abyssal-btn-mode.active {
 }
 
 /* Botão + de Ação Rápida no Cabeçalho da Coluna */
-.abyssal-col-add-btn {
+.snoopy-col-add-btn {
   background: transparent !important;
   border: 1px solid var(--background-modifier-border) !important;
   color: var(--text-muted) !important;
   border-radius: 4px !important;
-  width: 22px !important;
-  height: 22px !important;
+  width: 24px !important;
+  height: 24px !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  font-size: 12px !important;
+  font-size: 14px !important;
   font-weight: bold !important;
   cursor: pointer !important;
   line-height: 1 !important;
@@ -527,7 +697,7 @@ button.abyssal-btn-mode.active {
   transform: none !important;
 }
 
-.abyssal-col-add-btn:hover {
+.snoopy-col-add-btn:hover {
   background: var(--background-modifier-hover, rgba(128, 128, 128, 0.15)) !important;
   color: var(--text-normal) !important;
   border-color: var(--color-base-40, rgba(128, 128, 128, 0.25)) !important;
@@ -535,7 +705,7 @@ button.abyssal-btn-mode.active {
 }
 
 /* Container de Cards do Kanban com Rolagem Vertical Fixo */
-.abyssal-kanban-cards-box {
+.snoopy-kanban-cards-box {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -545,41 +715,41 @@ button.abyssal-btn-mode.active {
   padding-right: 4px;
 }
 
-.abyssal-kanban-card {
+.snoopy-kanban-card {
   background: var(--background-secondary) !important;
-  border: 1px solid var(--background-modifier-border) !important;
-  border-radius: 8px !important;
-  padding: 12px 14px !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  border-radius: 6px !important;
+  padding: 10px 12px !important;
   cursor: grab !important;
   transition: background 0.12s ease, border-color 0.12s ease !important;
   display: flex !important;
   flex-direction: column !important;
-  gap: 8px !important;
+  gap: 6px !important;
   user-select: none !important;
   box-shadow: none !important;
   transform: none !important;
 }
 
-.abyssal-kanban-card:active {
+.snoopy-kanban-card:active {
   cursor: grabbing !important;
 }
 
-.abyssal-kanban-card:hover {
+.snoopy-kanban-card:hover {
   background: var(--background-secondary-alt) !important;
-  border-color: var(--color-base-40, rgba(128, 128, 128, 0.25)) !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
   transform: none !important;
   box-shadow: none !important;
 }
 
 /* Badge/Link da nota de origem no To-Do Prioritário */
-.abyssal-todo-source {
-  font-size: 11px;
-  font-family: var(--font-monospace);
+.snoopy-todo-source {
+  font-size: 14px;
+  font-family: var(--snoopy-font-mono);
   color: var(--interactive-accent, #60a5fa) !important;
   background: rgba(96, 165, 250, 0.08);
   border: 1px solid rgba(96, 165, 250, 0.2);
   border-radius: 4px;
-  padding: 1px 7px;
+  padding: 2px 8px;
   cursor: pointer;
   text-decoration: none !important;
   white-space: nowrap;
@@ -589,7 +759,7 @@ button.abyssal-btn-mode.active {
   transform: none !important;
 }
 
-.abyssal-todo-source:hover {
+.snoopy-todo-source:hover {
   background: rgba(96, 165, 250, 0.16) !important;
   color: #93c5fd !important;
   border-color: rgba(96, 165, 250, 0.4) !important;
@@ -599,7 +769,7 @@ button.abyssal-btn-mode.active {
 /* --------------------------------------------------------------------------
    7. GRID DUPLO INFERIOR: HABITS & LEITURAS / ESTUDOS
    -------------------------------------------------------------------------- */
-.abyssal-bottom-grid {
+.snoopy-bottom-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 18px;
@@ -607,19 +777,19 @@ button.abyssal-btn-mode.active {
 }
 
 @media (max-width: 800px) {
-  .abyssal-bottom-grid {
+  .snoopy-bottom-grid {
     grid-template-columns: 1fr;
   }
 }
 
 /* Capas de Livros */
-.abyssal-books-shelf {
+.snoopy-books-shelf {
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
 }
 
-.abyssal-book-item {
+.snoopy-book-item {
   width: 88px;
   cursor: pointer;
   display: flex;
@@ -629,12 +799,12 @@ button.abyssal-btn-mode.active {
   transform: none !important;
 }
 
-.abyssal-book-item:hover {
+.snoopy-book-item:hover {
   opacity: 0.9 !important;
   transform: none !important;
 }
 
-.abyssal-book-cover {
+.snoopy-book-cover {
   width: 88px;
   height: 126px;
   border-radius: 6px;
@@ -645,18 +815,18 @@ button.abyssal-btn-mode.active {
   transition: border-color 0.12s ease !important;
 }
 
-.abyssal-book-item:hover .abyssal-book-cover {
+.snoopy-book-item:hover .snoopy-book-cover {
   border-color: var(--color-base-40, rgba(128, 128, 128, 0.35)) !important;
 }
 
 /* Cards de Matérias */
-.abyssal-subject-grid {
+.snoopy-subject-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
   gap: 12px;
 }
 
-.abyssal-subject-card {
+.snoopy-subject-card {
   background: var(--background-secondary) !important;
   border: 1px solid var(--background-modifier-border) !important;
   border-radius: 8px !important;
@@ -670,30 +840,191 @@ button.abyssal-btn-mode.active {
   transform: none !important;
 }
 
-.abyssal-subject-card:hover {
+.snoopy-subject-card:hover {
   background: var(--background-secondary-alt) !important;
   border-color: var(--color-base-40, rgba(128, 128, 128, 0.3)) !important;
   transform: none !important;
 }
 
 /* Pílulas de Hábitos Rápidos (Compacto) */
-.abyssal-habit-pill {
+.snoopy-habit-pill {
   display: inline-flex !important;
   align-items: center !important;
   gap: 7px !important;
-  padding: 4px 10px !important;
+  padding: 5px 12px !important;
   background: rgba(255, 255, 255, 0.04) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 20px !important;
-  font-size: 11.5px !important;
+  font-size: 14.5px !important;
   color: #d4d4d8 !important;
   cursor: pointer !important;
   transition: all 0.12s ease !important;
   user-select: none !important;
 }
 
-.abyssal-habit-pill:hover {
+.snoopy-habit-pill:hover {
   background: rgba(255, 255, 255, 0.08) !important;
   border-color: rgba(255, 255, 255, 0.2) !important;
   color: #ffffff !important;
 }
+
+/* --------------------------------------------------------------------------
+   8. COMPONENTES UTILITÁRIOS SNOOPY (Extração de Inline Styles)
+   -------------------------------------------------------------------------- */
+.snoopy-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.snoopy-modal-box {
+  background: #0d0d12;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-family: var(--snoopy-font-sans);
+}
+
+.snoopy-target-banner {
+  background: #14141e;
+  border: 1px solid rgba(134, 239, 172, 0.25);
+  border-radius: 6px;
+  padding: 7px 11px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 8px 0 4px 0;
+}
+
+.snoopy-form-input {
+  width: 100%;
+  background: #14141c;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: #ffffff;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.12s ease;
+}
+
+.snoopy-form-input:focus {
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.snoopy-modal-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #a1a1aa;
+  margin-bottom: 4px;
+}
+
+.snoopy-form-select {
+  width: 100%;
+  background: #14141c;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: #ffffff;
+  font-size: 14.5px;
+  outline: none;
+  transition: border-color 0.12s ease;
+}
+
+.snoopy-form-select:focus {
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.snoopy-chip-opt {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  padding: 4px 11px;
+  font-size: 14px;
+  color: #e4e4e7;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.snoopy-chip-opt:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+.snoopy-pdf-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 4px;
+  background: rgba(96, 165, 250, 0.14);
+  color: #93c5fd;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+  white-space: nowrap;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --------------------------------------------------------------------------
+   8. BOOKSHELF STUDIO & DUAL WORKSPACE
+   -------------------------------------------------------------------------- */
+.snoopy-bookshelf-workspace {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 920px) {
+  .snoopy-bookshelf-workspace {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Abas Segmentadas do Reader Companion */
+.snoopy-container .snoopy-btn-tab {
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  color: var(--text-muted) !important;
+  border-radius: 6px !important;
+  padding: 4px 10px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+
+.snoopy-container .snoopy-btn-tab:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text-normal) !important;
+}
+
+.snoopy-container .snoopy-btn-tab.active {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  font-weight: 700 !important;
+}
+
+/* Espaçamento de ícones dentro de botões padronizados */
+.btn-icon-pad {
+  margin-right: 5px !important;
+}
+
+
