@@ -124,6 +124,19 @@ Snoopy_Vault/
 
 ---
 
+## Atualização Segura e Gestão de Dados
+
+O Snoopy Vault conta com um mecanismo nativo de atualização em 1 clique integrado à nota [`99_Meta/⚙️ Configurações.md`](99_Meta/%E2%9A%99%EF%B8%8F%20Configura%C3%A7%C3%B5es.md), dispensando comandos manuais de terminal:
+
+- **Arquitetura de 3 Zonas:**
+  - **Dados Pessoais (`01_Inbox/`, `02_Projetos/`, `03_Estudos/`, `04_Leituras/`):** Intocáveis. O atualizador é estritamente proibido de alterar ou excluir notas pessoais do usuário.
+  - **Motor (`99_Meta/Snoopy/`, `.obsidian/snippets/`):** Atualizado automaticamente a partir dos lançamentos estáveis (releases) do GitHub. Arquivos do motor editados localmente pelo usuário são preservados intactos, com a nova versão gravada com o sufixo `.novo`.
+  - **Sementes (`00_Home/`):** Documentações e notas base criadas apenas caso ainda não existam.
+- **Backup e Rollback Automáticos:** Antes de qualquer alteração, um snapshot atômico é salvo em `99_Meta/.backups/snoopy/`, permitindo reversão imediata com um clique no botão *Desfazer Última Atualização*.
+- **Cofre Limpo (Remoção de Exemplos):** Permite mover notas de demonstração (prefixadas por `Exemplo - `) para a lixeira do Obsidian e zerar a fila do ciclo de estudos em 1 clique, deixando o cofre pronto para uso real imediato.
+
+---
+
 ## Requisitos e Instalação
 
 1. **Baixar ou clonar o repositório:**

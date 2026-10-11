@@ -100,4 +100,30 @@ O cofre mantém estritamente **um mock oficial e completo por módulo**:
 
 ---
 
+## 5. Atualizações Seguras & Gestão de Dados (Cofre Limpo)
+
+O Snoopy Vault foi projetado com uma arquitetura de proteção em **3 Zonas** para que você possa evoluir seu cofre e receber melhorias de código sem nunca perder ou conflitar suas anotações pessoais:
+
+1. **🛡️ Zona de Dados Pessoais (`01_Inbox/`, `02_Projetos/`, `03_Estudos/`, `04_Leituras/`):**
+   - É o seu território exclusivo. O mecanismo de atualização **nunca altera nem apaga** seus arquivos de anotações reais.
+2. **⚙️ Zona Motor (`99_Meta/Snoopy/`, `.obsidian/snippets/`):**
+   - Scripts, dashboards e estilos. O sistema atualiza esses módulos automaticamente. Se você modificou algum arquivo do motor localmente, o Snoopy preserva a sua versão e grava a nova com a extensão `.novo` para que você possa comparar sem surpresas.
+3. **🌱 Zona de Sementes & Guias (`00_Home/`, templates de ciclo):**
+   - Arquivos fundamentais criados apenas se não existirem no seu cofre.
+
+### Como Atualizar em 1 Clique
+Acesse a nota [[99_Meta/⚙️ Configurações|⚙️ Configurações]]:
+- Clique em **🔍 Verificar Atualizações**: o cofre consultará o repositório oficial no GitHub.
+- Havendo novidades, revise o resumo das mudanças e clique em **⚡ Instalar Atualização com Backup**.
+- Um backup atômico completo do estado anterior é gerado automaticamente em `99_Meta/.backups/snoopy/`.
+- Caso queira desfazer a qualquer momento, basta clicar em **⏪ Desfazer Última Atualização (Rollback)**.
+
+### Começando 100% Limpo (Remoção de Exemplos)
+Se preferir usar o cofre diretamente com seus estudos e projetos reais sem os dados de teste:
+- Vá em [[99_Meta/⚙️ Configurações|⚙️ Configurações]] e clique em **🗑️ Limpar Exemplos (Cofre Limpo)**.
+- Todas as notas com prefixo `Exemplo - ` serão movidas com segurança para a lixeira do Obsidian e o ciclo de estudos será zerado.
+- Você pode recriar os dados de demonstração a qualquer momento clicando em **✨ Restaurar Exemplos (Modo Demonstração)**.
+
+---
+
 [[00_Home/Home|← Voltar ao Painel Central]]
