@@ -1,7 +1,7 @@
 ---
 cssclasses:
   - home-dashboard
-  - abyssal-home
+  - snoopy-home
 ---
 
 ```dataviewjs

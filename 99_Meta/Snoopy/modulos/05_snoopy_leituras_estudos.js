@@ -1,38 +1,50 @@
 /**
  * Snoopy Vault - Módulo 05: Vitrine de Estudos & Bookshelf de Leituras
  * Posicionado acima do Kanban com proporção 50/50:
- * - Esquerda: Estudos com atalho direto ao Painel e destaque da matéria da vez no ciclo
- * - Direita: Bookshelf estilo KOReader com capas e busca de metadados na nuvem via API
+ * - Esquerda: Estudos com atalho direto ao Painel e destaque da matéria da vez no ciclo.
+ * - Direita: Bookshelf estilo KOReader com capas e busca de metadados na nuvem via Open Library API.
+ *
+ * @module modulos/05_snoopy_leituras_estudos
  */
 return {
   id: 'snoopy_leituras_estudos',
   titulo: 'Estudos & Bookshelf de Leituras',
+
+  /**
+   * Ponto de entrada do ciclo de vida de renderização do Módulo 05.
+   *
+   * @param {object} ctx - Contexto compartilhado com os microsserviços do Vault.
+   * @param {HTMLElement} ctx.root - Contêiner raiz DOM.
+   * @param {object} ctx.app - Instância global do Obsidian.
+   * @param {object} ctx.dv - API Dataview.
+   * @param {string} ctx.todayStr - Data do dia em formato ISO (YYYY-MM-DD).
+   * @param {function(HTMLElement, string, object=): HTMLElement} [ctx.renderIcon] - Helper de ícones.
+   * @returns {Promise<void>}
+   */
   async render(ctx) {
     const { root, app, dv, todayStr } = ctx;
 
     // CONTAINER PRINCIPAL: VITRINE 50/50 LADO A LADO
-    const showcaseGrid = root.createEl('div', { cls: 'abyssal-showcase-grid' });
+    const showcaseGrid = root.createEl('div', { cls: 'snoopy-showcase-grid' });
 
     // =========================================================================
     // 1. COLUNA ESQUERDA: ESTUDOS & CICLO ATIVO (ESTILO ESTUDEI)
     // =========================================================================
     const estudosCol = showcaseGrid.createEl('div', { 
-      cls: 'abyssal-card-box', 
+      cls: 'snoopy-card-box', 
       attr: { style: 'display: flex; flex-direction: column; gap: 12px;' } 
     });
 
     const estudos = dv.pages('"03_Estudos"')
       .where(e => !e.file.name.includes("Template") && !e.file.name.includes("Painel"));
 
-    const estudosHeader = estudosCol.createEl('div', { 
-      attr: { style: 'display: flex; justify-content: space-between; align-items: center;' } 
-    });
+    const estudosHeader = estudosCol.createEl('div', { cls: 'snoopy-card-header' });
 
     estudosHeader.innerHTML = `
-      <a id="link-painel-estudos" class="abyssal-section-title-link" title="Abrir Subdashboard Completo de Estudos (Framework Estudei)">
-        ESTUDOS & CICLO ATIVO <span style="font-size: 11px; opacity: 0.6;">↗</span>
+      <a id="link-painel-estudos" class="snoopy-section-title-link" title="Abrir Subdashboard Completo de Estudos (Framework Estudei)">
+        ESTUDOS & CICLO ATIVO <span style="font-size: 14px; opacity: 0.6;">↗</span>
       </a>
-      <span style="font-size: 11px; font-family: monospace; color: var(--text-muted);">${estudos.length} matérias</span>
+      <span class="snoopy-meta">${estudos.length} matérias</span>
     `;
 
     const linkPainelEstudos = estudosHeader.querySelector('#link-painel-estudos');
@@ -74,12 +86,12 @@ return {
     });
     kpiRowEstudos.innerHTML = `
       <div style="background: var(--background-secondary-alt); border: 1px solid var(--background-modifier-border); border-radius: 6px; padding: 6px 10px; display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-size: 10.5px; font-family: monospace; color: var(--text-muted);">Foco Hoje</span>
-        <span style="font-size: 12px; font-weight: 800; color: var(--text-normal); font-family: monospace;">${minutosHojeTxt}</span>
+        <span class="snoopy-meta">Foco Hoje</span>
+        <span class="snoopy-meta" style="font-size: 15px; font-weight: 800; color: var(--text-normal);">${minutosHojeTxt}</span>
       </div>
       <div style="background: var(--background-secondary-alt); border: 1px solid var(--background-modifier-border); border-radius: 6px; padding: 6px 10px; display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-size: 10.5px; font-family: monospace; color: var(--text-muted);">Questões</span>
-        <span style="font-size: 12px; font-weight: 800; color: var(--text-normal); font-family: monospace;">${questoesHoje}</span>
+        <span class="snoopy-meta">Questões</span>
+        <span class="snoopy-meta" style="font-size: 15px; font-weight: 800; color: var(--text-normal);">${questoesHoje}</span>
       </div>
     `;
 
@@ -97,11 +109,11 @@ return {
 
       vezCard.innerHTML = `
         <div style="display: flex; flex-direction: column; gap: 2px; overflow: hidden; padding-right: 8px;">
-          <span style="font-size: 10px; font-family: monospace; font-weight: 700; color: var(--interactive-accent, #60a5fa); text-transform: uppercase;">Matéria da Vez no Ciclo</span>
-          <span style="font-size: 13.5px; font-weight: 700; color: var(--text-normal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${materiaVez.title || materiaVez.file.name}</span>
-          <span style="font-size: 11px; font-family: monospace; color: var(--text-muted);">${materiaVez.disciplina || 'Geral'} • Status: ${materiaVez.status || 'Em Andamento'}</span>
+          <span class="snoopy-micro" style="font-weight: 700; color: var(--interactive-accent, #60a5fa); text-transform: uppercase;">Matéria da Vez no Ciclo</span>
+          <span style="font-size: 17px; font-weight: 700; color: var(--text-normal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${materiaVez.title || materiaVez.file.name}</span>
+          <span class="snoopy-meta">${materiaVez.disciplina || 'Geral'} • Status: ${materiaVez.status || 'Em Andamento'}</span>
         </div>
-        <span class="abyssal-todo-source" style="font-size: 11px; padding: 2px 8px; flex-shrink: 0;">Abrir →</span>
+        <span class="snoopy-todo-source" style="font-size: 14px; padding: 2px 8px; flex-shrink: 0;">Abrir →</span>
       `;
 
       vezCard.addEventListener('click', () => {
@@ -110,23 +122,24 @@ return {
     }
 
     // Mini Grade de Matérias
-    const subjectIcons = ['💻', '🗄️', '📐', '🧠', '🔬', '⚙️'];
+    const subjectIcons = ['code-2', 'database', 'ruler', 'brain', 'microscope', 'settings'];
     const miniGrid = estudosCol.createEl('div', { 
       attr: { style: 'display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px;' } 
     });
 
     materiasLista.slice(0, 4).forEach((e, idx) => {
       const card = miniGrid.createEl('div', { 
-        cls: 'abyssal-subject-card',
-        attr: { style: 'padding: 8px 10px; cursor: pointer;' }
+        cls: 'snoopy-subject-card',
+        attr: { style: 'padding: 8px 10px; cursor: pointer; display: flex; align-items: center; gap: 8px;' }
       });
-      card.innerHTML = `
-        <span style="font-size: 1.2rem;">${subjectIcons[idx % subjectIcons.length]}</span>
-        <div style="overflow: hidden;">
-          <div style="font-size: 12.5px; font-weight: 600; color: var(--text-normal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${e.title || e.file.name}</div>
-          <div style="font-size: 10.5px; font-family: monospace; color: var(--text-muted);">${e.status || 'Ativo'}</div>
-        </div>
-      `;
+
+      const iconBox = card.createEl('div', { attr: { style: 'display: flex; align-items: center; justify-content: center; color: var(--interactive-accent, #60a5fa);' } });
+      if (ctx.renderIcon) ctx.renderIcon(iconBox, subjectIcons[idx % subjectIcons.length], { size: 18 });
+
+      const infoBox = card.createEl('div', { attr: { style: 'overflow: hidden;' } });
+      infoBox.createEl('div', { text: e.title || e.file.name, attr: { style: 'font-size: 15.5px; font-weight: 600; color: var(--text-normal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;' } });
+      infoBox.createEl('div', { text: e.status || 'Ativo', attr: { class: 'snoopy-meta', style: 'font-size: 13px;' } });
+
       card.addEventListener('click', () => app.workspace.openLinkText(e.file.path, "", false));
     });
 
@@ -134,19 +147,51 @@ return {
     // 2. COLUNA DIREITA: BOOKSHELF DE LEITURAS (ESTILO KOREADER)
     // =========================================================================
     const leiturasCol = showcaseGrid.createEl('div', { 
-      cls: 'abyssal-card-box', 
+      cls: 'snoopy-card-box', 
       attr: { style: 'display: flex; flex-direction: column; gap: 12px;' } 
     });
 
-    const leiturasHeader = leiturasCol.createEl('div', { 
-      attr: { style: 'display: flex; justify-content: space-between; align-items: center;' } 
+    // Cálculo sutil da ofensiva de leitura para lembrete
+    const dailyPagesLeitura = dv.pages('"01_Inbox/Diário"');
+    let streakLeitura = 0;
+    let pagsHoje = 0;
+    const mapaDiasLeitura = new Map();
+    dailyPagesLeitura.forEach(dp => {
+      const dName = dp.file ? dp.file.name : '';
+      if (/^\d{4}-\d{2}-\d{2}$/.test(dName)) {
+        const pags = Number(dp.paginas_lidas) || 0;
+        mapaDiasLeitura.set(dName, pags);
+        if (dName === todayStr) pagsHoje = pags;
+      }
     });
 
+    const shiftData = (dStr, delta) => {
+      const p = dStr.split('-').map(Number);
+      const d = new Date(p[0], p[1] - 1, p[2] + delta);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    };
+
+    let cursorStreak = (pagsHoje >= 20) ? todayStr : shiftData(todayStr, -1);
+    while (true) {
+      const p = mapaDiasLeitura.get(cursorStreak) || 0;
+      if (p >= 20) {
+        streakLeitura++;
+        cursorStreak = shiftData(cursorStreak, -1);
+      } else {
+        break;
+      }
+    }
+
+    const leiturasHeader = leiturasCol.createEl('div', { cls: 'snoopy-card-header' });
+
     leiturasHeader.innerHTML = `
-      <a id="link-painel-leituras" class="abyssal-section-title-link" title="Abrir pasta de leituras">
-        BOOKSHELF <span style="font-size: 11px; opacity: 0.6;">↗</span>
-      </a>
-      <button id="btn-buscar-livro-nuvem" class="abyssal-nav-pill-btn" style="padding: 2px 8px; font-size: 10.5px;" title="Buscar metadados de livro na nuvem via API">+ BUSCAR NA NUVEM</button>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <a id="link-painel-leituras" class="snoopy-section-title-link" title="Abrir pasta de leituras">
+          BOOKSHELF <span style="font-size: 14px; opacity: 0.6;">↗</span>
+        </a>
+        ${streakLeitura > 0 ? `<span class="snoopy-micro" style="padding: 1px 6px; border-radius: 4px; background: rgba(134, 239, 172, 0.1); color: #86efac; border: 1px solid rgba(134, 239, 172, 0.2); font-weight: 600;" title="${pagsHoje} págs lidas hoje">${streakLeitura}d ofensiva</span>` : ''}
+      </div>
+      <button id="btn-buscar-livro-nuvem" class="snoopy-nav-pill-btn snoopy-btn-sm" title="Buscar metadados de livro na nuvem via API">+ BUSCAR NA NUVEM</button>
     `;
 
     const linkPainelLeituras = leiturasHeader.querySelector('#link-painel-leituras');
@@ -165,7 +210,7 @@ return {
 
     if (listaLivros.length === 0) {
       const emptyShelf = leiturasCol.createEl('div', {
-        attr: { style: 'color: var(--text-muted); font-size: 12px; font-family: monospace; padding: 24px 0; text-align: center; width: 100%;' },
+        attr: { class: 'snoopy-meta', style: 'padding: 24px 0; text-align: center; width: 100%; font-size: 15px;' },
         text: 'Nenhum livro cadastrado. Use "+ BUSCAR NA NUVEM" para adicionar!'
       });
     } else {
@@ -189,20 +234,20 @@ return {
         <img src="${coverSrc}" style="width: 56px; height: 80px; border-radius: 4px; object-fit: cover; border: 1px solid var(--background-modifier-border); box-shadow: 0 2px 8px rgba(0,0,0,0.35);" onerror="this.src='https://images.pexels.com/photos/10254198/pexels-photo-10254198.jpeg';" />
         <div style="display: flex; flex-direction: column; gap: 3px; overflow: hidden;">
           <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 10px; font-family: monospace; color: var(--interactive-accent, #60a5fa); font-weight: 700; text-transform: uppercase;">▶ Lendo Agora</span>
-            <span class="prio-badge prio-media" style="font-size: 9.5px; padding: 1px 6px;">${pctL}%</span>
+            <span class="snoopy-micro" style="color: var(--interactive-accent, #60a5fa); font-weight: 700;">Lendo Agora</span>
+            <span class="prio-badge prio-media" style="font-size: 12px; padding: 1px 6px;">${pctL}%</span>
           </div>
-          <div style="font-size: 12.5px; font-weight: 700; color: var(--text-normal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+          <div style="font-size: 15.5px; font-weight: 700; color: var(--text-normal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
             ${livroLendo.title || livroLendo.file.name}
           </div>
-          <div style="font-size: 11px; font-style: italic; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+          <div style="font-size: 14px; font-style: italic; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
             ${livroLendo.author || 'Autor desconhecido'}
           </div>
           <div style="margin-top: 2px;">
-            <div class="abyssal-prog-track" style="height: 4px; width: 100%;">
-              <div class="abyssal-prog-fill" style="width: ${pctL}%; background: var(--text-normal);"></div>
+            <div class="snoopy-prog-track" style="height: 4px; width: 100%;">
+              <div class="snoopy-prog-fill" style="width: ${pctL}%; background: var(--text-normal);"></div>
             </div>
-            <div style="font-size: 9.5px; font-family: monospace; color: var(--text-muted); margin-top: 2px;">
+            <div class="snoopy-meta" style="font-size: 12px; margin-top: 2px;">
               ${curL}/${totL} págs • restam ${paginasRest} págs
             </div>
           </div>
@@ -213,24 +258,24 @@ return {
       const outrosLivros = listaLivros.filter(l => l.file.path !== livroLendo.file.path).slice(0, 4);
       if (outrosLivros.length > 0) {
         const shelf = leiturasCol.createEl('div', { 
-          cls: 'abyssal-books-shelf',
+          cls: 'snoopy-books-shelf',
           attr: { style: 'display: flex; gap: 10px; overflow-x: auto; padding-top: 2px;' }
         });
 
         outrosLivros.forEach(b => {
           const item = shelf.createEl('div', { 
-            cls: 'abyssal-book-item',
+            cls: 'snoopy-book-item',
             attr: { style: 'width: 58px; flex-shrink: 0; cursor: pointer;' }
           });
           item.addEventListener('click', () => app.workspace.openLinkText(b.file.path, "", false));
 
-          const bImg = item.createEl('img', { cls: 'abyssal-book-cover', attr: { style: 'width: 58px; height: 84px; border-radius: 4px; object-fit: cover; border: 1px solid var(--background-modifier-border);' } });
+          const bImg = item.createEl('img', { cls: 'snoopy-book-cover', attr: { style: 'width: 58px; height: 84px; border-radius: 4px; object-fit: cover; border: 1px solid var(--background-modifier-border);' } });
           bImg.src = b.cover || "https://images.pexels.com/photos/10254198/pexels-photo-10254198.jpeg";
           bImg.onerror = () => { bImg.src = "https://images.pexels.com/photos/10254198/pexels-photo-10254198.jpeg"; };
 
           item.createEl('div', { 
             text: b.title || b.file.name, 
-            attr: { style: 'font-size: 10px; font-weight: 600; color: var(--text-normal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; margin-top: 3px;' } 
+            attr: { style: 'font-size: 12.5px; font-weight: 600; color: var(--text-normal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; margin-top: 3px;' } 
           });
         });
       }
@@ -240,135 +285,119 @@ return {
     // 3. MODAL DE BUSCA DE LIVROS NA NUVEM VIA API (KO-READER ASSISTANT)
     // =========================================================================
     function abrirModalBuscaLivro() {
-      const modalBg = document.createElement('div');
-      modalBg.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;';
-      
-      const modalBox = document.createElement('div');
-      modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 480px; width: 100%; max-height: 85vh; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 12px; font-family: sans-serif;';
-      
-      modalBox.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span style="font-size: 14px; font-weight: bold; color: #ffffff;">Buscar Livro no Bookshelf</span>
-          <button id="modal-close-book" style="background: none; border: none; color: #71717a; cursor: pointer; font-size: 14px;">✕</button>
-        </div>
-        <div style="font-size: 11px; font-family: monospace; color: #a1a1aa;">Digite o título ou autor (busca online via Open Library):</div>
-        
-        <div style="display: flex; gap: 8px;">
-          <input id="modal-book-search-input" type="text" placeholder="Ex: Hábitos Atômicos, Clean Code..." style="flex: 1; background: #181824; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 8px; color: #ffffff; font-size: 12px; outline: none;">
-          <button id="modal-book-search-btn" class="abyssal-btn-primary" style="font-size: 11px; padding: 6px 14px;">Buscar</button>
-        </div>
+      if (ctx.ModalFactory) {
+        ctx.ModalFactory.abrir({
+          maxWidth: '480px',
+          htmlContent: `
+            <div class="snoopy-card-header">
+              <span class="snoopy-section-title">Buscar Livro no Bookshelf</span>
+              <button class="snoopy-modal-close" title="Fechar">✕</button>
+            </div>
+            <div class="snoopy-modal-label">Digite o título ou autor (busca online via Open Library):</div>
+            
+            <div class="snoopy-toolbar">
+              <input id="modal-book-search-input" class="snoopy-form-input" type="text" placeholder="Ex: Hábitos Atômicos, Clean Code..." style="flex: 1;">
+              <button id="modal-book-search-btn" class="snoopy-btn-primary snoopy-btn-sm">Buscar</button>
+            </div>
 
-        <div id="modal-book-results" style="max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-top: 4px; padding-right: 4px;">
-          <div style="font-size: 11.5px; font-family: monospace; color: #71717a; text-align: center; padding: 20px 0;">Digite o termo e clique em "Buscar".</div>
-        </div>
-      `;
-      
-      modalBg.appendChild(modalBox);
-      document.body.appendChild(modalBg);
-      
-      const fechar = () => {
-        if (modalBg.parentNode) document.body.removeChild(modalBg);
-      };
+            <div id="modal-book-results" style="max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-top: 4px; padding-right: 4px;">
+              <div class="snoopy-meta" style="text-align: center; padding: 20px 0;">Digite o termo e clique em "Buscar".</div>
+            </div>
+          `,
+          onMontar: (box, fechar) => {
+            const inputSearch = box.querySelector('#modal-book-search-input');
+            const btnSearch = box.querySelector('#modal-book-search-btn');
+            const resultsContainer = box.querySelector('#modal-book-results');
 
-      modalBg.addEventListener('click', (e) => {
-        if (e.target === modalBg) fechar();
-      });
-      
-      const closeBtn = modalBox.querySelector('#modal-close-book');
-      if (closeBtn) closeBtn.addEventListener('click', fechar);
+            async function executarBusca() {
+              const query = inputSearch ? inputSearch.value.trim() : '';
+              if (!query) return;
 
-      const inputSearch = modalBox.querySelector('#modal-book-search-input');
-      const btnSearch = modalBox.querySelector('#modal-book-search-btn');
-      const resultsContainer = modalBox.querySelector('#modal-book-results');
+              resultsContainer.innerHTML = '<div class="snoopy-meta" style="text-align: center; padding: 20px 0;">Consultando acervo na nuvem...</div>';
 
-      async function executarBusca() {
-        const query = inputSearch ? inputSearch.value.trim() : '';
-        if (!query) return;
+              try {
+                const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=5`;
+                const res = await fetch(url);
+                const data = await res.json();
 
-        resultsContainer.innerHTML = '<div style="font-size: 11.5px; font-family: monospace; color: #a1a1aa; text-align: center; padding: 20px 0;">🔍 Consultando acervo na nuvem...</div>';
+                if (!data.docs || data.docs.length === 0) {
+                  resultsContainer.innerHTML = '<div class="snoopy-meta" style="color: #fca5a5; text-align: center; padding: 20px 0;">Nenhum livro encontrado para essa busca.</div>';
+                  return;
+                }
 
-        try {
-          // Busca na Open Library API
-          const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=5`;
-          const res = await fetch(url);
-          const data = await res.json();
+                resultsContainer.innerHTML = '';
+                data.docs.forEach(doc => {
+                  const titulo = doc.title || 'Sem título';
+                  const autor = doc.author_name ? doc.author_name.join(', ') : 'Autor desconhecido';
+                  const paginas = doc.number_of_pages_median || 250;
+                  const ano = doc.first_publish_year || '';
+                  const coverId = doc.cover_i;
+                  const coverUrl = coverId ? `https://covers.openlibrary.org/b/id/${coverId}-M.jpg` : 'https://images.pexels.com/photos/10254198/pexels-photo-10254198.jpeg';
 
-          if (!data.docs || data.docs.length === 0) {
-            resultsContainer.innerHTML = '<div style="font-size: 11.5px; font-family: monospace; color: #fca5a5; text-align: center; padding: 20px 0;">Nenhum livro encontrado para essa busca.</div>';
-            return;
-          }
+                  const itemCard = resultsContainer.createEl('div', {
+                    attr: {
+                      style: 'display: flex; gap: 10px; align-items: center; background: #181824; border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 8px; cursor: pointer; transition: background 0.12s ease;'
+                    }
+                  });
 
-          resultsContainer.innerHTML = '';
-          data.docs.forEach(doc => {
-            const titulo = doc.title || 'Sem título';
-            const autor = doc.author_name ? doc.author_name.join(', ') : 'Autor desconhecido';
-            const paginas = doc.number_of_pages_median || 250;
-            const ano = doc.first_publish_year || '';
-            const coverId = doc.cover_i;
-            const coverUrl = coverId ? `https://covers.openlibrary.org/b/id/${coverId}-M.jpg` : 'https://images.pexels.com/photos/10254198/pexels-photo-10254198.jpeg';
+                  itemCard.innerHTML = `
+                    <img src="${coverUrl}" style="width: 38px; height: 56px; border-radius: 4px; object-fit: cover; flex-shrink: 0;" />
+                    <div style="flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 2px;">
+                      <span style="font-size: 15.5px; font-weight: 700; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${titulo}</span>
+                      <span style="font-size: 14px; color: #a1a1aa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${autor}</span>
+                      <span class="snoopy-micro" style="color: #71717a;">${paginas} páginas ${ano ? `• ${ano}` : ''}</span>
+                    </div>
+                    <button class="snoopy-btn-action snoopy-btn-sm" style="flex-shrink: 0;">Salvar +</button>
+                  `;
 
-            const itemCard = resultsContainer.createEl('div', {
-              attr: {
-                style: 'display: flex; gap: 10px; align-items: center; background: #181824; border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 8px; cursor: pointer; transition: background 0.12s ease;'
+                  itemCard.addEventListener('click', async () => {
+                    const cleanTitle = titulo.replace(/[\\/:*?"<>|]/g, '-').trim();
+                    const targetPath = `04_Leituras/Livros/${cleanTitle}.md`;
+                    
+                    if (!app.vault.getAbstractFileByPath("04_Leituras/Livros")) {
+                      await app.vault.createFolder("04_Leituras/Livros").catch(() => {});
+                    }
+
+                    const tplFile = app.vault.getAbstractFileByPath("99_Meta/Templates/Template - Livro.md");
+                    let content = "";
+                    if (tplFile) {
+                      const raw = await app.vault.read(tplFile);
+                      content = raw.replace(/{{title}}/g, cleanTitle)
+                                   .replace(/{{author}}/g, autor)
+                                   .replace(/{{category}}/g, "Geral")
+                                   .replace(/{{publisher}}/g, "")
+                                   .replace(/{{publishDate}}/g, String(ano))
+                                   .replace(/{{totalPage}}/g, String(paginas))
+                                   .replace(/{{coverUrl}}/g, coverUrl)
+                                   .replace(/{{description}}/g, `Livro cadastrado automaticamente via busca na nuvem (Open Library).`);
+                    } else {
+                      content = `---\ntitle: "${cleanTitle}"\nauthor: "${autor}"\ntotal_pages: ${paginas}\ncurrent_page: 0\nstatus: "Quero ler"\ncover: "${coverUrl}"\ntags: [leitura, livro]\n---\n\n# ${cleanTitle}\n\n`;
+                    }
+
+                    const newFile = await app.vault.create(targetPath, content);
+                    new Notice(`Livro "${cleanTitle}" adicionado à estante!`);
+                    fechar();
+                    await app.workspace.openLinkText(newFile.path, "", false);
+                  });
+                });
+
+              } catch(err) {
+                resultsContainer.innerHTML = `<div class="snoopy-meta" style="color: #fca5a5; text-align: center; padding: 20px 0;">Erro ao consultar nuvem: ${err.message || 'Verifique a conexão'}.</div>`;
               }
-            });
+            }
 
-            itemCard.innerHTML = `
-              <img src="${coverUrl}" style="width: 38px; height: 56px; border-radius: 4px; object-fit: cover; flex-shrink: 0;" />
-              <div style="flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 2px;">
-                <span style="font-size: 12.5px; font-weight: 700; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${titulo}</span>
-                <span style="font-size: 11px; color: #a1a1aa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${autor}</span>
-                <span style="font-size: 10px; font-family: monospace; color: #71717a;">${paginas} páginas ${ano ? `• ${ano}` : ''}</span>
-              </div>
-              <button class="abyssal-btn-action" style="font-size: 10px; padding: 4px 8px; flex-shrink: 0;">Salvar +</button>
-            `;
-
-            itemCard.addEventListener('click', async () => {
-              // Cadastra o livro em 04_Leituras/Livros
-              const cleanTitle = titulo.replace(/[\\/:*?"<>|]/g, '-').trim();
-              const targetPath = `04_Leituras/Livros/${cleanTitle}.md`;
-              
-              if (!app.vault.getAbstractFileByPath("04_Leituras/Livros")) {
-                await app.vault.createFolder("04_Leituras/Livros").catch(() => {});
-              }
-
-              const tplFile = app.vault.getAbstractFileByPath("99_Meta/Templates/Template - Livro.md");
-              let content = "";
-              if (tplFile) {
-                const raw = await app.vault.read(tplFile);
-                content = raw.replace(/{{title}}/g, cleanTitle)
-                             .replace(/{{author}}/g, autor)
-                             .replace(/{{category}}/g, "Geral")
-                             .replace(/{{publisher}}/g, "")
-                             .replace(/{{publishDate}}/g, String(ano))
-                             .replace(/{{totalPage}}/g, String(paginas))
-                             .replace(/{{coverUrl}}/g, coverUrl)
-                             .replace(/{{description}}/g, `Livro cadastrado automaticamente via busca na nuvem (Open Library).`);
-              } else {
-                content = `---\ntitle: "${cleanTitle}"\nauthor: "${autor}"\ntotal_pages: ${paginas}\ncurrent_page: 0\nstatus: "Quero ler"\ncover: "${coverUrl}"\ntags: [leitura, livro]\n---\n\n# ${cleanTitle}\n\n`;
-              }
-
-              const newFile = await app.vault.create(targetPath, content);
-              new Notice(`📖 Livro "${cleanTitle}" adicionado à estante!`);
-              fechar();
-              await app.workspace.openLinkText(newFile.path, "", false);
-            });
-          });
-
-        } catch(err) {
-          resultsContainer.innerHTML = `<div style="font-size: 11.5px; font-family: monospace; color: #fca5a5; text-align: center; padding: 20px 0;">Erro ao consultar nuvem: ${err.message || 'Verifique a conexão'}.</div>`;
-        }
-      }
-
-      if (btnSearch) btnSearch.addEventListener('click', executarBusca);
-      if (inputSearch) {
-        inputSearch.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            executarBusca();
+            if (btnSearch) btnSearch.addEventListener('click', executarBusca);
+            if (inputSearch) {
+              inputSearch.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  executarBusca();
+                }
+              });
+              setTimeout(() => inputSearch.focus(), 50);
+            }
           }
         });
-        setTimeout(() => inputSearch.focus(), 50);
       }
     }
 

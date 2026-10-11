@@ -4,7 +4,7 @@ tempo_pausa_curta: 5
 tempo_pausa_longa: 15
 meta_ciclos_diarios: 4
 banner_imagem: "99_Meta/Attachments/snoopy_panoramic.jpg"
-tema_preset: "abyssal"
+tema_preset: "snoopy"
 modulos_ativos:
   - snoopy_banner_cabecalho
   - snoopy_cockpit_pomodoro
@@ -30,7 +30,7 @@ Todas as opções podem ser configuradas no painel **Propriedades** (na barra la
 
 ### 🎨 Personalização Visual
 - **`banner_imagem`**: Imagem exibida no topo do painel principal (padrão: `99_Meta/Attachments/snoopy_panoramic.jpg`).
-- **`tema_preset`**: Preset de estilo visual aplicado (opções: `abyssal`, `snoopy_classico`, `lavanda`, `floresta`).
+- **`tema_preset`**: Preset de estilo visual aplicado (opções: `snoopy`, `snoopy_classico`, `lavanda`, `floresta`).
 
 ---
 

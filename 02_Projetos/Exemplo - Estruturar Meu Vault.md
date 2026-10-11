@@ -17,13 +17,13 @@ tags:
 
 ## 🧭 Objetivo & Escopo
 - **Por que este projeto existe?** Configurar um ambiente estético, produtivo e sem atrito para organizar estudos, leituras e tarefas.
-- **Critério de Sucesso:** Ter o Abyssal Dashboard funcionando com Kanban de projetos, busca de livros e modelos prontos.
+- **Critério de Sucesso:** Ter o Snoopy Dashboard funcionando com Kanban de projetos, busca de livros e modelos prontos.
 
 ---
 
 ## 📋 Lista de Entregas & Tarefas
 - [x] Criar estrutura de pastas numeradas 📅 2026-10-03
-- [x] Instalar utilidades e validar o Abyssal Dashboard 📅 2026-10-03
+- [x] Instalar utilidades e validar o Snoopy Dashboard 📅 2026-10-03
 - [x] Personalizar estilos visuais no snippet do tema (Configurações > Aparência > Snippets de CSS)
 - [x] Testar a busca de um livro com o Book Search (`Ctrl + P` > Book Search)
 - [x] Criar a primeira anotação de estudos em `03_Estudos/`
