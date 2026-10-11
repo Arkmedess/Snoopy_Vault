@@ -11,6 +11,8 @@ rating: 0
 started: 
 finished: 
 cover: "{{coverUrl}}"
+description: "{{description}}"
+estudos_vinculados: []
 tags:
   - leitura
   - livro
@@ -23,6 +25,11 @@ tags:
 
 ## 📌 Sinopse & Visão Geral
 {{description}}
+
+---
+
+## 🔗 Estudos & Disciplinas Vinculadas
+- 
 
 ---
 
@@ -43,4 +50,3 @@ tags:
 ---
 
 [[00_Home/Home|← Voltar ao Painel Principal]]
-

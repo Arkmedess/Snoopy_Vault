@@ -1,518 +1,447 @@
 /**
- * Snoopy Vault - Subdashboard Especializado de Leituras
- * Fiel à interface do Bookshelf do KOReader (AndyHazz/bookshelf.koplugin):
- * - Hero Card no topo com capa 3D, autor em itálico, sinopse, progresso e páginas restantes
- * - Barra de navegação e-reader: Todos, Lendo, Quero Ler, Lidos e Busca na Nuvem
- * - The Shelf Grid: capas proporcionais com marcadores de fita (ribbon) e barras embutidas
- * - Atualização rápida de páginas lidas e busca de metadados na nuvem
+ * Snoopy Vault - Orquestrador do Bookshelf (Subdashboard de Leituras)
+ * Implementa o Reading Studio Completo com Ecossistema Central do Snoopy:
+ * - ModuleLoader com Cache V8 por mtime
+ * - Lifecycle seguro contra vazamento de memória DOM
+ * - Microsserviços: UIKit, DateUtils, VaultStore, ModalFactory, renderIcon Lucide
+ * - Histórico de 30 Dias e Ofensiva unificada de Leitura
+ * - Dual Workspace: A Estante (The Shelf Grid) + Reader Companion em Abas
+ *
+ * @module subdashboards/leituras/view
  */
 
-const root = dv.container.createEl('div', { cls: 'abyssal-container' });
-
-// ---------------------------------------------------------------------------
-// 1. CARREGAMENTO DOS LIVROS DO VAULT
-// ---------------------------------------------------------------------------
-const rawLivros = dv.pages('"04_Leituras/Livros"')
-  .where(l => l.file && !l.file.name.includes("Template"))
-  .sort(l => l.file.mtime, 'desc');
-
-const listaLivros = [...rawLivros];
-
-let abaAtiva = 'todos'; // 'todos' | 'lendo' | 'quero_ler' | 'lidos'
-let livroSelecionadoPath = listaLivros.length > 0 ? listaLivros[0].file.path : null;
-
-// Encontra o livro prioritário para o Hero Box (preferencialmente um que esteja "Lendo")
-const livroLendo = listaLivros.find(l => String(l.status).toLowerCase().includes('lendo'));
-if (livroLendo) {
-  livroSelecionadoPath = livroLendo.file.path;
-}
-
-// ---------------------------------------------------------------------------
-// 2. MODAIS AUXILIARES (ATUALIZAR PÁGINAS & BUSCAR NA NUVEM)
-// ---------------------------------------------------------------------------
-
-// Modal de Atualização de Páginas Lidas
-function abrirModalProgresso(livro) {
-  const modalBg = document.createElement('div');
-  modalBg.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;';
-  
-  const modalBox = document.createElement('div');
-  modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 380px; width: 100%; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 12px; font-family: sans-serif;';
-
-  const curPag = Number(livro.current_page) || 0;
-  const totPag = Number(livro.total_pages) || 100;
-
-  modalBox.innerHTML = `
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <span style="font-size: 14px; font-weight: bold; color: #ffffff;">Atualizar Progresso</span>
-      <button id="modal-close-prog" style="background: none; border: none; color: #71717a; cursor: pointer; font-size: 14px;">✕</button>
-    </div>
-    <div style="font-size: 12px; color: #a1a1aa;">${livro.title || livro.file.name}</div>
-
-    <div style="display: flex; gap: 8px;">
-      <div style="flex: 1;">
-        <div style="font-size: 11px; font-family: monospace; color: #a1a1aa; margin-bottom: 4px;">Página Atual:</div>
-        <input id="modal-prog-cur" type="number" min="0" max="${totPag}" value="${curPag}" style="width: 100%; background: #181824; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 6px; color: #ffffff; font-size: 11.5px; outline: none;">
-      </div>
-      <div style="flex: 1;">
-        <div style="font-size: 11px; font-family: monospace; color: #a1a1aa; margin-bottom: 4px;">Total de Páginas:</div>
-        <input id="modal-prog-tot" type="number" min="1" value="${totPag}" style="width: 100%; background: #181824; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 6px; color: #ffffff; font-size: 11.5px; outline: none;">
-      </div>
-    </div>
-
-    <div>
-      <div style="font-size: 11px; font-family: monospace; color: #a1a1aa; margin-bottom: 4px;">Status da Leitura:</div>
-      <select id="modal-prog-status" style="width: 100%; background: #181824; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 6px; color: #ffffff; font-size: 11.5px; outline: none;">
-        <option value="Lendo" ${livro.status === 'Lendo' ? 'selected' : ''}>Lendo</option>
-        <option value="Quero ler" ${livro.status === 'Quero ler' ? 'selected' : ''}>Quero ler</option>
-        <option value="Lido" ${livro.status === 'Lido' ? 'selected' : ''}>Lido (Concluído)</option>
-        <option value="Pausado" ${livro.status === 'Pausado' ? 'selected' : ''}>Pausado</option>
-      </select>
-    </div>
-
-    <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px;">
-      <button id="modal-cancel-prog" class="abyssal-btn-action" style="font-size: 11px;">Cancelar</button>
-      <button id="modal-save-prog" class="abyssal-btn-primary" style="font-size: 11px;">Salvar Progresso</button>
-    </div>
-  `;
-
-  modalBg.appendChild(modalBox);
-  document.body.appendChild(modalBg);
-
-  const fechar = () => { if (modalBg.parentNode) document.body.removeChild(modalBg); };
-  modalBg.addEventListener('click', (e) => { if (e.target === modalBg) fechar(); });
-  modalBox.querySelector('#modal-close-prog').onclick = fechar;
-  modalBox.querySelector('#modal-cancel-prog').onclick = fechar;
-
-  modalBox.querySelector('#modal-save-prog').onclick = async () => {
-    const novoCur = parseInt(modalBox.querySelector('#modal-prog-cur').value, 10) || 0;
-    const novoTot = parseInt(modalBox.querySelector('#modal-prog-tot').value, 10) || totPag;
-    const novoStatus = modalBox.querySelector('#modal-prog-status').value;
-
-    const file = app.vault.getAbstractFileByPath(livro.file.path);
-    if (file) {
-      const raw = await app.vault.read(file);
-      let updated = raw;
-
-      if (/current_page:\s*\d+/.test(updated)) {
-        updated = updated.replace(/current_page:\s*\d+/, `current_page: ${novoCur}`);
-      } else if (updated.startsWith('---')) {
-        updated = updated.replace(/^---\n/, `---\ncurrent_page: ${novoCur}\n`);
-      }
-
-      if (/total_pages:\s*\d+/.test(updated)) {
-        updated = updated.replace(/total_pages:\s*\d+/, `total_pages: ${novoTot}`);
-      }
-
-      if (/status:\s*["'][^"']+["']/.test(updated)) {
-        updated = updated.replace(/status:\s*["'][^"']+["']/, `status: "${novoStatus}"`);
-      }
-
-      // Se atingiu o total de páginas, marca automaticamente como Lido
-      if (novoCur >= novoTot && novoStatus !== 'Lido') {
-        updated = updated.replace(/status:\s*["'][^"']+["']/, `status: "Lido"`);
-      }
-
-      await app.vault.modify(file, updated);
-      new Notice(`📖 Progresso atualizado: ${novoCur}/${novoTot} págs (${Math.round((novoCur/novoTot)*100)}%)`);
-      fechar();
-      renderBookshelfCompleto();
+(async () => {
+  // Carregamento dinâmico do ModuleLoader central
+  let ModuleLoader = null;
+  try {
+    const _mlFile = app.vault.getAbstractFileByPath("99_Meta/Snoopy/core/module_loader.js");
+    if (_mlFile) {
+      const _mlCode = await app.vault.read(_mlFile);
+      ModuleLoader = (new Function(_mlCode))();
     }
-  };
-}
-
-// Modal de Busca na Nuvem (Open Library API)
-function abrirModalBuscaNuvem() {
-  const modalBg = document.createElement('div');
-  modalBg.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;';
-  
-  const modalBox = document.createElement('div');
-  modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 480px; width: 100%; max-height: 85vh; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 12px; font-family: sans-serif;';
-  
-  modalBox.innerHTML = `
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <span style="font-size: 14px; font-weight: bold; color: #ffffff;">Buscar Livro no Bookshelf</span>
-      <button id="modal-close-search" style="background: none; border: none; color: #71717a; cursor: pointer; font-size: 14px;">✕</button>
-    </div>
-    <div style="font-size: 11px; font-family: monospace; color: #a1a1aa;">Digite o título ou autor (busca online Open Library):</div>
-    
-    <div style="display: flex; gap: 8px;">
-      <input id="modal-search-input" type="text" placeholder="Ex: Hábitos Atômicos, Clean Code..." style="flex: 1; background: #181824; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 8px; color: #ffffff; font-size: 12px; outline: none;">
-      <button id="modal-search-btn" class="abyssal-btn-primary" style="font-size: 11px; padding: 6px 14px;">Buscar</button>
-    </div>
-
-    <div id="modal-search-results" style="max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-top: 4px; padding-right: 4px;">
-      <div style="font-size: 11.5px; font-family: monospace; color: #71717a; text-align: center; padding: 20px 0;">Digite o termo e clique em "Buscar".</div>
-    </div>
-  `;
-  
-  modalBg.appendChild(modalBox);
-  document.body.appendChild(modalBg);
-  
-  const fechar = () => { if (modalBg.parentNode) document.body.removeChild(modalBg); };
-  modalBg.addEventListener('click', (e) => { if (e.target === modalBg) fechar(); });
-  modalBox.querySelector('#modal-close-search').onclick = fechar;
-
-  const inputSearch = modalBox.querySelector('#modal-search-input');
-  const btnSearch = modalBox.querySelector('#modal-search-btn');
-  const resultsContainer = modalBox.querySelector('#modal-search-results');
-
-  async function executarBusca() {
-    const query = inputSearch ? inputSearch.value.trim() : '';
-    if (!query) return;
-
-    resultsContainer.innerHTML = '<div style="font-size: 11.5px; font-family: monospace; color: #a1a1aa; text-align: center; padding: 20px 0;">🔍 Consultando acervo na nuvem...</div>';
-
-    try {
-      const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=5`;
-      const res = await fetch(url);
-      const data = await res.json();
-
-      if (!data.docs || data.docs.length === 0) {
-        resultsContainer.innerHTML = '<div style="font-size: 11.5px; font-family: monospace; color: #fca5a5; text-align: center; padding: 20px 0;">Nenhum livro encontrado para essa busca.</div>';
-        return;
-      }
-
-      resultsContainer.innerHTML = '';
-      data.docs.forEach(doc => {
-        const titulo = doc.title || 'Sem título';
-        const autor = doc.author_name ? doc.author_name.join(', ') : 'Autor desconhecido';
-        const paginas = doc.number_of_pages_median || 250;
-        const ano = doc.first_publish_year || '';
-        const coverId = doc.cover_i;
-        const coverUrl = coverId ? `https://covers.openlibrary.org/b/id/${coverId}-M.jpg` : 'https://images.pexels.com/photos/10254198/pexels-photo-10254198.jpeg';
-
-        const itemCard = resultsContainer.createEl('div', {
-          attr: {
-            style: 'display: flex; gap: 10px; align-items: center; background: #181824; border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 8px; cursor: pointer; transition: background 0.12s ease;'
-          }
-        });
-
-        itemCard.innerHTML = `
-          <img src="${coverUrl}" style="width: 38px; height: 56px; border-radius: 4px; object-fit: cover; flex-shrink: 0;" />
-          <div style="flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 2px;">
-            <span style="font-size: 12.5px; font-weight: 700; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${titulo}</span>
-            <span style="font-size: 11px; color: #a1a1aa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${autor}</span>
-            <span style="font-size: 10px; font-family: monospace; color: #71717a;">${paginas} páginas ${ano ? `• ${ano}` : ''}</span>
-          </div>
-          <button class="abyssal-btn-action" style="font-size: 10px; padding: 4px 8px; flex-shrink: 0;">Salvar +</button>
-        `;
-
-        itemCard.addEventListener('click', async () => {
-          const cleanTitle = titulo.replace(/[\\/:*?"<>|]/g, '-').trim();
-          const targetPath = `04_Leituras/Livros/${cleanTitle}.md`;
-          
-          if (!app.vault.getAbstractFileByPath("04_Leituras/Livros")) {
-            await app.vault.createFolder("04_Leituras/Livros").catch(() => {});
-          }
-
-          const tplFile = app.vault.getAbstractFileByPath("99_Meta/Templates/Template - Livro.md");
-          let content = "";
-          if (tplFile) {
-            const raw = await app.vault.read(tplFile);
-            content = raw.replace(/{{title}}/g, cleanTitle)
-                         .replace(/{{author}}/g, autor)
-                         .replace(/{{category}}/g, "Geral")
-                         .replace(/{{publisher}}/g, "")
-                         .replace(/{{publishDate}}/g, String(ano))
-                         .replace(/{{totalPage}}/g, String(paginas))
-                         .replace(/{{coverUrl}}/g, coverUrl)
-                         .replace(/{{description}}/g, `Livro cadastrado automaticamente via busca na nuvem (Open Library).`);
-          } else {
-            content = `---\ntitle: "${cleanTitle}"\nauthor: "${autor}"\ntotal_pages: ${paginas}\ncurrent_page: 0\nstatus: "Quero ler"\ncover: "${coverUrl}"\ntags: [leitura, livro]\n---\n\n# ${cleanTitle}\n\n`;
-          }
-
-          const newFile = await app.vault.create(targetPath, content);
-          new Notice(`📖 Livro "${cleanTitle}" adicionado à estante!`);
-          fechar();
-          livroSelecionadoPath = newFile.path;
-          renderBookshelfCompleto();
-        });
-      });
-
-    } catch(err) {
-      resultsContainer.innerHTML = `<div style="font-size: 11.5px; font-family: monospace; color: #fca5a5; text-align: center; padding: 20px 0;">Erro ao consultar nuvem: ${err.message || 'Verifique a conexão'}.</div>`;
-    }
+  } catch (e) {
+    console.warn("[Snoopy Leituras] Falha ao carregar core/module_loader.js:", e);
   }
 
-  if (btnSearch) btnSearch.onclick = executarBusca;
-  if (inputSearch) {
-    inputSearch.onkeydown = (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        executarBusca();
+  if (!ModuleLoader) {
+    ModuleLoader = class {
+      static async carregar(app, path) {
+        const f = app.vault.getAbstractFileByPath ? app.vault.getAbstractFileByPath(path) : null;
+        if (!f) return null;
+        const c = await app.vault.read(f);
+        return (new Function(c))();
       }
     };
-    setTimeout(() => inputSearch.focus(), 50);
-  }
-}
-
-// ---------------------------------------------------------------------------
-// 3. RENDERIZAÇÃO PRINCIPAL DO BOOKSHELF KOREADER (PRINT 4)
-// ---------------------------------------------------------------------------
-function renderBookshelfCompleto() {
-  root.innerHTML = '';
-
-  // 3.1. CABEÇALHO SUPERIOR (COM VOLTAR AO HOME E BUSCA)
-  const topNav = root.createEl('div', {
-    attr: { style: 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 12px 18px; background: var(--background-secondary); border: 1px solid var(--background-modifier-border); border-radius: 10px; flex-wrap: wrap; gap: 12px;' }
-  });
-
-  topNav.innerHTML = `
-    <div style="display: flex; align-items: center; gap: 12px;">
-      <button id="btn-back-home" class="abyssal-btn-action" style="font-size: 11px; padding: 4px 10px;">← HOME</button>
-      <div>
-        <div style="font-size: 15px; font-weight: 700; color: var(--text-normal); text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px;">
-          BOOKSHELF
-        </div>
-        <div style="font-size: 11px; font-family: monospace; color: var(--text-muted);">${listaLivros.length} livros no acervo</div>
-      </div>
-    </div>
-
-    <div style="display: flex; align-items: center; gap: 8px;">
-      <button id="btn-add-nuvem" class="abyssal-btn-primary" style="font-size: 11px; padding: 4px 12px;">+ BUSCAR NA NUVEM</button>
-    </div>
-  `;
-
-  topNav.querySelector('#btn-back-home').onclick = () => app.workspace.openLinkText("00_Home/Home.md", "", false);
-  topNav.querySelector('#btn-add-nuvem').onclick = abrirModalBuscaNuvem;
-
-  // 3.2. HERO CARD: DESTAQUE DO LIVRO NO TOPO (EXATAMENTE COMO O PRINT 4)
-  const livroDestaque = listaLivros.find(l => l.file.path === livroSelecionadoPath) || listaLivros[0];
-
-  if (livroDestaque) {
-    const cur = Number(livroDestaque.current_page) || 0;
-    const tot = Number(livroDestaque.total_pages) || 100;
-    const pct = tot > 0 ? Math.round((cur / tot) * 100) : 0;
-    const paginasRestantes = Math.max(0, tot - cur);
-    // Estimativa KOReader: ~1.5 min por página
-    const horasRestantes = (paginasRestantes * 1.5 / 60).toFixed(1);
-
-    const heroBox = root.createEl('div', {
-      attr: {
-        style: 'background: var(--background-secondary-alt); border: 1px solid var(--background-modifier-border); border-radius: 12px; padding: 20px; margin-bottom: 20px; display: grid; grid-template-columns: 140px 1fr; gap: 22px; align-items: start;'
-      }
-    });
-
-    // Coluna Esquerda: Capa 3D com perspectiva
-    const heroLeft = heroBox.createEl('div', { attr: { style: 'position: relative;' } });
-    const heroImg = heroLeft.createEl('img', {
-      attr: {
-        style: 'width: 140px; height: 204px; border-radius: 6px; object-fit: cover; box-shadow: -4px 6px 18px rgba(0,0,0,0.45); border: 1px solid var(--background-modifier-border);'
-      }
-    });
-    heroImg.src = livroDestaque.cover || "https://images.pexels.com/photos/10254198/pexels-photo-10254198.jpeg";
-    heroImg.onerror = () => { heroImg.src = "https://images.pexels.com/photos/10254198/pexels-photo-10254198.jpeg"; };
-
-    // Coluna Direita: Informações Editoriais Estilo KOReader
-    const heroRight = heroBox.createEl('div', { attr: { style: 'display: flex; flex-direction: column; gap: 8px;' } });
-    
-    // Título e Autor
-    heroRight.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;">
-        <div>
-          <div style="font-size: 20px; font-weight: 800; color: var(--text-normal); line-height: 1.25; letter-spacing: -0.01em;">
-            ${livroDestaque.title || livroDestaque.file.name}
-          </div>
-          <div style="font-size: 13.5px; font-style: italic; color: var(--text-muted); margin-top: 3px;">
-            ${livroDestaque.author || 'Autor desconhecido'}
-          </div>
-        </div>
-        <span class="prio-badge prio-media" style="font-size: 10.5px; padding: 2px 7px;">
-          ${livroDestaque.status || 'Quero ler'}
-        </span>
-      </div>
-
-      <!-- Sinopse / Blurb Editorial -->
-      <div style="font-size: 12.5px; color: var(--text-muted); line-height: 1.5; max-height: 72px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; margin-top: 4px;">
-        ${livroDestaque.description || 'Sinopse editorial não informada. Clique em "Abrir Nota" para preencher suas lições e notas de leitura.'}
-      </div>
-
-      <!-- Barra de Progresso Estilo KOReader -->
-      <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 4px;">
-        <div style="display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; font-family: monospace;">
-          <span style="font-weight: 800; color: var(--text-normal); font-size: 14px;">${pct}%</span>
-          <span style="color: var(--text-muted);">${cur}/${tot} páginas • Restam ~${horasRestantes}h (${paginasRestantes} págs)</span>
-        </div>
-        <div class="abyssal-prog-track" style="height: 7px; width: 100%; border-radius: 99px;">
-          <div class="abyssal-prog-fill" style="width: ${pct}%; background: var(--text-normal); border-radius: 99px;"></div>
-        </div>
-      </div>
-
-      <!-- Ações do Livro -->
-      <div style="display: flex; gap: 10px; margin-top: 8px;">
-        <button id="btn-hero-open" class="abyssal-btn-primary" style="font-size: 11.5px; padding: 6px 14px;">▶ Continuar Lendo / Abrir</button>
-        <button id="btn-hero-prog" class="abyssal-btn-action" style="font-size: 11.5px; padding: 6px 12px;">✏️ Atualizar Página</button>
-      </div>
-    `;
-
-    heroRight.querySelector('#btn-hero-open').onclick = () => app.workspace.openLinkText(livroDestaque.file.path, "", false);
-    heroRight.querySelector('#btn-hero-prog').onclick = () => abrirModalProgresso(livroDestaque);
   }
 
-  // 3.3. BARRA DE NAVEGAÇÃO E-READER (TABS ESTILO PRINT 4)
-  const navTabsRow = root.createEl('div', {
-    attr: {
-      style: 'display: flex; align-items: center; border-bottom: 2px solid var(--background-modifier-border); margin-bottom: 18px; padding-bottom: 2px; gap: 6px;'
-    }
-  });
+  // Carregamento dos microsserviços centrais via ModuleLoader
+  const DateUtils = await ModuleLoader.carregar(app, "99_Meta/Snoopy/core/date_utils.js");
+  const VaultStore = await ModuleLoader.carregar(app, "99_Meta/Snoopy/core/vault_store.js");
+  const ModalFactory = await ModuleLoader.carregar(app, "99_Meta/Snoopy/core/modal_factory.js");
+  const UIKit = await ModuleLoader.carregar(app, "99_Meta/Snoopy/core/ui_kit.js");
+  let Lifecycle = await ModuleLoader.carregar(app, "99_Meta/Snoopy/core/lifecycle.js");
 
-  const abasConfig = [
-    { id: 'todos', label: 'HOME (Todos)' },
-    { id: 'lendo', label: 'RECENT (Lendo)' },
-    { id: 'quero_ler', label: 'QUERO LER' },
-    { id: 'lidos', label: 'FAVOURITES (Lidos)' }
-  ];
-
-  abasConfig.forEach(aba => {
-    const isAtiva = abaAtiva === aba.id;
-    const btnAba = navTabsRow.createEl('button', {
-      cls: `abyssal-btn-mode ${isAtiva ? 'active' : ''}`,
-      attr: {
-        style: `font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 6px 14px; border-radius: 4px; ${isAtiva ? 'background: var(--text-normal); color: var(--background-primary);' : ''}`
-      },
-      text: aba.label
-    });
-    btnAba.onclick = () => {
-      abaAtiva = aba.id;
-      renderBookshelfCompleto();
+  if (!Lifecycle) {
+    Lifecycle = class {
+      static onDispose() { return () => {}; }
+      static dispose() {}
+      static contagem() { return 0; }
     };
-  });
-
-  // 3.4. THE SHELF GRID: A ESTANTE DE LIVROS DO KOREADER (PRINT 4)
-  const shelfSection = root.createEl('div');
-
-  let livrosFiltrados = listaLivros;
-  if (abaAtiva === 'lendo') {
-    livrosFiltrados = listaLivros.filter(l => String(l.status).toLowerCase().includes('lendo'));
-  } else if (abaAtiva === 'quero_ler') {
-    livrosFiltrados = listaLivros.filter(l => String(l.status).toLowerCase().includes('quero'));
-  } else if (abaAtiva === 'lidos') {
-    livrosFiltrados = listaLivros.filter(l => String(l.status).toLowerCase().includes('lido'));
   }
 
-  if (livrosFiltrados.length === 0) {
-    shelfSection.innerHTML = `
-      <div style="font-size: 12.5px; font-family: monospace; color: var(--text-muted); text-align: center; padding: 40px 0;">
-        Nenhum livro encontrado nesta categoria. Use o botão "+ BUSCAR NA NUVEM" para alimentar seu acervo!
-      </div>
-    `;
+  // Limpa ouvintes e timers registrados na renderização anterior do Bookshelf
+  Lifecycle.dispose('bookshelf');
+
+  // Submódulos do Bookshelf
+  const ModaisLeiturasClass = await ModuleLoader.carregar(app, "99_Meta/Snoopy/subdashboards/leituras/modais.js");
+  const BookshelfView = await ModuleLoader.carregar(app, "99_Meta/Snoopy/subdashboards/leituras/bookshelf_view.js");
+  const GamificacaoLeituras = await ModuleLoader.carregar(app, "99_Meta/Snoopy/subdashboards/leituras/gamificacao.js");
+
+  const root = dv.container.createEl('div', { cls: 'snoopy-container' });
+
+  if (!ModaisLeiturasClass || !BookshelfView || !GamificacaoLeituras) {
+    root.innerHTML = `<div class="snoopy-meta" style="color: #fca5a5; padding: 20px;">Erro ao carregar os submódulos do Bookshelf. Verifique os caminhos do Snoopy Vault.</div>`;
     return;
   }
 
-  const gridShelf = shelfSection.createEl('div', {
-    attr: {
-      style: 'display: grid; grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); gap: 20px;'
+  // Catálogo nativo de vetores Lucide Icons (SVG puro e de alta nitidez)
+  const SNOOPY_LUCIDE_ICONS = {
+    'calendar': '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+    'book-open': '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+    'book': '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+    'book-plus': '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="12" y1="8" x2="12" y2="14"/><line x1="9" y1="11" x2="15" y2="11"/>',
+    'arrow-left': '<line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>',
+    'arrow-up-right': '<line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>',
+    'more-vertical': '<circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>',
+    'star': '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+    'clock': '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+    'award': '<circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>',
+    'sparkles': '<path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>',
+    'check': '<polyline points="20 6 9 17 4 12"/>',
+    'search': '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+    'target': '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+    'pencil': '<path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>',
+    'trash-2': '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/>',
+    'bookmark': '<path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>',
+    'zap': '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+    'external-link': '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>'
+  };
+
+  /**
+   * Renderiza um ícone vetorial SVG do catálogo Lucide nativo dentro de um contêiner DOM.
+   *
+   * @param {HTMLElement} container - Elemento pai onde o ícone será inserido.
+   * @param {string} iconName - Identificador do ícone no catálogo.
+   * @param {object} [options] - Opções de estilização e dimensões.
+   * @returns {HTMLElement} Elemento span contendo o SVG renderizado.
+   */
+  function renderIcon(container, iconName, { size = 14, color = 'currentColor', cls = '' } = {}) {
+    const span = container.createEl('span', { cls: `snoopy-icon ${cls}`.trim() });
+    const innerSvg = SNOOPY_LUCIDE_ICONS[iconName] || '<circle cx="12" cy="12" r="8"/>';
+    span.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="${size}" height="${size}" style="display: block;">${innerSvg}</svg>`;
+    if (size) {
+      span.style.width = `${size}px`;
+      span.style.height = `${size}px`;
+    }
+    return span;
+  }
+
+  // Estado da interface
+  let modoVisualizacao = 'estante'; // 'estante' | 'dashboard'
+  let abaAtiva = 'todos';           // 'todos' | 'lendo' | 'quero_ler' | 'sintetizando' | 'lidos'
+  let termoBusca = '';
+  let generoFiltroAtivo = 'Todos';
+  let livroSelecionadoPath = null;
+  let metaDiariaPaginas = typeof window !== 'undefined' && window.snoopyMetaDiariaLeitura ? window.snoopyMetaDiariaLeitura : 25;
+
+  const now = new Date();
+  const padTime = (n) => String(n).padStart(2, '0');
+  const todayStr = `${now.getFullYear()}-${padTime(now.getMonth() + 1)}-${padTime(now.getDate())}`;
+
+  const modais = new ModaisLeiturasClass({
+    app,
+    onReload: () => renderBookshelf(),
+    onSelectLivro: (path) => {
+      livroSelecionadoPath = path;
+      renderBookshelf();
     }
   });
 
-  livrosFiltrados.forEach(b => {
-    const isSelecionado = livroDestaque && b.file.path === livroDestaque.file.path;
-    const cur = Number(b.current_page) || 0;
-    const tot = Number(b.total_pages) || 100;
-    const pct = tot > 0 ? Math.round((cur / tot) * 100) : 0;
-    const isLido = String(b.status).toLowerCase().includes('lido') || pct >= 100;
+  function carregarLivros() {
+    return dv.pages('"04_Leituras/Livros"')
+      .where(l => l.file && !l.file.name.includes("Template"))
+      .sort(l => l.file.mtime, 'desc');
+  }
 
-    const bookItem = gridShelf.createEl('div', {
-      attr: {
-        style: `display: flex; flex-direction: column; cursor: pointer; position: relative; border-radius: 6px; padding: 4px; transition: transform 0.15s ease; ${isSelecionado ? 'outline: 2px solid var(--interactive-accent, #60a5fa);' : ''}`
+  function carregarMateriasEstudo() {
+    return dv.pages('"03_Estudos"')
+      .where(e => e.file && !e.file.name.includes("Template") && !e.file.name.includes("Painel"));
+  }
+
+  function carregarNotasDiarias() {
+    return dv.pages('"01_Inbox/Diário"')
+      .where(d => d.date || (d.file && d.file.name.match(/^\d{4}-\d{2}-\d{2}$/)));
+  }
+
+  async function renderBookshelf() {
+    root.innerHTML = '';
+    const listaLivros = [...carregarLivros()];
+    const materiasEstudo = [...carregarMateriasEstudo()];
+    const notasDiarias = [...carregarNotasDiarias()];
+
+    // Seleção padrão inteligente: primeiro que estiver "lendo" ou primeiro do acervo
+    if (!livroSelecionadoPath && listaLivros.length > 0) {
+      const livroLendo = listaLivros.find(l => String(l.status).toLowerCase().includes('lendo'));
+      livroSelecionadoPath = livroLendo ? livroLendo.file.path : listaLivros[0].file.path;
+    }
+
+    // Calcula agregação dos últimos 30 dias para o Heatmap de Constância
+    const historico30Dias = GamificacaoLeituras.calcularHistorico30Dias(notasDiarias, todayStr, metaDiariaPaginas);
+    const estagioLeitor = GamificacaoLeituras.calcularEstagioLeitor(historico30Dias.totalPaginas, historico30Dias.streak);
+
+    // Monta contexto completo compartilhado com os submódulos
+    const ctx = {
+      root,
+      app,
+      dv,
+      now,
+      todayStr,
+      metaDiariaPaginas,
+      historico30Dias,
+      estagioLeitor,
+      DateUtils,
+      VaultStore,
+      ModalFactory,
+      Lifecycle,
+      UIKit,
+      renderIcon,
+      modais,
+      gamificacao: GamificacaoLeituras,
+      events: window._snoopyEvents || null,
+      onDefinirMetaDiaria: (novaMeta) => {
+        metaDiariaPaginas = novaMeta;
+        if (typeof window !== 'undefined') window.snoopyMetaDiariaLeitura = novaMeta;
+        renderBookshelf();
+      },
+      onSelectLivro: (path) => {
+        livroSelecionadoPath = path;
+        renderBookshelf();
       }
-    });
-
-    // Ao clicar, seleciona o livro no Hero Box superior
-    bookItem.onclick = () => {
-      livroSelecionadoPath = b.file.path;
-      renderBookshelfCompleto();
     };
 
-    // Capa com molde KOReader
-    const coverWrapper = bookItem.createEl('div', {
-      attr: { style: 'position: relative; width: 100%; height: 195px; border-radius: 5px; overflow: hidden; background: #161622; border: 1px solid var(--background-modifier-border); box-shadow: 0 4px 12px rgba(0,0,0,0.3);' }
+    // 1. Barra de Comandos Superior Padronizada (Header Moderno Anthropic Style)
+    const topNav = root.createEl('div', { cls: 'snoopy-card-header', attr: { style: 'margin-bottom: 18px;' } });
+
+    const leftNav = topNav.createEl('div', { cls: 'snoopy-toolbar' });
+    const btnHome = leftNav.createEl('button', { cls: 'snoopy-btn-action snoopy-btn-sm', attr: { id: 'btn-back-home', title: 'Voltar ao Painel Home' } });
+    renderIcon(btnHome, 'arrow-left', { size: 12, cls: 'btn-icon-pad' });
+    btnHome.createEl('span', { text: 'HOME' });
+    btnHome.onclick = () => app.workspace.openLinkText("00_Home/Home.md", "", false);
+
+    const titleGroup = leftNav.createEl('div');
+    const titleRow = titleGroup.createEl('div', { attr: { style: 'display: flex; align-items: center; gap: 8px;' } });
+    titleRow.createEl('span', { cls: 'snoopy-section-title', text: 'BOOKSHELF STUDIO' });
+    if (historico30Dias && historico30Dias.streak > 0) {
+      titleRow.createEl('span', {
+        cls: 'snoopy-micro',
+        attr: { style: 'padding: 1px 6px; border-radius: 4px; background: rgba(134, 239, 172, 0.1); color: #86efac; border: 1px solid rgba(134, 239, 172, 0.2); font-weight: 600;' },
+        text: `${historico30Dias.streak}d ofensiva`
+      });
+    }
+    titleGroup.createEl('div', { cls: 'snoopy-meta', text: `${listaLivros.length} livros no acervo • Meta: ${metaDiariaPaginas} págs/dia` });
+
+    const rightNav = topNav.createEl('div', { cls: 'snoopy-toolbar', attr: { style: 'gap: 10px;' } });
+
+    // Switcher Estante | Dashboard no padrão segment control
+    const toggleGroup = rightNav.createEl('div', {
+      cls: 'snoopy-toggle-group',
+      attr: { style: 'display: inline-flex; background: var(--background-secondary); border: 1px solid var(--snoopy-border); border-radius: 6px; padding: 2px;' }
     });
 
-    if (b.cover && b.cover.startsWith('http')) {
-      const img = coverWrapper.createEl('img', {
-        attr: { style: 'width: 100%; height: 100%; object-fit: cover;' }
+    const btnToggleEstante = toggleGroup.createEl('button', {
+      cls: `snoopy-btn-mode snoopy-btn-sm ${modoVisualizacao === 'estante' ? 'active' : ''}`,
+      text: 'Estante'
+    });
+    btnToggleEstante.onclick = () => {
+      modoVisualizacao = 'estante';
+      renderBookshelf();
+    };
+
+    const btnToggleDash = toggleGroup.createEl('button', {
+      cls: `snoopy-btn-mode snoopy-btn-sm ${modoVisualizacao === 'dashboard' ? 'active' : ''}`,
+      text: 'Dashboard'
+    });
+    btnToggleDash.onclick = () => {
+      modoVisualizacao = 'dashboard';
+      renderBookshelf();
+    };
+
+    // Botão Primário: Buscar na Nuvem
+    const btnAddNuvem = rightNav.createEl('button', {
+      cls: 'snoopy-btn-primary snoopy-btn-sm',
+      attr: { id: 'btn-add-nuvem', title: 'Pesquisar e importar metadados de livros' }
+    });
+    renderIcon(btnAddNuvem, 'book-plus', { size: 12, cls: 'btn-icon-pad' });
+    btnAddNuvem.createEl('span', { text: 'BUSCAR NA NUVEM' });
+    btnAddNuvem.onclick = () => modais.abrirModalBuscaNuvem();
+
+    // =========================================================================
+    // MODO DASHBOARD (KOReader Analytics Completo)
+    // =========================================================================
+    if (modoVisualizacao === 'dashboard') {
+      const dadosDashboard = GamificacaoLeituras.gerarDadosDashboard(listaLivros, notasDiarias, materiasEstudo, {
+        dataHoje: todayStr,
+        metaDiaria: metaDiariaPaginas,
+        metaSemanalHoras: 5
       });
-      img.src = b.cover;
-      img.onerror = () => {
-        img.style.display = 'none';
-        coverWrapper.appendChild(criarCapaTipografica(b));
+
+      BookshelfView.renderDashboardKOReader(root, dadosDashboard, {
+        ...ctx,
+        onSelectLivro: (livro) => {
+          if (livro && livro.file) {
+            livroSelecionadoPath = livro.file.path;
+            modoVisualizacao = 'estante';
+            renderBookshelf();
+          }
+        },
+        onVoltarEstante: () => {
+          modoVisualizacao = 'estante';
+          renderBookshelf();
+        }
+      });
+      return;
+    }
+
+    // =========================================================================
+    // MODO ESTANTE (Reading Studio Dual Workspace)
+    // =========================================================================
+
+    // 2. Bloco de Histórico & Constância de 30 Dias (Heatmap Padrão Home)
+    if (BookshelfView.renderHistoricoConstancia) {
+      BookshelfView.renderHistoricoConstancia(root, historico30Dias, estagioLeitor, ctx);
+    }
+
+    // 3. Painel Retrátil de Desafios & Recomendações dos Estudos
+    if (BookshelfView.renderDesafiosPainel) {
+      BookshelfView.renderDesafiosPainel(root, listaLivros, materiasEstudo, ctx);
+    }
+
+    // 4. Dual Workspace (Split View: Estante 55% + Reader Companion 45%)
+    const workspaceGrid = root.createEl('div', {
+      cls: 'snoopy-bookshelf-workspace',
+      attr: { style: 'display: grid; grid-template-columns: 1.15fr 1fr; gap: 20px; align-items: start;' }
+    });
+
+    // --- COLUNA ESQUERDA: A ESTANTE & CONTROLES ---
+    const leftCol = workspaceGrid.createEl('div', {
+      attr: { style: 'display: flex; flex-direction: column; gap: 14px;' }
+    });
+
+    const controlsBox = leftCol.createEl('div', {
+      attr: { style: 'display: flex; flex-direction: column; gap: 10px;' }
+    });
+
+    // Abas de Status com contagem dinâmica
+    const navTabsRow = controlsBox.createEl('div', {
+      cls: 'snoopy-toolbar',
+      attr: { style: 'border-bottom: 1px solid var(--snoopy-border); padding-bottom: 8px; overflow-x: auto;' }
+    });
+
+    const contagemStatus = {
+      todos: listaLivros.length,
+      lendo: listaLivros.filter(l => String(l.status).toLowerCase().includes('lendo')).length,
+      quero_ler: listaLivros.filter(l => String(l.status).toLowerCase().includes('quero')).length,
+      sintetizando: listaLivros.filter(l => String(l.status).toLowerCase().includes('sintetiz')).length,
+      lidos: listaLivros.filter(l => String(l.status).toLowerCase().includes('lido')).length
+    };
+
+    const abasConfig = [
+      { id: 'todos', label: `Todos (${contagemStatus.todos})` },
+      { id: 'lendo', label: `Lendo (${contagemStatus.lendo})` },
+      { id: 'quero_ler', label: `Quero Ler (${contagemStatus.quero_ler})` },
+      { id: 'sintetizando', label: `Sintetizando (${contagemStatus.sintetizando})` },
+      { id: 'lidos', label: `Lidos (${contagemStatus.lidos})` }
+    ];
+
+    abasConfig.forEach(aba => {
+      const isAtiva = abaAtiva === aba.id;
+      const btnAba = navTabsRow.createEl('button', {
+        cls: `snoopy-btn-mode snoopy-btn-sm ${isAtiva ? 'active' : ''}`,
+        text: aba.label
+      });
+      btnAba.onclick = () => {
+        abaAtiva = aba.id;
+        renderBookshelf();
       };
-    } else {
-      coverWrapper.appendChild(criarCapaTipografica(b));
-    }
-
-    // Marcador de Fita / Ribbon na base inferior (KOReader Style)
-    if (isLido) {
-      const ribbon = coverWrapper.createEl('div', {
-        attr: {
-          style: 'position: absolute; top: 0; right: 8px; width: 22px; height: 26px; background: #86efac; color: #000; font-size: 11px; font-weight: bold; display: flex; align-items: center; justify-content: center; clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 75%, 0 100%);'
-        },
-        text: '✓'
-      });
-    } else {
-      const ribbon = coverWrapper.createEl('div', {
-        attr: {
-          style: 'position: absolute; bottom: 0; left: 8px; width: 18px; height: 18px; background: rgba(0,0,0,0.7); color: #fff; font-size: 10px; display: flex; align-items: center; justify-content: center; border-radius: 3px 3px 0 0;'
-        },
-        text: '🔖'
-      });
-    }
-
-    // Barra de Progresso Embutida na Base da Capa (KOReader Style)
-    const baseProgress = coverWrapper.createEl('div', {
-      attr: {
-        style: 'position: absolute; bottom: 0; left: 0; right: 0; height: 5px; background: rgba(0,0,0,0.6);'
-      }
     });
-    baseProgress.createEl('div', {
+
+    // Campo de Busca Instantânea + Dropdown de Gênero
+    const searchRow = controlsBox.createEl('div', {
+      attr: { style: 'display: flex; gap: 8px;' }
+    });
+
+    const searchInput = searchRow.createEl('input', {
+      cls: 'snoopy-form-input',
       attr: {
-        style: `height: 100%; width: ${pct}%; background: ${isLido ? '#86efac' : '#ffffff'};`
+        type: 'text',
+        placeholder: 'Filtrar por título, autor, série...',
+        value: termoBusca,
+        style: 'flex: 1; font-size: 12px; padding: 6px 10px;'
       }
     });
 
-    // Legenda abaixo da capa
-    const metaBottom = bookItem.createEl('div', { attr: { style: 'margin-top: 6px; display: flex; flex-direction: column; gap: 2px;' } });
-    metaBottom.createEl('span', {
-      text: b.title || b.file.name,
-      attr: { style: 'font-size: 12px; font-weight: 700; color: var(--text-normal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;' }
-    });
-    metaBottom.createEl('span', {
-      text: b.author || 'Autor desconhecido',
-      attr: { style: 'font-size: 10.5px; font-family: monospace; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;' }
-    });
-  });
+    searchInput.oninput = (e) => {
+      termoBusca = e.target.value.toLowerCase().trim();
+      renderShelfOnly();
+    };
 
-  // 3.5. RODAPÉ DE PAGINAÇÃO ESTILO E-READER
-  const pagination = root.createEl('div', {
-    attr: {
-      style: 'display: flex; justify-content: center; align-items: center; gap: 14px; margin-top: 30px; padding-top: 14px; border-top: 1px solid var(--background-modifier-border); font-size: 12px; font-family: monospace; color: var(--text-muted);'
+    const todosGenerosSet = new Set();
+    listaLivros.forEach(l => {
+      if (Array.isArray(l.categories) && l.categories.length > 0) {
+        l.categories.forEach(c => { if (c) todosGenerosSet.add(c.trim()); });
+      } else if (l.category) {
+        todosGenerosSet.add(l.category.trim());
+      }
+    });
+    const generosDisponiveis = ['Todos', ...Array.from(todosGenerosSet).filter(Boolean).sort()];
+
+    const selectGenero = searchRow.createEl('select', {
+      cls: 'snoopy-form-select',
+      attr: { style: 'width: 140px; font-size: 11px; padding: 5px 8px;' }
+    });
+
+    generosDisponiveis.forEach(gen => {
+      const opt = selectGenero.createEl('option', {
+        text: gen === 'Todos' ? 'Gênero: Todos' : gen,
+        value: gen
+      });
+      if (generoFiltroAtivo === gen) opt.selected = true;
+    });
+
+    selectGenero.onchange = (e) => {
+      generoFiltroAtivo = e.target.value;
+      renderShelfOnly();
+    };
+
+    const shelfContainer = leftCol.createEl('div');
+    const livroDestaque = listaLivros.find(l => l.file.path === livroSelecionadoPath) || listaLivros[0];
+
+    function obterLivrosFiltrados() {
+      let resultado = listaLivros;
+
+      if (abaAtiva === 'lendo') {
+        resultado = resultado.filter(l => String(l.status).toLowerCase().includes('lendo'));
+      } else if (abaAtiva === 'quero_ler') {
+        resultado = resultado.filter(l => String(l.status).toLowerCase().includes('quero'));
+      } else if (abaAtiva === 'sintetizando') {
+        resultado = resultado.filter(l => String(l.status).toLowerCase().includes('sintetiz'));
+      } else if (abaAtiva === 'lidos') {
+        resultado = resultado.filter(l => String(l.status).toLowerCase().includes('lido'));
+      }
+
+      if (generoFiltroAtivo && generoFiltroAtivo !== 'Todos') {
+        const genAlvo = generoFiltroAtivo.toLowerCase();
+        resultado = resultado.filter(l => {
+          if (Array.isArray(l.categories) && l.categories.length > 0) {
+            return l.categories.some(c => String(c).trim().toLowerCase() === genAlvo);
+          }
+          return String(l.category || 'Geral').trim().toLowerCase() === genAlvo;
+        });
+      }
+
+      if (termoBusca) {
+        resultado = resultado.filter(l => {
+          const t = String(l.title || (l.file ? l.file.name : '')).toLowerCase();
+          const a = String(l.author || '').toLowerCase();
+          const c = String(l.category || '').toLowerCase();
+          const cats = Array.isArray(l.categories) ? l.categories.join(' ').toLowerCase() : '';
+          const s = String(l.series || '').toLowerCase();
+          return t.includes(termoBusca) || a.includes(termoBusca) || c.includes(termoBusca) || cats.includes(termoBusca) || s.includes(termoBusca);
+        });
+      }
+
+      return resultado;
     }
-  });
-  pagination.innerHTML = `
-    <span style="opacity: 0.5; cursor: default;">«</span>
-    <span style="opacity: 0.5; cursor: default;">‹</span>
-    <span>Page 1 of 1</span>
-    <span style="opacity: 0.5; cursor: default;">›</span>
-    <span style="opacity: 0.5; cursor: default;">»</span>
-  `;
-}
 
-// Capa Tipográfica Clássica de E-Reader quando não houver imagem
-function criarCapaTipografica(livro) {
-  const box = document.createElement('div');
-  box.style.cssText = 'width: 100%; height: 100%; padding: 14px 10px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; border: 2px solid rgba(255,255,255,0.12); box-sizing: border-box; background: #1a1a26;';
-  box.innerHTML = `
-    <div style="font-size: 11px; font-weight: 800; color: #ffffff; line-height: 1.25; margin-bottom: 6px; max-height: 60px; overflow: hidden;">
-      ${livro.title || livro.file.name}
-    </div>
-    <div style="font-size: 9.5px; font-family: monospace; color: #a1a1aa; font-style: italic;">
-      ${livro.author || 'Autor'}
-    </div>
-    <div style="margin-top: 10px; font-size: 10px; opacity: 0.4;">❖</div>
-  `;
-  return box;
-}
+    function renderShelfOnly() {
+      shelfContainer.innerHTML = '';
+      const filtrados = obterLivrosFiltrados();
+      BookshelfView.renderShelfGrid(shelfContainer, filtrados, livroDestaque, ctx);
+    }
 
-renderBookshelfCompleto();
+    renderShelfOnly();
+
+    // --- COLUNA DIREITA: READER'S STUDIO COMPANION ---
+    const rightCol = workspaceGrid.createEl('div', {
+      attr: { style: 'position: sticky; top: 10px;' }
+    });
+
+    await BookshelfView.renderReaderCompanion(rightCol, livroDestaque, {
+      ...ctx,
+      materiasEstudo,
+      notasDiarias
+    });
+  }
+
+  await renderBookshelf();
+})();
