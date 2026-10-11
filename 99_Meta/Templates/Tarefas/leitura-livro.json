@@ -1,0 +1,36 @@
+{
+  "id": "leitura-livro",
+  "nome": "Leitura de Livro (Bookshelf)",
+  "tipo": "leitura",
+  "pasta": "04_Leituras/Livros",
+  "icone": "book-open",
+  "frontmatter": {
+    "author": "Autor",
+    "category": "Literatura",
+    "total_pages": 300,
+    "current_page": 0,
+    "status": "Lendo",
+    "priority": "Média",
+    "rating": 0,
+    "cover": "",
+    "tags": [
+      "leitura",
+      "livro"
+    ]
+  },
+  "corpo": "# {{title}}\n\n> **Status:** `Lendo` | **Páginas:** {{current_page}}/{{total_pages}}\n\n---\n\n## 📌 Visão Geral & Sinopse\n\n\n---\n\n## 💡 Principais Lições & Citações\n- \n\n---\n\n## 🧠 Reflexões\n- \n\n---\n\n[[00_Home/Home|← Voltar ao Painel]]\n",
+  "vinculos": {
+    "kanban": {
+      "status": "Em Andamento",
+      "prioridade": "Média"
+    },
+    "bookshelf": {
+      "vincular_leitura": true
+    },
+    "pomodoro": {
+      "tempo_foco": 30,
+      "tempo_pausa": 5,
+      "auto_apontar": true
+    }
+  }
+}

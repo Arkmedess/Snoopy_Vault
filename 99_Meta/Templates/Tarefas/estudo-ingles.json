@@ -1,0 +1,36 @@
+{
+  "id": "estudo-ingles",
+  "nome": "Estudo de Inglês / Idiomas",
+  "tipo": "estudo",
+  "pasta": "03_Estudos",
+  "icone": "brain",
+  "frontmatter": {
+    "area": "Idiomas",
+    "status": "Em Andamento",
+    "priority": "Alta",
+    "minutos_foco": 0,
+    "questoes_feitas": 0,
+    "questoes_acertos": 0,
+    "tags": [
+      "estudo",
+      "ingles"
+    ]
+  },
+  "corpo": "# {{title}}\n\n> **Área:** `Idiomas` | **Status:** `Em Andamento`\n\n---\n\n## 🎯 Metas da Sessão\n- [ ] Prática de Listening e Compreensão 🎧\n- [ ] Absorção de Vocabulário e Flashcards 🧠\n- [ ] Exercícios Práticos e Diálogos 📝\n\n---\n\n## 📖 Anotações & Vocabulário Novo\n\n\n---\n\n[[00_Home/Home|← Voltar ao Painel]]\n",
+  "vinculos": {
+    "kanban": {
+      "status": "Em Andamento",
+      "prioridade": "Alta"
+    },
+    "estudos": {
+      "adicionar_ao_ciclo": true,
+      "revisao_espacada": true,
+      "intervalo_dias": 1
+    },
+    "pomodoro": {
+      "tempo_foco": 25,
+      "tempo_pausa": 5,
+      "auto_apontar": true
+    }
+  }
+}

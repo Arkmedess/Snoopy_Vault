@@ -1,0 +1,27 @@
+{
+  "id": "projeto-sprint",
+  "nome": "Projeto / Iniciativa Técnica",
+  "tipo": "projeto",
+  "pasta": "02_Projetos",
+  "icone": "code-2",
+  "frontmatter": {
+    "status": "Em Andamento",
+    "priority": "Alta",
+    "start_date": "{{date}}",
+    "tags": [
+      "projeto"
+    ]
+  },
+  "corpo": "# 🎯 {{title}}\n\n> **Status:** `Em Andamento` | **Início:** {{date}}\n\n---\n\n## 🧭 Objetivo & Critérios de Sucesso\n- \n\n---\n\n## 📋 Entregas & Tarefas\n- [ ] Planejamento inicial da arquitetura 📅 {{date}} ⏫\n- [ ] Implementação do MVP funcional 📅 {{date}} 🔼\n- [ ] Validação e testes automatizados 📅 {{date}} 🔼\n\n---\n\n[[00_Home/Home|← Voltar ao Painel]]\n",
+  "vinculos": {
+    "kanban": {
+      "status": "Em Andamento",
+      "prioridade": "Alta"
+    },
+    "pomodoro": {
+      "tempo_foco": 50,
+      "tempo_pausa": 10,
+      "auto_apontar": true
+    }
+  }
+}
