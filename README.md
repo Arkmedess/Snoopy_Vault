@@ -1,12 +1,12 @@
 <div align="center">
 
-# 🐶 Snoopy Vault • Abyssal Edition
+# 🐶 Snoopy Vault
 
 Painel de controle minimalista, cockpit de foco e gestão de conhecimento pessoal para **Obsidian**.
 
 [![Obsidian](https://img.shields.io/badge/Obsidian-v1.5+-7C3AED?style=for-the-badge&logo=obsidian&logoColor=white&labelColor=1a1b26)](https://obsidian.md)
 [![Dataview](https://img.shields.io/badge/DataviewJS-Enabled-10B981?style=for-the-badge&labelColor=1a1b26)](https://github.com/blacksmithgu/obsidian-dataview)
-[![CSS3](https://img.shields.io/badge/CSS3-Abyssal_Theme-1572B6?style=for-the-badge&logo=css3&logoColor=white&labelColor=1a1b26)](.obsidian/snippets/05_Abyssal_Snoopy.css)
+[![CSS3](https://img.shields.io/badge/CSS3-Snoopy_Theme-1572B6?style=for-the-badge&logo=css3&logoColor=white&labelColor=1a1b26)](.obsidian/snippets/05_Snoopy_Theme.css)
 [![License](https://img.shields.io/badge/License-MIT-9ece6a?style=for-the-badge&labelColor=1a1b26)](LICENSE)
 
 <br/>
@@ -29,7 +29,7 @@ A maioria dos cofres no Obsidian oscila entre dois extremos pouco práticos:
 1. **Over-engineering excessivo:** Dezenas de plugins concorrentes, dezenas de pastas vazias e telas lentas que desestimulam o registro diário de anotações.
 2. **Markdown cru sem visibilidade:** Notas fragmentadas sem uma central de comando que ofereça clareza sobre o foco do dia, progresso de projetos ou ritmo de estudos.
 
-O **Snoopy Vault** equilibra estética, foco e simplicidade: uma **página inicial única e viva** (em DataviewJS puro) integrada a um tema escuro de alto contraste (*Abyssal #070709*). O ambiente unifica temporizador de foco, evolução botânica de constância, Kanban interativo de projetos e rastreador de hábitos sem depender de serviços externos.
+O **Snoopy Vault** equilibra estética, foco e simplicidade: uma **página inicial única e viva** (em DataviewJS puro) integrada a um tema escuro de alto contraste (*Snoopy #070709*). O ambiente unifica temporizador de foco, evolução botânica de constância, Kanban interativo de projetos e rastreador de hábitos sem depender de serviços externos.
 
 ---
 
@@ -69,7 +69,7 @@ Snoopy_Vault/
 │   ├── kanban-columns.json  # Configuração de status dinâmicos do Kanban
 │   └── ⚙️ Configurações.md  # Painel de preferências visuais e tempos de foco
 ├── .obsidian/               # Configuração do cofre
-│   ├── snippets/            # 05_Abyssal_Snoopy.css (Design System)
+│   ├── snippets/            # 05_Snoopy_Theme.css (Design System)
 │   ├── community-plugins.json # Plugins ativos
 │   └── themes/              # Tema base Border
 ├── LICENSE                  # Licença MIT
@@ -117,7 +117,7 @@ Abra a nota [`00_Home/Home.md`](00_Home/Home.md) para interagir com o dashboard 
 
 ## Design System & Estilo
 
-O tema [`05_Abyssal_Snoopy.css`](.obsidian/snippets/05_Abyssal_Snoopy.css) adota uma paleta cinematográfica escura:
+O tema [`05_Snoopy_Theme.css`](.obsidian/snippets/05_Snoopy_Theme.css) adota uma paleta cinematográfica escura:
 * **Fundo Profundo:** `#070709` (Preto puro confortável para sessões prolongadas)
 * **Superfícies & Cartões:** `#0d0d12` e `#121218` com bordas sutis em `rgba(255, 255, 255, 0.08)`
 * **Acentos de Foco & Sucesso:** `#4ade80` e `#86efac`
