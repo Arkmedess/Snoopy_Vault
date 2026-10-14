@@ -3,6 +3,7 @@
   "theme": "obsidian",
   "baseFontSize": 16,
   "enabledCssSnippets": [
+    "00_Snoopy_Fonts",
     "05_Snoopy_Theme"
   ]
 }

@@ -218,7 +218,7 @@ function renderAbaPlanner(rootContainer, ctx) {
     modalBox.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <span style="font-size: 14px; font-weight: bold; color: #ffffff;">Agendar Estudo • ${formatarDataBR(dataInicial)}</span>
-        <button id="modal-close-plan" style="background: none; border: none; color: #71717a; cursor: pointer; font-size: 14px;">✕</button>
+        <button id="modal-close-plan" class="snoopy-modal-close" title="Fechar"></button>
       </div>
 
       <div>
@@ -262,7 +262,10 @@ function renderAbaPlanner(rootContainer, ctx) {
     modalBg.addEventListener('click', (e) => { if (e.target === modalBg) fechar(); });
 
     const btnClose = modalBox.querySelector('#modal-close-plan');
-    if (btnClose) btnClose.onclick = fechar;
+    if (btnClose) {
+      btnClose.onclick = fechar;
+      if (ctx.renderIcon) ctx.renderIcon(btnClose, 'x', { size: 14 });
+    }
     const btnCancel = modalBox.querySelector('#modal-cancel-plan');
     if (btnCancel) btnCancel.onclick = fechar;
 
@@ -299,7 +302,7 @@ function renderAbaPlanner(rootContainer, ctx) {
     modalBox.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <span style="font-size: 14px; font-weight: bold; color: #ffffff;">Bloco de Estudo • ${formatarDataBR(dia)}</span>
-        <button id="modal-close-mbloco" style="background: none; border: none; color: #71717a; cursor: pointer; font-size: 14px;">✕</button>
+        <button id="modal-close-mbloco" class="snoopy-modal-close" title="Fechar"></button>
       </div>
 
       <div style="background: var(--background-secondary-alt); border: 1px solid var(--background-modifier-border); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 3px;">
@@ -320,7 +323,10 @@ function renderAbaPlanner(rootContainer, ctx) {
     modalBg.addEventListener('click', (e) => { if (e.target === modalBg) fechar(); });
 
     const btnClose = modalBox.querySelector('#modal-close-mbloco');
-    if (btnClose) btnClose.onclick = fechar;
+    if (btnClose) {
+      btnClose.onclick = fechar;
+      if (ctx.renderIcon) ctx.renderIcon(btnClose, 'x', { size: 14 });
+    }
 
     const btnDel = modalBox.querySelector('#btn-del-bloco-act');
     if (btnDel) {

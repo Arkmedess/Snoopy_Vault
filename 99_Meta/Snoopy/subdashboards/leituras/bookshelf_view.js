@@ -348,8 +348,8 @@ const BookshelfView = {
     });
     if (renderIconFn) {
       renderIconFn(avatarBox, iconName, { size: 22, color: '#86efac' });
-    } else {
-      avatarBox.createEl('span', { text: '📖' });
+    } else if (typeof UIKit !== 'undefined' && UIKit.renderIcon) {
+      UIKit.renderIcon(avatarBox, iconName || 'book-open', { size: 22, color: '#86efac' });
     }
 
     const levelInfo = levelCard.createEl('div', { attr: { style: 'flex: 1; overflow: hidden;' } });
@@ -799,7 +799,7 @@ const BookshelfView = {
         }
 
         if (typeof Notice !== 'undefined') {
-          new Notice(`🎯 Alvo do Pomodoro definido: "${titulo}"! Abra a Home para acompanhar o temporizador.`);
+          new Notice(`[Snoopy] Alvo do Pomodoro definido: "${titulo}"! Abra a Home para acompanhar o temporizador.`);
         }
       };
     }
@@ -1347,7 +1347,7 @@ const BookshelfView = {
         if (typeof window !== 'undefined' && window.dispatchEvent) {
           window.dispatchEvent(new CustomEvent('pomodoro:focar', { detail: { tarefa: tarefaFoco } }));
         }
-        if (typeof Notice !== 'undefined') new Notice('🎯 Alvo do Pomodoro definido como "Sessão de Leitura" na Home!');
+        if (typeof Notice !== 'undefined') new Notice('[Snoopy] Alvo do Pomodoro definido como "Sessão de Leitura" na Home!');
       };
     }
 

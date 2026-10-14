@@ -72,8 +72,10 @@
     attr: { style: 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;' }
   });
 
-  const titleUpdate = headerUpdate.createEl('h3', {
-    text: '🚀 Atualização do Snoopy Vault',
+  const titleBoxUpdate = headerUpdate.createEl('div', { cls: 'snoopy-toolbar' });
+  UIKit.renderIcon(titleBoxUpdate, 'refresh-cw', { size: 16, color: '#60a5fa' });
+  titleBoxUpdate.createEl('h3', {
+    text: 'Atualização do Snoopy Vault',
     attr: { style: 'margin: 0; font-size: 1.15rem; font-weight: 600;' }
   });
 
@@ -99,18 +101,19 @@
   });
 
   // Botão: Verificar Atualizações
-  const btnVerificar = rowBotoesUpdate.createEl('button', {
-    text: '🔍 Verificar Atualizações',
-    cls: 'mod-cta',
-    attr: { style: 'cursor: pointer; padding: 7px 16px; border-radius: 6px;' }
+  const btnVerificar = UIKit.criarBotao(rowBotoesUpdate, {
+    label: 'Verificar Atualizações',
+    icon: 'search',
+    variant: 'primary',
+    size: 'md'
   });
 
   // Botão: Desfazer Atualização (Rollback)
-  const btnRollback = rowBotoesUpdate.createEl('button', {
-    text: `⏪ Desfazer Última Atualização (${statusCofre.backups.length})`,
-    attr: {
-      style: 'cursor: pointer; padding: 7px 16px; border-radius: 6px; background: var(--background-modifier-error-hover, #4a1e1e); color: var(--text-normal);'
-    }
+  const btnRollback = UIKit.criarBotao(rowBotoesUpdate, {
+    label: `Desfazer Última Atualização (${statusCofre.backups.length})`,
+    icon: 'undo-2',
+    variant: 'danger',
+    size: 'md'
   });
 
   if (statusCofre.backups.length === 0) {
@@ -122,7 +125,9 @@
   // Ação: Verificar Atualizações
   btnVerificar.addEventListener('click', async () => {
     btnVerificar.disabled = true;
-    btnVerificar.textContent = '⏳ Verificando no GitHub...';
+    btnVerificar.innerHTML = '';
+    UIKit.renderIcon(btnVerificar, 'refresh-cw', { size: 13 });
+    btnVerificar.createEl('span', { text: 'Verificando no GitHub...' });
     msgStatus.innerHTML = '<span style="color: var(--text-muted);">Consultando repositório oficial...</span>';
 
     try {
@@ -132,9 +137,11 @@
       const manifestoRemoto = await Updater.buscarManifestoRemoto(repo, tag).catch(() => null);
 
       if (!manifestoRemoto) {
-        msgStatus.innerHTML = `<span style="color: var(--text-accent);">ℹ️ Não foi possível conectar ao GitHub Releases no momento ou você já possui a versão estável mais recente (v${statusCofre.versao}).</span>`;
+        msgStatus.innerHTML = `<span style="color: var(--text-accent);">Não foi possível conectar ao GitHub Releases no momento ou você já possui a versão estável mais recente (v${statusCofre.versao}).</span>`;
         btnVerificar.disabled = false;
-        btnVerificar.textContent = '🔍 Verificar Atualizações';
+        btnVerificar.innerHTML = '';
+        UIKit.renderIcon(btnVerificar, 'search', { size: 13 });
+        btnVerificar.createEl('span', { text: 'Verificar Atualizações' });
         return;
       }
 
@@ -147,7 +154,7 @@
                                plano.arquivosPreservadosNovo.length > 0;
 
       if (!precisaAtualizar && manifestoRemoto.versao === statusCofre.versao) {
-        msgStatus.innerHTML = `<span style="color: var(--color-green, #4ade80); font-weight: 500;">✅ Seu cofre já está 100% atualizado na versão v${statusCofre.versao}!</span>`;
+        msgStatus.innerHTML = `<span style="color: var(--color-green, #4ade80); font-weight: 500;">Seu cofre já está 100% atualizado na versão v${statusCofre.versao}!</span>`;
       } else {
         msgStatus.innerHTML = `
           <div style="background: var(--background-primary); border-left: 4px solid var(--interactive-accent); padding: 12px; border-radius: 4px; margin-top: 8px;">
@@ -158,25 +165,30 @@
               • ${plano.arquivosPreservadosNovo.length} arquivos locais com suas edições (serão preservados e gravados com sufixo .novo)<br>
               • Backup atômico ativado por padrão.
             </span>
-            <div style="margin-top: 10px;">
-              <button id="btn-aplicar-upgrade" class="mod-cta" style="cursor: pointer; padding: 6px 14px; border-radius: 6px;">
-                ⚡ Instalar Atualização com Backup
-              </button>
-            </div>
+            <div id="btn-aplicar-container" style="margin-top: 10px;"></div>
           </div>
         `;
 
-        const btnAplicar = msgStatus.querySelector('#btn-aplicar-upgrade');
-        if (btnAplicar) {
+        const containerAplicar = msgStatus.querySelector('#btn-aplicar-container');
+        if (containerAplicar) {
+          const btnAplicar = UIKit.criarBotao(containerAplicar, {
+            label: 'Instalar Atualização com Backup',
+            icon: 'refresh-cw',
+            variant: 'primary',
+            size: 'md'
+          });
+
           btnAplicar.addEventListener('click', async () => {
             btnAplicar.disabled = true;
-            btnAplicar.textContent = '⏳ Baixando e aplicando...';
+            btnAplicar.innerHTML = '';
+            UIKit.renderIcon(btnAplicar, 'refresh-cw', { size: 13 });
+            btnAplicar.createEl('span', { text: 'Baixando e aplicando...' });
             try {
               const res = await Updater.aplicarAtualizacao(app, manifestoRemoto, `v${manifestoRemoto.versao}`, true);
-              new Notice(`✅ Snoopy Vault atualizado para v${manifestoRemoto.versao}! Backup salvo em: ${res.backupCriado}`);
-              msgStatus.innerHTML = `<span style="color: var(--color-green, #4ade80); font-weight: bold;">🎉 Atualizado com sucesso para v${manifestoRemoto.versao}! Recarregue a nota ou o Obsidian para ver os novos recursos.</span>`;
+              new Notice(`[Snoopy] Vault atualizado para v${manifestoRemoto.versao}! Backup salvo em: ${res.backupCriado}`);
+              msgStatus.innerHTML = `<span style="color: var(--color-green, #4ade80); font-weight: bold;">Atualizado com sucesso para v${manifestoRemoto.versao}! Recarregue a nota ou o Obsidian para ver os novos recursos.</span>`;
             } catch (err) {
-              new Notice(`❌ Falha na atualização: ${err.message}`);
+              new Notice(`[Snoopy Erro] Falha na atualização: ${err.message}`);
               msgStatus.innerHTML = `<span style="color: var(--color-red, #f87171);">Erro ao aplicar atualização: ${err.message}</span>`;
             }
           });
@@ -186,14 +198,16 @@
       msgStatus.innerHTML = `<span style="color: var(--color-red, #f87171);">Erro ao verificar: ${e.message}</span>`;
     } finally {
       btnVerificar.disabled = false;
-      btnVerificar.textContent = '🔍 Verificar Atualizações';
+      btnVerificar.innerHTML = '';
+      UIKit.renderIcon(btnVerificar, 'search', { size: 13 });
+      btnVerificar.createEl('span', { text: 'Verificar Atualizações' });
     }
   });
 
   // Ação: Rollback
   btnRollback.addEventListener('click', async () => {
     if (!statusCofre.ultimoBackup) {
-      new Notice('Nenhum backup encontrado para restauração.');
+      new Notice('[Snoopy] Nenhum backup encontrado para restauração.');
       return;
     }
 
@@ -201,18 +215,22 @@
     if (!confirmar) return;
 
     btnRollback.disabled = true;
-    btnRollback.textContent = '⏳ Restaurando...';
+    btnRollback.innerHTML = '';
+    UIKit.renderIcon(btnRollback, 'refresh-cw', { size: 13 });
+    btnRollback.createEl('span', { text: 'Restaurando...' });
 
     try {
       const res = await Updater.desfazerAtualizacao(app, statusCofre.ultimoBackup);
-      new Notice(`✅ Rollback concluído! ${res.restaurados.length} arquivos restaurados.`);
+      new Notice(`[Snoopy] Rollback concluído! ${res.restaurados.length} arquivos restaurados.`);
       msgStatus.innerHTML = `<span style="color: var(--color-green, #4ade80);">Backup restaurado com sucesso!</span>`;
     } catch (e) {
-      new Notice(`❌ Falha no rollback: ${e.message}`);
+      new Notice(`[Snoopy Erro] Falha no rollback: ${e.message}`);
       msgStatus.innerHTML = `<span style="color: var(--color-red, #f87171);">Erro: ${e.message}</span>`;
     } finally {
       btnRollback.disabled = false;
-      btnRollback.textContent = `⏪ Desfazer Última Atualização (${statusCofre.backups.length})`;
+      btnRollback.innerHTML = '';
+      UIKit.renderIcon(btnRollback, 'undo-2', { size: 13 });
+      btnRollback.createEl('span', { text: `Desfazer Última Atualização (${statusCofre.backups.length})` });
     }
   });
 
@@ -228,8 +246,10 @@
     attr: { style: 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;' }
   });
 
-  headerMocks.createEl('h3', {
-    text: '🧹 Gestão de Exemplos & Cofre Limpo',
+  const titleBoxMocks = headerMocks.createEl('div', { cls: 'snoopy-toolbar' });
+  UIKit.renderIcon(titleBoxMocks, 'trash-2', { size: 16, color: '#fdba74' });
+  titleBoxMocks.createEl('h3', {
+    text: 'Gestão de Exemplos & Cofre Limpo',
     attr: { style: 'margin: 0; font-size: 1.15rem; font-weight: 600;' }
   });
 
@@ -254,18 +274,18 @@
     attr: { style: 'display: flex; gap: 12px; flex-wrap: wrap;' }
   });
 
-  const btnLimparMocks = rowBotoesMocks.createEl('button', {
-    text: '🗑️ Limpar Exemplos (Cofre Limpo)',
-    attr: {
-      style: 'cursor: pointer; padding: 7px 16px; border-radius: 6px; background: var(--interactive-normal); color: var(--text-normal);'
-    }
+  const btnLimparMocks = UIKit.criarBotao(rowBotoesMocks, {
+    label: 'Limpar Exemplos (Cofre Limpo)',
+    icon: 'trash-2',
+    variant: 'danger',
+    size: 'md'
   });
 
-  const btnRestaurarMocks = rowBotoesMocks.createEl('button', {
-    text: '✨ Restaurar Exemplos (Modo Demonstração)',
-    attr: {
-      style: 'cursor: pointer; padding: 7px 16px; border-radius: 6px; background: var(--interactive-normal); color: var(--text-normal);'
-    }
+  const btnRestaurarMocks = UIKit.criarBotao(rowBotoesMocks, {
+    label: 'Restaurar Exemplos (Modo Demonstração)',
+    icon: 'sparkles',
+    variant: 'action',
+    size: 'md'
   });
 
   // Ação: Limpar Mocks
@@ -279,39 +299,47 @@
     if (!confirmar) return;
 
     btnLimparMocks.disabled = true;
-    btnLimparMocks.textContent = '⏳ Limpando...';
+    btnLimparMocks.innerHTML = '';
+    UIKit.renderIcon(btnLimparMocks, 'refresh-cw', { size: 13 });
+    btnLimparMocks.createEl('span', { text: 'Limpando...' });
 
     try {
       const res = await MockManager.removerMocks(app);
-      new Notice(`✅ Cofre limpo! ${res.removidos.length} exemplo(s) movido(s) para a lixeira.`);
-      msgMocks.innerHTML = `<span style="color: var(--color-green, #4ade80); font-weight: 500;">✅ Cofre limpo! Mocks removidos e ciclo zerado. Você já pode criar suas próprias matérias e projetos.</span>`;
+      new Notice(`[Snoopy] Cofre limpo! ${res.removidos.length} exemplo(s) movido(s) para a lixeira.`);
+      msgMocks.innerHTML = `<span style="color: var(--color-green, #4ade80); font-weight: 500;">Cofre limpo! Mocks removidos e ciclo zerado. Você já pode criar suas próprias matérias e projetos.</span>`;
       badgeMocks.textContent = '0 notas de exemplo';
     } catch (e) {
-      new Notice(`❌ Falha ao limpar mocks: ${e.message}`);
+      new Notice(`[Snoopy Erro] Falha ao limpar mocks: ${e.message}`);
       msgMocks.innerHTML = `<span style="color: var(--color-red, #f87171);">Erro: ${e.message}</span>`;
     } finally {
       btnLimparMocks.disabled = false;
-      btnLimparMocks.textContent = '🗑️ Limpar Exemplos (Cofre Limpo)';
+      btnLimparMocks.innerHTML = '';
+      UIKit.renderIcon(btnLimparMocks, 'trash-2', { size: 13 });
+      btnLimparMocks.createEl('span', { text: 'Limpar Exemplos (Cofre Limpo)' });
     }
   });
 
   // Ação: Restaurar Mocks
   btnRestaurarMocks.addEventListener('click', async () => {
     btnRestaurarMocks.disabled = true;
-    btnRestaurarMocks.textContent = '⏳ Restaurando...';
+    btnRestaurarMocks.innerHTML = '';
+    UIKit.renderIcon(btnRestaurarMocks, 'refresh-cw', { size: 13 });
+    btnRestaurarMocks.createEl('span', { text: 'Restaurando...' });
 
     try {
       const res = await MockManager.restaurarMocks(app);
-      new Notice(`✨ ${res.restaurados.length} nota(s) de demonstração restaurada(s)!`);
+      new Notice(`[Snoopy] ${res.restaurados.length} nota(s) de demonstração restaurada(s)!`);
       msgMocks.innerHTML = `<span style="color: var(--color-green, #4ade80);">Exemplos recriados com sucesso! Verifique a aba de Estudos e Leituras.</span>`;
       const mocksAtualizados = await MockManager.detectarMocks(app);
       badgeMocks.textContent = `${mocksAtualizados.length} notas de exemplo`;
     } catch (e) {
-      new Notice(`❌ Falha ao restaurar mocks: ${e.message}`);
+      new Notice(`[Snoopy Erro] Falha ao restaurar mocks: ${e.message}`);
       msgMocks.innerHTML = `<span style="color: var(--color-red, #f87171);">Erro: ${e.message}</span>`;
     } finally {
       btnRestaurarMocks.disabled = false;
-      btnRestaurarMocks.textContent = '✨ Restaurar Exemplos (Modo Demonstração)';
+      btnRestaurarMocks.innerHTML = '';
+      UIKit.renderIcon(btnRestaurarMocks, 'sparkles', { size: 13 });
+      btnRestaurarMocks.createEl('span', { text: 'Restaurar Exemplos (Modo Demonstração)' });
     }
   });
 
@@ -323,9 +351,11 @@
     }
   });
 
-  cardZonas.createEl('h3', {
-    text: '🛡️ Garantia de Proteção de Dados (3 Zonas)',
-    attr: { style: 'margin: 0 0 10px 0; font-size: 1.15rem; font-weight: 600;' }
+  const headerZonas = cardZonas.createEl('div', { cls: 'snoopy-toolbar', attr: { style: 'margin-bottom: 10px;' } });
+  UIKit.renderIcon(headerZonas, 'shield', { size: 16, color: '#86efac' });
+  headerZonas.createEl('h3', {
+    text: 'Garantia de Proteção de Dados (3 Zonas)',
+    attr: { style: 'margin: 0; font-size: 1.15rem; font-weight: 600;' }
   });
 
   cardZonas.createEl('div', {

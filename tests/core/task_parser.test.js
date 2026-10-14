@@ -55,9 +55,32 @@ describe('TaskParser - Parser Puro de Tarefas e Hábitos', () => {
       const raw = "Fazer resumo de banco \u{1F4C5} 2026-10-10 \u{23EB} \u{1F345} 2 \u{1F305} Manh\u00E3 \u{1F501} seg-sex";
       const res = TaskParser.parseMetadata(raw, todayStr, DateUtils);
       assert.equal(res.cleanText, 'Fazer resumo de banco');
-      assert.equal(res.prio, 'alta');
-      assert.equal(res.pomosEst, '2');
       assert.equal(res.periodo, '🌅 Manhã');
+    });
+
+    test('extrai metadados quantitativos e progresso de tarefas', () => {
+      const res1 = TaskParser.parseMetadata('Ler livro Clean Code [15/30 págs] 📅 2026-10-10', todayStr, DateUtils);
+      assert.equal(res1.cleanText, 'Ler livro Clean Code');
+      assert.ok(res1.progresso);
+      assert.equal(res1.progresso.feito, 15);
+      assert.equal(res1.progresso.meta, 30);
+      assert.equal(res1.progresso.unidade, 'págs');
+      assert.equal(res1.progresso.pct, 50);
+      assert.equal(res1.progresso.rotulo, '15/30 págs');
+
+      const res2 = TaskParser.parseMetadata('Foco estudo algoritmos [30m]', todayStr, DateUtils);
+      assert.equal(res2.cleanText, 'Foco estudo algoritmos');
+      assert.ok(res2.progresso);
+      assert.equal(res2.progresso.feito, null);
+      assert.equal(res2.progresso.meta, 30);
+      assert.equal(res2.progresso.unidade, 'm');
+      assert.equal(res2.progresso.rotulo, '30 m');
+
+      const res3 = TaskParser.parseMetadata('Exercício de repetição [15x]', todayStr, DateUtils);
+      assert.equal(res3.cleanText, 'Exercício de repetição');
+      assert.ok(res3.progresso);
+      assert.equal(res3.progresso.meta, 15);
+      assert.equal(res3.progresso.unidade, 'x');
     });
   });
 

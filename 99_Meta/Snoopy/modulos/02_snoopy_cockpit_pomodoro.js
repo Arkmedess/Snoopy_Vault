@@ -67,9 +67,13 @@ return {
       attr: { style: 'display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.08);' }
     });
     pomoHeader.innerHTML = `
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <span class="snoopy-section-title">POMODORO FOCUS COCKPIT</span>
-        <span id="snoopy-mode-badge" class="snoopy-micro" style="font-weight: bold; padding: 2px 7px; border-radius: 4px; background: rgba(74, 222, 128, 0.15); color: #86efac;">FOCO ATIVO</span>
+      <div class="snoopy-card-header-main">
+        <div class="snoopy-toolbar">
+          ${ctx.UIKit && ctx.UIKit.ICONS && ctx.UIKit.ICONS['timer'] ? `<span class="snoopy-icon" style="width: 16px; height: 16px; color: var(--snoopy-muted);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">${ctx.UIKit.ICONS['timer']}</svg></span>` : ''}
+          <span class="snoopy-section-title">POMODORO</span>
+          <span id="snoopy-mode-badge" class="snoopy-micro" style="font-weight: bold; padding: 2px 7px; border-radius: 4px; background: rgba(74, 222, 128, 0.15); color: #86efac;">FOCO ATIVO</span>
+        </div>
+        <span class="snoopy-card-subtitle">Sessão de foco e intervalo</span>
       </div>
       <div class="snoopy-meta" style="display: flex; align-items: center; gap: 6px; font-size: 12px;">
         <div style="display: flex; align-items: center; gap: 4px; background: #14141c; padding: 3px 8px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.08);">
@@ -92,17 +96,26 @@ return {
     });
     targetBanner.innerHTML = `
       <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
-        <span style="font-size: 14px;">🎯</span>
+        <span id="snoopy-target-icon-box" style="display: inline-flex; align-items: center;"></span>
         <div style="overflow: hidden;">
           <div class="snoopy-micro" style="font-weight: 700; color: #86efac; letter-spacing: 0.05em;">FOCO SELECIONADO:</div>
           <div id="snoopy-target-name" style="font-size: 12px; font-weight: 700; color: #ffffff; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">-</div>
         </div>
       </div>
       <div class="snoopy-toolbar">
-        <button id="snoopy-btn-target-done" class="snoopy-btn-action snoopy-btn-sm" style="color: #86efac;">✓ Feito</button>
-        <button id="snoopy-btn-target-clear" class="snoopy-btn-icon" title="Liberar foco">✕</button>
+        <button id="snoopy-btn-target-done" class="snoopy-btn-action snoopy-btn-sm" style="color: #86efac;">Feito</button>
+        <button id="snoopy-btn-target-clear" class="snoopy-btn-icon" title="Liberar foco"></button>
       </div>
     `;
+    const tIconBox = targetBanner.querySelector('#snoopy-target-icon-box');
+    const tDoneBtn = targetBanner.querySelector('#snoopy-btn-target-done');
+    const tClearBtn = targetBanner.querySelector('#snoopy-btn-target-clear');
+    const renderIconFn = ctx.renderIcon || (ctx.UIKit && ctx.UIKit.renderIcon ? (c, n, o) => ctx.UIKit.renderIcon(c, n, o) : null);
+    if (renderIconFn) {
+      renderIconFn(tIconBox, 'target', { size: 14, color: '#86efac' });
+      renderIconFn(tDoneBtn, 'check', { size: 12, color: '#86efac' });
+      renderIconFn(tClearBtn, 'x', { size: 12 });
+    }
 
     // Centro do Pomodoro: Anel SVG + Controles
     const pomoCenter = pomoBox.createEl('div', {
@@ -150,7 +163,9 @@ return {
       variant: 'action'
     });
     const btnModoImersivo = criarBtn(btnsRow1, {
-      label: 'Modo Foco 🔍',
+      label: 'Modo Foco',
+      icon: 'search',
+      iconSize: 12,
       variant: 'action'
     });
 
@@ -208,7 +223,9 @@ return {
     let historyHeaderEls = null;
     if (ctx.UIKit && typeof ctx.UIKit.criarCardHeader === 'function') {
       historyHeaderEls = ctx.UIKit.criarCardHeader(historyBox, {
-        title: 'HISTÓRICO & CONSTÂNCIA DE FOCO'
+        title: 'JARDIM DE CONSTÂNCIA',
+        icon: 'sprout',
+        subtitle: 'Histórico e ciclos acumulados'
       });
       historyHeaderEls.actionsBox.createEl('span', {
         cls: 'snoopy-meta',
@@ -218,7 +235,12 @@ return {
     } else {
       const historyHeader = historyBox.createEl('div', { cls: 'snoopy-card-header' });
       historyHeader.innerHTML = `
-        <span class="snoopy-section-title">HISTÓRICO & CONSTÂNCIA DE FOCO</span>
+        <div class="snoopy-card-header-main">
+          <div class="snoopy-toolbar">
+            <span class="snoopy-section-title">JARDIM DE CONSTÂNCIA</span>
+          </div>
+          <span class="snoopy-card-subtitle">Histórico e ciclos acumulados</span>
+        </div>
         <span id="snoopy-today-stats" class="snoopy-meta" style="color: #86efac; font-weight: bold;">0 ciclos hoje (0 min)</span>
       `;
     }
@@ -227,7 +249,7 @@ return {
       attr: { style: 'display: flex; align-items: center; gap: 14px; padding: 12px 14px; background: #13131c; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); margin: 6px 0;' }
     });
     plantCard.innerHTML = `
-      <div id="snoopy-plant-avatar" style="width: 56px; height: 56px; border-radius: 50%; background: #181824; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 30px; flex-shrink: 0; user-select: none;">🌱</div>
+      <div id="snoopy-plant-avatar" style="width: 56px; height: 56px; border-radius: 50%; background: #181824; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; user-select: none;"></div>
       <div style="flex: 1; overflow: hidden;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <span id="snoopy-stage-title" style="font-size: 14px; font-weight: 700; color: #ffffff;">Semente Plantada</span>
@@ -416,11 +438,14 @@ return {
       focusOverlay.innerHTML = `
         <div style="position: absolute; top: 22px; right: 26px; display: flex; align-items: center; gap: 14px;">
           <span style="font-size: 11px; color: #71717a;">Pressione <kbd style="background: rgba(255,255,255,0.12); padding: 3px 7px; border-radius: 4px; color: #fff; font-size: 10px;">Esc</kbd> para sair</span>
-          <button id="snoopy-imm-close" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.16); color: #fff; border-radius: 6px; padding: 6px 14px; cursor: pointer; font-size: 12.5px; font-weight: 600;">✕ Sair</button>
+          <button id="snoopy-imm-close" class="snoopy-btn-action snoopy-btn-sm" style="color: #fff; font-weight: 600;">Sair</button>
         </div>
 
         <div style="text-align: center; max-width: 650px;">
-          <div style="font-size: 12px; font-weight: 800; color: #86efac; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 8px;">🎯 FOCO ATIVO SEM DISTRAÇÕES</div>
+          <div style="display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; font-weight: 800; color: #86efac; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 8px;">
+            <span id="snoopy-imm-target-icon"></span>
+            <span>FOCO ATIVO SEM DISTRAÇÕES</span>
+          </div>
           <h2 style="font-size: 26px; font-weight: 800; color: #ffffff; margin: 0; text-shadow: 0 2px 12px rgba(0,0,0,0.6);">${alvoNome}</h2>
         </div>
 
@@ -436,14 +461,20 @@ return {
         </div>
 
         <div style="display: flex; gap: 12px; margin-top: 6px;">
-          <button id="snoopy-imm-play-btn" style="background: #4ade80; color: #000; font-weight: 800; border: none; border-radius: 8px; padding: 10px 26px; cursor: pointer; font-size: 14px; box-shadow: 0 4px 14px rgba(74,222,128,0.3);">
+          <button id="snoopy-imm-play-btn" class="snoopy-btn-primary snoopy-btn-md">
             ${isRodando ? 'Pausar' : 'Iniciar Foco'}
           </button>
-          <button id="snoopy-imm-done-btn" style="background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.16); border-radius: 8px; padding: 10px 20px; cursor: pointer; font-size: 14px; font-weight: 600;">
-            ✓ Concluir Alvo
+          <button id="snoopy-imm-done-btn" class="snoopy-btn-action snoopy-btn-md" style="color: #86efac;">
+            Concluir Alvo
           </button>
         </div>
       `;
+
+      if (renderIconFn) {
+        renderIconFn(focusOverlay.querySelector('#snoopy-imm-close'), 'x', { size: 12 });
+        renderIconFn(focusOverlay.querySelector('#snoopy-imm-target-icon'), 'target', { size: 14, color: '#86efac' });
+        renderIconFn(focusOverlay.querySelector('#snoopy-imm-done-btn'), 'check', { size: 14, color: '#86efac' });
+      }
 
       document.body.appendChild(focusOverlay);
       document.addEventListener('keydown', onImmersiveEsc);
@@ -571,7 +602,7 @@ return {
         pomoBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
         pomoBox.style.borderColor = 'rgba(134, 239, 172, 0.4)';
         setTimeout(() => { pomoBox.style.borderColor = ''; }, 2000);
-        new Notice(`🎯 Pomodoro apontado para: ${dados.texto || dados.titulo}`);
+        new Notice(`[Snoopy] Pomodoro apontado para: ${dados.texto || dados.titulo}`);
       }
     };
 
@@ -602,7 +633,7 @@ return {
         if (timer) timer.setAlvo(null);
         targetBanner.style.display = 'none';
         if (targetNameEl) targetNameEl.textContent = '-';
-        new Notice('Alvo de foco liberado.');
+        new Notice('[Snoopy] Alvo de foco liberado.');
       };
     }
 
@@ -619,7 +650,7 @@ return {
           window._snoopyConcluirTarefaAtiva(alvo);
         }
         if (timer) timer.setAlvo(null);
-        new Notice(`✓ Concluído: "${nomeAtual}"!`);
+        new Notice(`[Snoopy] Concluído: "${nomeAtual}"!`);
       };
     }
 

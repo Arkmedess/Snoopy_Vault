@@ -118,7 +118,7 @@ class PomodoroModal {
     const modalHtml = `
       <div class="snoopy-card-header">
         <span class="snoopy-section-title">Ciclo Concluído! O que você aprendeu?</span>
-        <button id="modal-close-btn" class="snoopy-modal-close" title="Fechar">✕</button>
+        <button id="modal-close-btn" class="snoopy-modal-close" title="Fechar"></button>
       </div>
       <div class="snoopy-modal-label">Consolidação rápida registrada na nota diária (01_Inbox/Diário):</div>
       <textarea id="modal-log-text" rows="2" placeholder="Ex: Fixei estrutura de grafos e complexidade..." class="snoopy-form-input"></textarea>

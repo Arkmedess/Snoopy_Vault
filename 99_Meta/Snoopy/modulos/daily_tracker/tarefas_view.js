@@ -19,12 +19,14 @@ const TarefasView = {
     let addTplBtn = null;
     if (ctx.UIKit && typeof ctx.UIKit.criarCardHeader === 'function') {
       const headerEls = ctx.UIKit.criarCardHeader(tasksCard, {
-        title: 'CENTRAL DE TAREFAS',
-        meta: 'Núcleo de Execução'
+        title: 'TAREFAS',
+        icon: 'list-checks',
+        subtitle: 'O que precisa sair hoje'
       });
       if (typeof abrirModalTemplateTarefa === 'function') {
         addTplBtn = ctx.UIKit.criarBotao(headerEls.actionsBox, {
-          label: '⚡ + TEMPLATE',
+          label: '+ TEMPLATE',
+          icon: 'plus',
           variant: 'action',
           size: 'sm',
           onClick: abrirModalTemplateTarefa
@@ -32,6 +34,7 @@ const TarefasView = {
       }
       addTaskBtn = ctx.UIKit.criarBotao(headerEls.actionsBox, {
         label: '+ NOVA TAREFA',
+        icon: 'plus',
         variant: 'primary',
         size: 'sm',
         onClick: abrirModalNovaTarefa
@@ -40,15 +43,15 @@ const TarefasView = {
       const todoHeader = tasksCard.createEl('div', { cls: 'snoopy-card-header' });
       todoHeader.innerHTML = `
         <div class="snoopy-toolbar">
-          <span class="snoopy-section-title">CENTRAL DE TAREFAS</span>
-          <span class="snoopy-meta">Núcleo de Execução</span>
+          <span class="snoopy-section-title">TAREFAS</span>
+          <span class="snoopy-card-subtitle">O que precisa sair hoje</span>
         </div>
       `;
       const actionsBox = todoHeader.createEl('div', { cls: 'snoopy-toolbar' });
       if (typeof abrirModalTemplateTarefa === 'function') {
         addTplBtn = actionsBox.createEl('button', {
           cls: 'snoopy-btn-action snoopy-btn-sm',
-          text: '⚡ + TEMPLATE'
+          text: '+ TEMPLATE'
         });
         addTplBtn.onclick = abrirModalTemplateTarefa;
       }
@@ -66,11 +69,11 @@ const TarefasView = {
     });
 
     const tabsDef = [
-      { id: 'hoje', label: '🔥 HOJE' },
-      { id: 'amanha', label: '📅 AMANHÃ' },
-      { id: 'semana', label: '🗓️ ESTA SEMANA' },
-      { id: 'todas', label: '📥 PRÓXIMAS' },
-      { id: 'concluidas', label: '✓ CONCLUÍDAS' }
+      { id: 'hoje', label: 'HOJE' },
+      { id: 'amanha', label: 'AMANHÃ' },
+      { id: 'semana', label: 'ESTA SEMANA' },
+      { id: 'todas', label: 'PRÓXIMAS' },
+      { id: 'concluidas', label: 'CONCLUÍDAS' }
     ];
 
     let currentTab = 'hoje';
@@ -91,8 +94,8 @@ const TarefasView = {
     });
 
     const todoListContainer = tasksCard.createEl('div', {
-      cls: 'snoopy-kanban-cards-box',
-      attr: { style: 'min-height: 180px; max-height: 380px; overflow-y: auto; padding-right: 4px;' }
+      cls: 'snoopy-tasks-list-box',
+      attr: { style: 'min-height: 180px; max-height: 420px; overflow-y: auto; padding-right: 4px;' }
     });
 
     // Cache em memória
@@ -100,7 +103,7 @@ const TarefasView = {
     let cacheTarefasConcluidasHoje = [];
 
     async function recarregarEAtualizarTarefas() {
-      const escopo = dv.pages('"01_Inbox" or "02_Projetos" or "03_Estudos"')
+      const escopo = dv.pages('"01_Inbox" or "02_Projetos" or "03_Estudos" or "04_Leituras"')
         .where(p => p.file && !p.file.path.includes('Template') && !p.file.path.includes('00_Home') && !p.file.name.includes('Painel'));
 
       const allTasks = escopo.file.tasks
@@ -162,18 +165,32 @@ const TarefasView = {
       const cAmanha = cacheTarefasPendentes.filter(t => t.dueStr === amanhãStr).length;
       const cSemana = cacheTarefasPendentes.filter(t => t.statusPrazo === 'futura' && t.dueStr <= semanaStr).length;
 
-      if (tabBtns['hoje']) tabBtns['hoje'].textContent = `🔥 HOJE (${cHoje})`;
-      if (tabBtns['amanha']) tabBtns['amanha'].textContent = `📅 AMANHÃ (${cAmanha})`;
-      if (tabBtns['semana']) tabBtns['semana'].textContent = `🗓️ ESTA SEMANA (${cSemana})`;
-      if (tabBtns['todas']) tabBtns['todas'].textContent = `📥 PRÓXIMAS (${cacheTarefasPendentes.length})`;
-      if (tabBtns['concluidas']) tabBtns['concluidas'].textContent = `✓ CONCLUÍDAS (${cacheTarefasConcluidasHoje.length})`;
+      if (tabBtns['hoje']) tabBtns['hoje'].textContent = `HOJE (${cHoje})`;
+      if (tabBtns['amanha']) tabBtns['amanha'].textContent = `AMANHÃ (${cAmanha})`;
+      if (tabBtns['semana']) tabBtns['semana'].textContent = `ESTA SEMANA (${cSemana})`;
+      if (tabBtns['todas']) tabBtns['todas'].textContent = `PRÓXIMAS (${cacheTarefasPendentes.length})`;
+      if (tabBtns['concluidas']) tabBtns['concluidas'].textContent = `CONCLUÍDAS (${cacheTarefasConcluidasHoje.length})`;
 
       if (filtradas.length === 0) {
-        todoListContainer.innerHTML = `
-          <div class="snoopy-meta" style="color: var(--text-muted); text-align: center; padding: 24px 0; font-size: 12px;">
-            ${currentTab === 'hoje' ? '🎉 Nenhuma tarefa pendente para hoje!' : 'Nenhuma tarefa nesta categoria.'}
-          </div>
-        `;
+        if (ctx.UIKit && typeof ctx.UIKit.criarEstadoVazio === 'function') {
+          ctx.UIKit.criarEstadoVazio(todoListContainer, {
+            icon: 'list-checks',
+            titulo: currentTab === 'hoje' ? 'Nenhuma tarefa pendente para hoje' : 'Nenhuma tarefa nesta categoria',
+            descricao: currentTab === 'hoje' ? 'Aproveite para focar em estudos ou avançar projetos no Kanban.' : 'Cadastre novas tarefas para planejar seu fluxo diário.',
+            acao: {
+              label: '+ NOVA TAREFA',
+              icon: 'plus',
+              variant: 'action',
+              onClick: abrirModalNovaTarefa
+            }
+          });
+        } else {
+          todoListContainer.innerHTML = `
+            <div class="snoopy-meta" style="color: var(--text-muted); text-align: center; padding: 24px 0; font-size: 12px;">
+              ${currentTab === 'hoje' ? 'Nenhuma tarefa pendente para hoje.' : 'Nenhuma tarefa nesta categoria.'}
+            </div>
+          `;
+        }
         return;
       }
 
@@ -182,41 +199,55 @@ const TarefasView = {
         const filePath = t.path || (t.link ? t.link.path : null);
         const fileName = t.link ? (t.link.display || t.link.path.split('/').pop().replace(/\.md$/, '')) : (filePath ? filePath.split('/').pop().replace(/\.md$/, '') : 'Nota');
 
-        let badgeIcone = '📄 ';
+        let badgeIconName = 'file-text';
         let badgeLabel = fileName;
         let originBadgeStyle = 'background: rgba(255, 255, 255, 0.05); color: #a1a1aa; border: 1px solid rgba(255, 255, 255, 0.08);';
 
         if (filePath) {
           if (filePath.startsWith('02_Projetos/')) {
-            badgeIcone = '🎯 ';
+            badgeIconName = 'target';
             originBadgeStyle = 'background: rgba(167, 139, 250, 0.12); color: #c4b5fd; border: 1px solid rgba(167, 139, 250, 0.25);';
           } else if (filePath.startsWith('03_Estudos/')) {
-            badgeIcone = '📚 ';
+            badgeIconName = 'book-open';
             originBadgeStyle = 'background: rgba(96, 165, 250, 0.12); color: #93c5fd; border: 1px solid rgba(96, 165, 250, 0.25);';
           } else if (filePath.startsWith('04_Leituras/')) {
-            badgeIcone = '📖 ';
+            badgeIconName = 'book-open';
             originBadgeStyle = 'background: rgba(56, 189, 248, 0.12); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.25);';
           } else if (filePath.startsWith('01_Inbox/Diário/')) {
-            badgeIcone = '📝 ';
+            badgeIconName = 'calendar';
             badgeLabel = 'Diário';
           }
         }
 
         const card = todoListContainer.createEl('div', { 
-          cls: 'snoopy-kanban-card',
-          attr: { style: 'padding: 6px 10px; margin-bottom: 3px; display: flex; align-items: center; justify-content: space-between; gap: 8px; border-radius: 6px;' } 
+          cls: 'snoopy-task-card'
         });
 
         const label = card.createEl('label', { 
-          attr: { style: 'display: flex; align-items: center; gap: 7px; cursor: pointer; flex: 1; overflow: hidden; min-width: 0;' } 
+          attr: { style: 'display: flex; align-items: center; gap: 8px; cursor: pointer; flex: 1; overflow: hidden; min-width: 0;' } 
         });
 
         const cb = label.createEl('input', { cls: 'snoopy-circle-check', attr: { type: 'checkbox' } });
         cb.checked = item.completed;
 
         if (item.periodo) {
-          const ico = item.periodo.split(' ')[0] || '🌅';
-          label.createEl('span', { text: ico, attr: { style: 'font-size: 11px; flex-shrink: 0;', title: `Período: ${item.periodo}` } });
+          const isManha = /manh|🌅/i.test(item.periodo);
+          const isTarde = /tard|☀️/i.test(item.periodo);
+          const isNoite = /noit|🌙/i.test(item.periodo);
+          const pSpan = label.createEl('span', { 
+            attr: { 
+              style: 'font-size: 11px; flex-shrink: 0; display: inline-flex; align-items: center;', 
+              title: `Período: ${isManha ? 'Manhã' : isTarde ? 'Tarde' : 'Noite'}` 
+            } 
+          });
+          if (ctx.renderIcon) {
+            if (isManha) ctx.renderIcon(pSpan, 'sunrise', { size: 12, color: '#fdba74' });
+            else if (isTarde) ctx.renderIcon(pSpan, 'sun', { size: 12, color: '#fbbf24' });
+            else if (isNoite) ctx.renderIcon(pSpan, 'moon', { size: 12, color: '#818cf8' });
+          } else {
+            pSpan.className = 'snoopy-emoji-meta';
+            pSpan.textContent = item.periodo.split(' ')[0] || '';
+          }
         }
 
         label.createEl('span', { 
@@ -224,24 +255,38 @@ const TarefasView = {
           attr: { style: `font-size: 12.5px; font-weight: 500; color: ${item.completed ? 'var(--text-muted)' : 'var(--text-normal)'}; ${item.completed ? 'text-decoration: line-through;' : ''} line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;` } 
         });
 
-        const badgesCol = card.createEl('div', { attr: { style: 'display: flex; align-items: center; gap: 5px; flex-shrink: 0;' } });
+        const badgesCol = card.createEl('div', { attr: { style: 'display: flex; align-items: center; gap: 6px; flex-shrink: 0;' } });
+
+        if (item.progresso) {
+          const progBadge = badgesCol.createEl('span', {
+            cls: `snoopy-task-prog-chip ${item.progresso.pct >= 100 || item.completed ? 'prog-concluido' : ''}`,
+            attr: { title: `Meta: ${item.progresso.rotulo}${item.progresso.pct !== null ? ` (${item.progresso.pct}%)` : ''}` }
+          });
+          if (ctx.renderIcon) {
+            ctx.renderIcon(progBadge, item.progresso.pct >= 100 || item.completed ? 'check' : 'zap', { size: 10 });
+          }
+          progBadge.createEl('span', { text: item.progresso.rotulo });
+        }
 
         if (filePath) {
           const linkEl = badgesCol.createEl('a', { 
             cls: 'snoopy-todo-source',
             attr: { 
               title: `Abrir nota: ${filePath}`,
-              style: `${originBadgeStyle} padding: 1px 5px; font-size: 10px; border-radius: 3px; text-decoration: none; cursor: pointer; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;`
-            },
-            text: `${badgeIcone}${badgeLabel}` 
+              style: `${originBadgeStyle} padding: 1px 6px; font-size: 10px; border-radius: 4px; text-decoration: none; cursor: pointer; max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px;`
+            }
           });
+          if (ctx.renderIcon) {
+            ctx.renderIcon(linkEl, badgeIconName, { size: 10 });
+          }
+          linkEl.createEl('span', { text: badgeLabel });
           linkEl.onclick = (e) => { e.preventDefault(); e.stopPropagation(); app.workspace.openLinkText(filePath, '', false); };
         }
 
         if (item.pomosEst) {
           const pomoBadge = badgesCol.createEl('span', {
             cls: 'snoopy-micro',
-            attr: { style: 'padding: 1px 4px; border-radius: 3px; background: rgba(251, 146, 60, 0.12); color: #fdba74; display: inline-flex; align-items: center; gap: 3px;' }
+            attr: { style: 'padding: 1px 5px; border-radius: 4px; background: rgba(251, 146, 60, 0.12); color: #fdba74; display: inline-flex; align-items: center; gap: 3px;' }
           });
           if (ctx.renderIcon) ctx.renderIcon(pomoBadge, 'clock', { size: 10, color: '#fdba74' });
           pomoBadge.createEl('span', { text: `${item.pomosEst}p` });

@@ -699,7 +699,7 @@ class ModaisLeituras {
     modalBox.innerHTML = `
       <div class="snoopy-card-header">
         <span class="snoopy-section-title" style="font-size: 13px;">Adicionar Gênero / Tema</span>
-        <button id="modal-close-gen" class="snoopy-modal-close" title="Fechar">✕</button>
+        <button id="modal-close-gen" class="snoopy-modal-close" title="Fechar"></button>
       </div>
 
       <div>
@@ -902,7 +902,7 @@ class ModaisLeituras {
     modalBox.innerHTML = `
       <div class="snoopy-card-header">
         <span class="snoopy-section-title">Editar Metadados do Livro</span>
-        <button id="modal-close-edit" class="snoopy-modal-close" title="Fechar">✕</button>
+        <button id="modal-close-edit" class="snoopy-modal-close" title="Fechar"></button>
       </div>
 
       <div style="display: flex; gap: 8px;">
@@ -1058,7 +1058,7 @@ class ModaisLeituras {
     modalBox.innerHTML = `
       <div class="snoopy-card-header" style="border-bottom-color: rgba(239, 68, 68, 0.3);">
         <span class="snoopy-section-title" style="color: #fca5a5;">Excluir Livro</span>
-        <button id="modal-close-del" class="snoopy-modal-close" title="Fechar">✕</button>
+        <button id="modal-close-del" class="snoopy-modal-close" title="Fechar"></button>
       </div>
 
       <div style="font-size: 13px; color: var(--text-normal); line-height: 1.5;">
@@ -1116,7 +1116,7 @@ class ModaisLeituras {
     modalBox.innerHTML = `
       <div class="snoopy-card-header">
         <span class="snoopy-section-title">Captura Rápida de Anotação</span>
-        <button id="modal-close-note" class="snoopy-modal-close" title="Fechar">✕</button>
+        <button id="modal-close-note" class="snoopy-modal-close" title="Fechar"></button>
       </div>
       <div style="font-size: 12px; color: #a1a1aa;">Livro: <strong>${livroTitulo}</strong></div>
 
@@ -1198,7 +1198,7 @@ class ModaisLeituras {
     modalBox.innerHTML = `
       <div class="snoopy-card-header">
         <span class="snoopy-section-title">Vincular Matéria de Estudo</span>
-        <button id="modal-close-vinc" class="snoopy-modal-close" title="Fechar">✕</button>
+        <button id="modal-close-vinc" class="snoopy-modal-close" title="Fechar"></button>
       </div>
       <div style="font-size: 12px; color: #a1a1aa;">Selecione uma matéria de <strong>03_Estudos/</strong>:</div>
 
@@ -1283,7 +1283,7 @@ class ModaisLeituras {
     modalBox.innerHTML = `
       <div class="snoopy-card-header">
         <span class="snoopy-section-title">Atualizar Progresso</span>
-        <button id="modal-close-prog" class="snoopy-modal-close" title="Fechar">✕</button>
+        <button id="modal-close-prog" class="snoopy-modal-close" title="Fechar"></button>
       </div>
       <div style="font-size: 12px; color: #a1a1aa;">${livroTitulo}</div>
 
@@ -1387,7 +1387,7 @@ class ModaisLeituras {
     modalBox.innerHTML = `
       <div class="snoopy-card-header">
         <span class="snoopy-section-title">Definir Meta Diária</span>
-        <button id="modal-close-meta" class="snoopy-modal-close" title="Fechar">✕</button>
+        <button id="modal-close-meta" class="snoopy-modal-close" title="Fechar"></button>
       </div>
 
       <div class="snoopy-modal-label">Meta diária de leitura (páginas por dia):</div>
@@ -1452,7 +1452,7 @@ class ModaisLeituras {
     modalBox.innerHTML = `
       <div class="snoopy-card-header">
         <span class="snoopy-section-title">Buscar Livro na Nuvem</span>
-        <button id="modal-close-search" class="snoopy-modal-close" title="Fechar">✕</button>
+        <button id="modal-close-search" class="snoopy-modal-close" title="Fechar"></button>
       </div>
       <div class="snoopy-modal-label">Digite o título, autor ou assunto (busca Google Books, Open Library e BrasilAPI):</div>
 

@@ -26,12 +26,12 @@ function listarArquivosRecursivo(dir, filtro = () => true) {
   return arquivos;
 }
 
-const versao = '0.8.0';
+const versao = '0.9.0';
 const changelog = [
-  'Motor de templates conectados de tarefas (+ TEMPLATE)',
-  'Pomodoro com síntese sonora nativa Web Audio e Modo Foco imersivo em tela cheia',
-  'Opção de exclusão direta de card no menu de 3 pontinhos do Kanban',
-  'Arquitetura de atualização segura com backup e proteção de notas pessoais'
+  'Sistema de fontes embutidas offline-first (Inter, JetBrains Mono e Source Serif 4)',
+  'UIKit v2 com 16 novos vetores SVG Lucide nativos e componentes de Estado Vazio e Pluralização',
+  'Anatomia de cabeçalho unificada e padronização dos nomes dos módulos (Tarefas, Hábitos, Pomodoro, Jardim de Constância, Estudos, Estante, Kanban)',
+  'Diretrizes de design v2.1 com política de zero emojis na interface e botões principais em maiúsculo'
 ];
 
 // Zona Motor
@@ -39,6 +39,7 @@ const arquivosMotor = [
   ...listarArquivosRecursivo('99_Meta/Snoopy', p => !p.endsWith('manifest.json') && !p.includes('.install.json') && !p.includes('.backups')),
   ...listarArquivosRecursivo('99_Meta/Templates/Tarefas', p => p.endsWith('.json')),
   ...listarArquivosRecursivo('99_Meta/Templates', p => p.endsWith('.md')),
+  '.obsidian/snippets/00_Snoopy_Fonts.css',
   '.obsidian/snippets/05_Snoopy_Theme.css'
 ];
 

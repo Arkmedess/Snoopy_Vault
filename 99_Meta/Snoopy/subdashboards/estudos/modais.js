@@ -83,7 +83,7 @@ class ModaisEstudos {
           <div class="snoopy-section-title">+ Nova Matéria de Estudo</div>
           <div class="snoopy-meta">Cadastre uma matéria para cronometrar, agendar e revisar</div>
         </div>
-        <button id="modal-close-mat" class="snoopy-modal-close" title="Fechar">✕</button>
+        <button id="modal-close-mat" class="snoopy-modal-close" title="Fechar"></button>
       </div>
 
       <div>
@@ -248,7 +248,7 @@ Conceito::Definição
           <div class="snoopy-section-title">Editar Matéria: ${disc.nome}</div>
           <div class="snoopy-meta">Ajuste área, materiais anexos e métricas reais</div>
         </div>
-        <button id="modal-close-edit" class="snoopy-modal-close" title="Fechar">✕</button>
+        <button id="modal-close-edit" class="snoopy-modal-close" title="Fechar"></button>
       </div>
 
       <div>
@@ -389,11 +389,11 @@ Conceito::Definição
           <div class="snoopy-section-title">Organizar Fila do Ciclo</div>
           <div class="snoopy-meta">Defina a ordem contínua em que as matérias serão estudadas</div>
         </div>
-        <button id="modal-close-ciclo-cfg" class="snoopy-modal-close" title="Fechar">✕</button>
+        <button id="modal-close-ciclo-cfg" class="snoopy-modal-close" title="Fechar"></button>
       </div>
 
       <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 10px; font-size: 11.5px; color: #d4d4d8; line-height: 1.4;">
-        💡 <b>Como funciona:</b> A fila roda do item 1 até o último e recomeça. Use as setas para ajustar quem vem primeiro. Desmarque matérias que você não deseja estudar nesta fase.
+        <b>Como funciona:</b> A fila roda do item 1 até o último e recomeça. Use as setas para ajustar quem vem primeiro. Desmarque matérias que você não deseja estudar nesta fase.
       </div>
 
       <div id="modal-ciclo-lista" style="display: flex; flex-direction: column; gap: 6px; max-height: 280px; overflow-y: auto; padding-right: 4px;">
@@ -537,7 +537,7 @@ Conceito::Definição
     modalBox.innerHTML = `
       <div class="snoopy-card-header">
         <span class="snoopy-section-title">Registrar Estudo & Questões</span>
-        <button id="modal-close-sess" class="snoopy-modal-close" title="Fechar">✕</button>
+        <button id="modal-close-sess" class="snoopy-modal-close" title="Fechar"></button>
       </div>
 
       <div>
@@ -687,7 +687,7 @@ Conceito::Definição
     modalBox.innerHTML = `
       <div class="snoopy-card-header">
         <span class="snoopy-section-title">Vincular Prova / PDF</span>
-        <button id="modal-close-vinc" class="snoopy-modal-close" title="Fechar">✕</button>
+        <button id="modal-close-vinc" class="snoopy-modal-close" title="Fechar"></button>
       </div>
       <div style="font-size: 12px; color: #a1a1aa;">Disciplina: <b>${disc.nome}</b></div>
 

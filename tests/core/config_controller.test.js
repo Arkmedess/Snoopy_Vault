@@ -68,3 +68,4 @@ describe('ConfigController - Orquestração de Configurações e Estado do Cofre
     assert.equal(status.ultimoBackup, 'backup-2026-10-11T12-00-00-000Z');
   });
 });
+

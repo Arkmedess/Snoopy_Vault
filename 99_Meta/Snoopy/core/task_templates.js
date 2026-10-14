@@ -417,9 +417,22 @@ const TaskTemplates = {
       }
     }
 
-    // 4. Formata a representação em linha de tarefa com link para a nota
+    // 4. Formata a representação em linha de tarefa com link para a nota e meta/progresso
+    const metaQtd = dados.meta_qtd || template.meta_qtd;
+    const unidadeMedida = dados.unidade_medida || template.unidade_medida || (template.tipo === 'leitura' ? 'págs' : template.tipo === 'estudo' ? 'min' : '');
+    const progFeito = dados.progresso_feito;
+
+    let progStr = '';
+    if (metaQtd) {
+      if (progFeito !== undefined && progFeito !== null && progFeito !== '') {
+        progStr = ` [${progFeito}/${metaQtd} ${unidadeMedida}]`;
+      } else {
+        progStr = ` [${metaQtd}${unidadeMedida}]`;
+      }
+    }
+
     const prioChar = vinculos.kanban.prioridade === 'Alta' ? ' ⏫' : vinculos.kanban.prioridade === 'Baixa' ? ' 🔽' : ' 🔼';
-    const tarefaTexto = `- [ ] [[${caminhoSugerido}|${titulo}]] 📅 ${dataISO}${prioChar}`;
+    const tarefaTexto = `- [ ] [[${caminhoSugerido}|${titulo}]]${progStr} 📅 ${dataISO}${prioChar}`;
 
     return {
       notaPath: caminhoSugerido,

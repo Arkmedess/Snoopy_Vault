@@ -76,6 +76,7 @@ return {
         if (TarefasModal && typeof TarefasModal.abrirModalNovaTarefa === 'function') {
           TarefasModal.abrirModalNovaTarefa({
             app: ctx.app,
+            ctx,
             dv: ctx.dv,
             todayStr: ctx.todayStr,
             DateUtils: ctx.DateUtils,
@@ -110,6 +111,7 @@ return {
             t,
             filePath,
             app: ctx.app,
+            ctx,
             todayStr: ctx.todayStr,
             DateUtils: ctx.DateUtils,
             VaultStore: ctx.VaultStore,

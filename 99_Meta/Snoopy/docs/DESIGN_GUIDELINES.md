@@ -1,152 +1,250 @@
 # Guia de Estilo & Diretrizes de Design do Snoopy Vault
-**Versão:** 1.0  
+**Versão:** 2.1  
 **Stack de Interface:** Obsidian CSS Snippet + DataviewJS  
-**Inspiração Tipográfica & Visual:** Anthropic Design Language (Anthropic Sans / Styrene / Modern Minimal Clean Tech)
+**Inspiração Tipográfica & Visual:** Anthropic Design Language (Anthropic Sans / Tech Minimal Clean) + Editorial Serif Accent
 
 ---
 
 ## 1. Filosofia de Design & Identidade Visual
 
-O design do Snoopy Vault segue os princípios de **clareza técnica, legibilidade estrita e minimalismo moderno**:
-1. **Zero Efeito "IA Genérica":** Sem gradientes roxos/rosas genéricos, sem sombras volumosas falsas e sem layouts engessados.
-2. **Preto Profundo & Tons Monocromáticos:** Fundo primário `#070709`, painéis `#0d0d12`, bordas semitransparentes elegantes (`rgba(255, 255, 255, 0.08)` a `0.14`), com realces sutis em verde menta (`#86efac` / `#4ade80`) e azul técnico (`#60a5fa`).
-3. **Centralização Estrita de Tokens:** Nenhuma propriedade de fonte, tamanho de cabeçalho ou cor arbitrária deve ser declarada inline diretamente no JavaScript. Tudo deve derivar das variáveis CSS e de classes utilitárias semânticas.
+O design do Snoopy Vault é construído com base em **precisão técnica, legibilidade estrita e minimalismo funcional de cockpit**:
+1. **Zero Efeito "IA Genérica":** Rejeição categórica de gradientes roxos/rosas genéricos, bordas neon espalhafatosas, ilustrações decorativas infladas e sombras volumosas falsas.
+2. **Preto Profundo & Tons Monocromáticos:**
+   - **Superfície Primária (Mestre):** `#070709` (preto profundo absorvente).
+   - **Superfície Secundária (Painéis/Cartões):** `#0d0d12` (cinza escuro técnico neutro).
+   - **Superfície Interativa (Hover de Cartões):** `#121217`.
+   - **Campos de Entrada (Inputs/Selects):** `#121218`.
+3. **Bordas Semitransparentes Cirúrgicas:**
+   - Linhas estruturais com `rgba(255, 255, 255, 0.08)` em repouso e `rgba(255, 255, 255, 0.16)` no estado hover.
+4. **Paleta Semântica de Realce Focado:** Cores puramente utilitárias para sinalização de estado:
+   - **Verde Menta (`#86efac` / `#4ade80`):** Conclusão, progresso ativo e confirmação.
+   - **Laranja Técnico (`#fdba74`):** Atenção moderada, tarefas em andamento e prazos próximos.
+   - **Azul Técnico (`#60a5fa`):** Navegação, referências cruzadas e identificação de fontes.
+   - **Vermelho Discreto (`#f87171`):** Atrasos críticos e ações destrutivas irreversíveis.
+5. **Centralização Estrita de Tokens:** Nenhuma propriedade de tipografia, espaçamento ou cor pode ser escrita inline em código JavaScript. Todo estilo deve derivar exclusivamente das variáveis CSS do snippet [`05_Snoopy_Theme.css`](file:///home/arthur/Documents/Snoopy_Vault/.obsidian/snippets/05_Snoopy_Theme.css) e das classes semânticas utilitárias.
 
 ---
 
-## 2. Tipografia Global Centralizada
+## 2. Política Estrita de Zero Emojis na Interface
 
-A tipografia é configurada em um único ponto através de CSS Custom Properties (`:root`), permitindo substituição simples para o vault inteiro com fallback automático.
+Para garantir um ambiente de alta concentração, profissionalismo e estética sóbria, vigora a seguinte regra inegociável:
 
-### 2.1 Pilhas Tipográficas (Font Stacks)
+1. **Proibição Absoluta de Emojis em Elementos de Interface:**
+   - É expressamente proibido o uso de caracteres de emoji gráficos (ex.: 🎯, 🚀, 🔍, 🗑️, ⚙️, ✨, 🌅, ☀️, 🌙, ✓, ✕, 📅, ⚡, 🛡️, ⏪) em botões, títulos de seções, cartões, abas, diálogos modais, cabeçalhos, barras de ferramentas e mensagens `new Notice()`.
+   - Elementos visuais de status, ação ou identificação devem ser representados exclusivamente pelo **catálogo de ícones vetoriais SVG (Lucide)**.
+2. **Exceção Estrita e Controlada:**
+   - Emojis só são permitidos quando fizerem parte da sintaxe de metadados em texto markdown de plugins legados de terceiros no corpo de notas (ex.: `📅 YYYY-MM-DD`, `⏫`, `🔁` no padrão do plugin Obsidian Tasks). Mesmo nesses casos, quando parseados pelo motor DataviewJS, devem ser exibidos na UI através de ícones vetoriais correspondentes.
 
-| Categoria | Propriedade CSS | Stack Padrão (Anthropic Style) | Fallback |
+### 2.1 Tabela Canônica de De/Para (Substituição de Emojis por Ícones SVG)
+
+| Conceito / Intenção | Emoji Obsoleto | Ícone SVG Lucide Canônico | Caso de Uso na Interface |
+| :--- | :---: | :--- | :--- |
+| **Data / Calendário / Prazo** | 📅 | `calendar` | Datas de entrega, agendamento de tarefas e notas diárias. |
+| **Meta / Alvo Quantitativo** | 🎯 | `target` | Objetivos de estudo, metas de páginas e limites numéricos. |
+| **Modo Foco / Energia** | ⚡ | `zap` | Disparo do Modo Foco imersivo em tela cheia. |
+| **Excluir / Descartar** | 🗑️ | `trash-2` | Ação destrutiva no menu contextual e remoção de tarefas/notas. |
+| **Configurações / Sistema** | ⚙️ | `settings` | Subdashboard de manutenção, parâmetros e integrações. |
+| **Pesquisa / Busca** | 🔍 | `search` | Campo de filtro de templates e busca de anotações. |
+| **Ações / Mocks / Demonstração** | ✨ | `sparkles` | Criação de dados de demonstração ou geração assistida. |
+| **Manhã** | 🌅 | `sunrise` | Aba e filtro de tarefas programadas para a manhã. |
+| **Tarde** | ☀️ | `sun` | Aba e filtro de tarefas programadas para a tarde. |
+| **Noite** | 🌙 | `moon` | Aba e filtro de tarefas programadas para a noite. |
+| **Rotina / Hábitos Diários** | 🔁 | `repeat` | Rastreador de hábitos com recorrência cíclica. |
+| **Segurança / Backup / Zonas** | 🛡️ | `shield` | Mecanismo de proteção de dados e rollback do atualizador. |
+| **Rollback / Desfazer** | ⏪ | `undo-2` | Restauração atômica de versão anterior do cofre. |
+| **Sincronizar / Atualizar** | 🔄 | `refresh-cw` | Verificação de novas versões do motor no GitHub. |
+| **Concluído / Sucesso** | ✅ / ✓ | `check` / `check-circle` | Marcação de tarefa finalizada ou hábito cumprido. |
+| **Fechar / Cancelar** | ❌ / ✕ | `x` | Botão de encerramento de modais e cancelamento. |
+| **Atenção / Atraso** | ⚠️ | `alert-circle` | Sinalização de tarefa vencida ou erro operacional. |
+| **Leitura / Livro** | 📚 / 📖 | `book` / `book-open` / `library` | Estante Koreader e vitrine de leituras ativas. |
+| **Estudos / Aprendizado** | 🎓 | `graduation-cap` | Módulo de ciclo de estudos e planejamento acadêmico. |
+| **Ideia / Insight** | 💡 | `lightbulb` | Notas conceituais e sínteses de aprendizagem. |
+| **Métricas / Unidades** | 📏 | `ruler` | Configuração de unidade de medida (páginas, minutos, blocos). |
+
+---
+
+## 3. Sistema de Design Iconográfico (Lucide SVG Nativo)
+
+Todos os ícones da interface derivam do catálogo de vetores SVG puros, embutidos diretamente no microsserviço [`UIKit`](file:///home/arthur/Documents/Snoopy_Vault/99_Meta/Snoopy/core/ui_kit.js) e consumíveis via `ctx.renderIcon()` ou `UIKit.renderIcon()`.
+
+### 3.1 Especificação Técnica dos Vetores
+
+- **Formato:** SVG embutido nativo (sem requisições externas de rede e sem dependência de fontes de ícones).
+- **ViewBox:** `0 0 24 24`.
+- **Preenchimento:** `fill="none"`.
+- **Traçado (Stroke):** `stroke="currentColor"` com `stroke-width="2"`, `stroke-linecap="round"` e `stroke-linejoin="round"`.
+- **Comportamento no DOM:** O container do ícone é um elemento `<span class="snoopy-icon">` estilizado com `display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; line-height: 1;`.
+
+### 3.2 Escala Dimensional Ótica de Ícones
+
+| Classificação | Dimensão (`width` x `height`) | Aplicação no Sistema |
+| :--- | :--- | :--- |
+| **Micro** | `10px` a `12px` | Badges densas de metadados, indicadores em linhas de tabela, chips compactos. |
+| **Padrão (Botões)** | `14px` x `14px` | Botões `.snoopy-btn-action`, `.snoopy-btn-primary`, abas e botões de cabeçalho. |
+| **Barra de Ações (Action Bar)**| `15px` x `15px` | Botões de ícone `.snoopy-btn-icon` em cabeçalhos de modais e menus rápidos. |
+| **Seção / Cabeçalho de Card** | `16px` x `16px` | Títulos de painéis (ex.: `.snoopy-card-title`) e colunas do Kanban. |
+| **Destaque / Hero** | `20px` a `24px` | Controles centrais do Cockpit Pomodoro, estados vazios e Modo Foco. |
+
+### 3.3 Catálogo Canônico de Ícones (`UIKit.ICONS`)
+
+| Chave do Ícone | Categoria | Descrição Semântica |
+| :--- | :--- | :--- |
+| `calendar` | Navegação / Tempo | Representação de datas, notas diárias e agendamentos. |
+| `calendar-plus` | Ação / Tempo | Adiar prazo (+1 dia) no editor contextual. |
+| `clock` / `timer` | Tempo | Indicador de estimativa temporal e dial do Pomodoro. |
+| `play` | Pomodoro / Execução | Iniciar contagem do ciclo de foco ou carregar tarefa no cockpit. |
+| `pause` | Pomodoro | Pausar temporariamente o timer ativo. |
+| `rotate-ccw` | Pomodoro | Resetar o ciclo para o tempo inicial padrão. |
+| `zap` | Pomodoro / Foco | Ativar o Modo Foco imersivo em tela cheia com escurecimento profundo. |
+| `target` | Metas | Alvo numérico de execução quantitativa. |
+| `plus` | Operação | Criação de nova tarefa, novo projeto ou novo hábito. |
+| `plus-circle` | Operação | Ação aditiva em formulários e cards modais. |
+| `minus` | Operação | Decremento de valor ou minimização de bloco. |
+| `pencil` | Edição | Abertura do editor contextual de tarefa ou nota. |
+| `trash-2` | Destrutivo | Exclusão de card no Kanban ou descarte de item. |
+| `check` | Validação | Conclusão rápida de item. |
+| `check-circle` | Validação | Status de projeto concluído ou meta batida. |
+| `x` | Fechamento | Fechar modal, limpar filtro ou descartar janela. |
+| `more-vertical` | Ação Contextual | Menu de três pontinhos (`⋮`) **sempre visível** para ações do item. |
+| `external-link` | Navegação | Atalho para abrir a nota Markdown nativa no Obsidian. |
+| `arrow-up-right` | Navegação Externa | Indicador de salto para subdashboard (substitui o glifo `↗`). |
+| `skip-forward` | Fluxo | Pular matéria no ciclo de estudos contínuo. |
+| `list-checks` | Tarefas | Central e módulo de tarefas em execução. |
+| `library` | Leituras | Módulo Estante de livros e catálogo de volumes. |
+| `graduation-cap` | Conhecimento | Subdashboard e módulo de Estudos. |
+| `kanban` / `trello` | Estrutura | Quadro Kanban de fluxo de projetos e iniciativas. |
+| `bar-chart-3` | Métricas | Indicadores de desempenho e gráficos de assertividade. |
+| `percent` | Métricas | Taxa percentual de conclusão e acertos. |
+| `file-text` | Documentação | Origem de nota diária ou vínculo de arquivo. |
+| `info` | Ajuda / Instrução | Blocos orientadores e estados vazios com dicas operacionais. |
+| `grip-vertical` | Interação | Alça tátil de arrasto para reordenação de elementos (drag-and-drop). |
+| `search` | Filtro | Consulta textual instantânea em listas e templates. |
+| `filter` | Filtro | Alternância de critérios de visualização em painéis. |
+| `refresh-cw` | Sistema | Verificação e sincronização de dados do cofre. |
+| `undo-2` | Sistema | Reversão atômica de atualização (Rollback). |
+| `shield` | Sistema | Segurança arquitetural de 3 zonas e proteção de dados. |
+| `alert-circle` | Status | Alerta de item em atraso ou falha operacional. |
+| `book` / `book-open` | Conhecimento | Leituras do Bookshelf Koreader e anotações literárias. |
+| `book-plus` | Operação | Cadastrar novo livro na estante. |
+| `brain` | Aprendizado | Planejamento cognitivo e revisões espaçadas. |
+| `sprout` / `trees` | Aprendizado | Estágios do Jardim de Constância e níveis de Bloom. |
+| `code-2` | Domínio | Tarefas técnicas de engenharia e desenvolvimento de software. |
+| `database` | Sistema | Manutenção e limpeza de mocks de demonstração. |
+| `ruler` | Metrologia | Unidades de medida quantitativa configuráveis. |
+| `microscope` | Análise | Investigação detalhada e revisões profundas. |
+| `lightbulb` | Ideias | Captura de notas e conceitos no Inbox. |
+| `sunrise` / `sun` / `moon` | Período | Períodos do dia (Manhã, Tarde, Noite). |
+| `repeat` | Hábitos | Rotina recorrente de acompanhamento diário. |
+| `columns` | Estrutura | Organização em colunas e grades de alta densidade. |
+| `folder-plus` | Arquivo | Criação de novo projeto estruturado em pasta. |
+| `file-x` | Arquivo | Exclusão física ou descarte de nota do cofre. |
+| `bookmark` | Marcação | Fixação de item prioritário ou favorito. |
+| `star` / `star-half` | Avaliação | Classificação por estrelas de volumes lidos. |
+
+---
+
+## 4. Tipografia Global, Fontes Embutidas e Tokens CSS
+
+A tipografia do cofre foi projetada em **três camadas de resiliência**, garantindo independência completa de conexão com a internet e consistência em qualquer sistema operacional:
+
+1. **Camada 1 (Proprietária):** Caso instalada no sistema operacional, a fonte `"Anthropic Sans"` é assumida no topo da pilha.
+2. **Camada 2 (Embutida Offline-First):** O snippet [`00_Snoopy_Fonts.css`](file:///home/arthur/Documents/Snoopy_Vault/.obsidian/snippets/00_Snoopy_Fonts.css) embute em formato WOFF2 base64 as famílias `Snoopy Inter` (UI), `Snoopy Mono` (dados e códigos) e `Snoopy Display` (serif editorial para a data do banner).
+3. **Camada 3 (Fallbacks de Sistema):** Reconhecimento nativo de `JetBrainsMono Nerd Font`, `Inter`, `SF Mono`, `Menlo` e fallbacks do sistema.
+
+### 4.1 Pilhas Tipográficas (Font Stacks)
+
+| Categoria | Variável CSS | Pilha Declarada | Fallback de Último Nível |
 | :--- | :--- | :--- | :--- |
-| **Geral / UI** | `--snoopy-font-sans` | `"Anthropic Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif` | Sistema Nativo |
-| **Títulos & Destaques** | `--snoopy-font-heading` | `"Anthropic Sans", "Inter Display", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif` | Sans Serif |
-| **Dados & Metadados** | `--snoopy-font-mono` | `"JetBrains Mono", "Fira Code", "SF Mono", Menlo, Consolas, monospace` | Monospace Nativo |
+| **Interface / UI** | `--snoopy-font-sans` | `"Anthropic Sans", "Snoopy Inter", "Inter", "Geist"` | `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif` |
+| **Display (Banner)** | `--snoopy-font-display` | `"Snoopy Display", "Source Serif 4", "Fraunces", Georgia` | `"Noto Serif", serif` |
+| **Dados / Metadados** | `--snoopy-font-mono` | `"Snoopy Mono", "JetBrains Mono", "JetBrainsMono Nerd Font"` | `"Fira Code", "SF Mono", Menlo, monospace` |
 
-### 2.2 Escala Tipográfica Padronizada
+### 4.2 Escala Tipográfica Estrita (Tokens Fechados)
 
-| Nível / Uso | Classe Semântica | Tamanho | Peso | Letter-Spacing | Transform |
+| Token CSS | Tamanho | Peso | Letter-Spacing | Transform | Finalidade |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Título Principal (H1)** | `.snoopy-h1` | `20px` | `700` | `-0.02em` | Normal |
-| **Título de Seção (H2)** | `.snoopy-section-title` | `14.5px` | `700` | `+0.05em` | `uppercase` |
-| **Subtítulo / Módulo** | `.snoopy-sub-title` | `11px` | `700` | `+0.05em` | `uppercase` |
-| **Corpo / Cards** | `.snoopy-text-body` | `13px` | `400` / `500`| `normal` | Normal |
-| **Metadados / Badges** | `.snoopy-meta` | `11px` | `500` | `normal` | Normal (Mono) |
-| **Micro-labels / Status** | `.snoopy-micro` | `10px` | `600` | `+0.03em` | `uppercase` (Mono) |
+| `--snoopy-fs-hero` | `54px` | `700` | Normal | Normal | Mostrador gigante do Cockpit Pomodoro em repouso. |
+| `--snoopy-fs-display` | `26px` / `2.25rem` | `700` | `-0.01em` | Normal | Data por extenso no banner central (Serif). |
+| `--snoopy-fs-h1` | `18px` | `700` | `-0.02em` | Normal | Título de subdashboards em tela cheia. |
+| `--snoopy-fs-h2` | `14px` | `700` | `+0.05em` | `uppercase` | Título de card/painel (.snoopy-section-title). |
+| `--snoopy-fs-body` | `13px` | `400`/`500`| Normal | Normal | Texto corrido de tarefas, cartões e inputs. |
+| `--snoopy-fs-small` | `12px` | `500` | Normal | Normal | Subtítulos de painéis (.snoopy-card-subtitle), botões e abas. |
+| `--snoopy-fs-meta` | `11px` | `500` | Normal | Normal | Metadados mono, badges de arquivos e tags. |
+| `--snoopy-fs-micro` | `10px` | `600` | `+0.05em` | `uppercase` | Overlines (.snoopy-overline) e cabeçalhos de tabela (Mono). |
 
 ---
 
-## 3. Tokens de Cor e Contraste
+## 5. Anatomia Canônica de Cabeçalhos e Nomenclatura dos Módulos
 
-Todas as cores são semânticas e sincronizadas com as variáveis do Obsidian e Snippet:
+Para erradicar a mistura de idiomas e eliminar títulos genéricos, os 6 módulos do dashboard adotam títulos concisos em português e anatomia em duas linhas:
 
-```css
-:root {
-  /* Tipografia */
-  --snoopy-font-sans: "Anthropic Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --snoopy-font-heading: "Anthropic Sans", "Inter Display", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --snoopy-font-mono: "JetBrains Mono", "Fira Code", "SF Mono", Menlo, Consolas, monospace;
+### 5.1 Nomenclatura dos Módulos
 
-  /* Superfícies & Cores de Fundo */
-  --snoopy-bg-main: #070709;
-  --snoopy-bg-card: #0d0d12;
-  --snoopy-bg-card-hover: #121217;
-  --snoopy-bg-input: #121218;
+| Título Oficial (H2) | Ícone Lucide (16px) | Subtítulo Descritivo (.snoopy-card-subtitle) | Substituição de Nome Antigo |
+| :--- | :--- | :--- | :--- |
+| **TAREFAS** | `list-checks` | *O que precisa sair hoje* | Substitui *Central de Tarefas · Núcleo de Execução* |
+| **HÁBITOS** | `repeat` | *Rituais diários e frequência* | Substitui *Hábitos de Hoje* |
+| **POMODORO** | `timer` | *Sessão de foco e intervalo* | Substitui *Pomodoro Focus Cockpit* |
+| **JARDIM DE CONSTÂNCIA** | `sprout` | *Histórico e ciclos acumulados* | Substitui *Histórico & Constância de Foco* |
+| **ESTUDOS** | `graduation-cap` | *Ciclo de estudos e matérias ativas* | Substitui *Estudos & Ciclo Ativo* |
+| **ESTANTE** | `library` | *Leituras ativas e biblioteca* | Substitui *Bookshelf de Leituras* |
+| **KANBAN** | `kanban` | *Fluxo contínuo de iniciativas* | Substitui *Iniciativas em Andamento* |
 
-  /* Bordas */
-  --snoopy-border: rgba(255, 255, 255, 0.08);
-  --snoopy-border-subtle: rgba(255, 255, 255, 0.05);
-  --snoopy-border-hover: rgba(255, 255, 255, 0.16);
+### 5.2 Anatomia Visual do Cabeçalho (.snoopy-card-header)
 
-  /* Texto */
-  --snoopy-text-primary: #ffffff;
-  --snoopy-text-normal: #e4e4e7;
-  --snoopy-text-muted: #a1a1aa;
-  --snoopy-text-faint: #71717a;
-
-  /* Realces Semânticos */
-  --snoopy-accent-blue: #60a5fa;
-  --snoopy-accent-green: #86efac;
-  --snoopy-accent-orange: #fdba74;
-}
+```text
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ [ícone 16px] TÍTULO DO MÓDULO (H2)                     [+ AÇÃO PRINCIPAL]   │
+│ Subtítulo descritivo em sans 12px muted (sem caixa alta)                    │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 4. Componentes de Ação (Botões & Controles)
+## 6. Design System de Botões e Interações
 
-Todos os botões do Snoopy Vault seguem classes semânticas e modificadores de escala, eliminando paddings e font-sizes inline.
+### 6.1 Regra de Capitalização e Proeminência
 
-### 4.1 Variantes de Botão
-
-| Classe CSS | Descrição e Caso de Uso |
-| :--- | :--- |
-| `.snoopy-btn-action` | Botão secundário/neutro padrão (transparente com borda sutil e hover claro). |
-| `.snoopy-btn-primary` | Botão de destaque/ação primária (fundo com acento e alto contraste). |
-| `.snoopy-btn-mode` | Botão de alternância/modo (usado em abas compactas, timers e filtros). |
-| `.snoopy-btn-tab` | Botão de abas de escopo e navegação de segundo nível. |
-| `.snoopy-btn-icon` | Botão quadrado para ícones/ações pontuais (`padding: 0; min-width: 28px`). |
-| `.snoopy-btn-danger` | Variante de perigo/destrutiva (combina com `.snoopy-btn-action` ou `.snoopy-btn-icon`). |
-
-### 4.2 Modificadores de Escala
-
-| Classe Modificadora | Altura / Padding | Uso Típico |
-| :--- | :--- | :--- |
-| `.snoopy-btn-sm` | `padding: 3px 8px; font-size: 11px` | Linhas de tabelas, cartões densos, itens de lista. |
-| `.snoopy-btn-md` | `padding: 5px 12px; font-size: 12px` | Modais, toolbars principais, ações de formulário. |
-| `.snoopy-btn-lg` | `padding: 8px 16px; font-size: 13px` | Cockpit principal, CTAs de destaque. |
-| `.snoopy-btn-block` | `width: 100%` | Botões que ocupam toda a largura do container. |
+1. **Botões Principais (CTAs Primários e Criação):**
+   - Rótulo **sempre em maiúsculo**, acompanhado de ícone vetorial à esquerda:
+   - Exemplo: `+ NOVA TAREFA`, `+ NOVO HÁBITO`, `+ TEMPLATE`, `+ NOVO PROJETO`, `+ BUSCAR NA NUVEM`.
+2. **Botões Secundários, Abas e Ações de Linha:**
+   - Rótulo em **caixa normal (Sentence case)**:
+   - Exemplo: `Iniciar Foco`, `Reset`, `Modo Foco`, `Foco`, `Abrir nota`, `Avançar`, `Cancelar`, `Salvar alterações`.
+3. **Menu Contextual de Três Pontinhos (`more-vertical`):**
+   - Deve permanecer **sempre visível** (sem ocultação por hover), assegurando descobrimento imediato em telas desktop e mobile.
 
 ---
 
-## 5. Estrutura de Layout e Containers
+## 7. Componentes de Resiliência: Estado Vazio e Concordância Gramatical
 
-| Classe Utilitária | Propósito | Comportamento CSS |
-| :--- | :--- | :--- |
-| `.snoopy-card-header` | Cabeçalho padronizado de painéis | `display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--snoopy-border);` |
-| `.snoopy-toolbar` | Barra horizontal de ações e botões | `display: flex; align-items: center; gap: 8px; flex-wrap: wrap;` |
-| `.snoopy-modal-close` | Botão de fechamento no topo de modais | Posicionamento ou alinhamento com hover transparente |
+### 7.1 Componente Padronizado de Estado Vazio (`.snoopy-empty`)
 
----
+Quando uma coluna do Kanban, lista de tarefas ou estante não contiver itens, é expressamente proibido exibir textos crus soltos. Deve ser invocado `UIKit.criarEstadoVazio()`:
+- Ícone de 24px em `--snoopy-muted`.
+- Título em `--snoopy-fs-body` (`600`, alto contraste).
+- Descrição de apoio orientando a ação do usuário em `--snoopy-fs-small`.
+- Botão CTA integrado para resolver o estado vazio imediatamente (ex.: `+ NOVA TAREFA`).
 
-## 6. Microsserviço UIKit (`core/ui_kit.js`)
+### 7.2 Helper de Concordância Gramatical (`UIKit.pluralizar()`)
 
-Para módulos dinâmicos DataviewJS, o helper `UIKit` encapsula a criação declarativa de elementos padronizados:
-
-```javascript
-// Criar botão padronizado
-const botao = UIKit.criarBotao(container, {
-  texto: "Nova Tarefa",
-  icone: "plus",
-  variante: "primary", // 'action' | 'primary' | 'mode' | 'tab' | 'icon' | 'danger'
-  tamanho: "md",       // 'sm' | 'md' | 'lg'
-  onClick: () => abrirModal()
-});
-
-// Criar cabeçalho de cartão com título e toolbar
-const header = UIKit.criarCardHeader(container, {
-  titulo: "Quadro Kanban",
-  icone: "trello",
-  acoes: [
-    { texto: "+ Item", variante: "primary", tamanho: "sm", onClick: () => novoItem() }
-  ]
-});
-```
+Para evitar anomalias de microcopy como *"1 matérias"* ou *"1 pendente(s)"*, todo contador textual deve passar por `UIKit.pluralizar(qtd, singular, plural)`:
+- `UIKit.pluralizar(1, 'matéria', 'matérias')` → `"1 matéria"`
+- `UIKit.pluralizar(4, 'matéria', 'matérias')` → `"4 matérias"`
+- `UIKit.pluralizar(0, 'matéria', 'matérias')` → `"0 matérias"`
 
 ---
 
-## 7. Regras de Engenharia para os Módulos (JavaScript)
+## 8. Modais de Referência: Action Bars Compactas
 
-1. **Proibição de `font-family` inline:** Nunca injetar `style="font-family: monospace;"` ou `font-family: sans-serif;` em templates de strings JS.
-2. **Proibição de paddings e fontes inline em botões:** Sempre utilizar variantes `.snoopy-btn-*` e modificadores `.snoopy-btn-sm|md|lg`.
-3. **Uso de Classes Utilitárias:**
-   - Para metadados e chips com tipografia mono: usar a classe `.snoopy-meta` ou `.snoopy-micro`.
-   - Para títulos de cartões: usar `.snoopy-card-title` ou `.snoopy-section-title`.
-   - Para rótulos de campos em modais: usar `.snoopy-modal-label`.
-   - Para cabeçalhos e barras de botões: usar `.snoopy-card-header` e `.snoopy-toolbar`.
-4. **Modificação Única e Central:**
-   - Se o usuário desejar alternar a tipografia do Vault para qualquer outra fonte no futuro (ex.: `Geist Sans`, `Departure Mono`, `SF Pro`), basta editar as variáveis no topo do arquivo `.obsidian/snippets/05_Snoopy_Theme.css`. Todo o sistema responderá instantaneamente.
-
+Conforme demonstrado no modal **Editar Tarefa**, o cabeçalho superior direito deve concentrar as ações de atalho da entidade:
+1. **Ordem de Ações:**
+   - Botão de Foco (`play`)
+   - Botão de Adiar/Prazo (`calendar` ou `calendar-plus`)
+   - Botão de Abrir Nota Externa (`external-link`)
+   - Botão de Exclusão (`trash-2` em tom avermelhado)
+   - Divisor vertical fino (`width: 1px; height: 16px; background: rgba(255,255,255,0.12);`)
+   - Botão de Fechar (`x`)
+2. **Inputs e Formulários:**
+   - Inputs com cantos de `4px`, fundo `#121218`, borda sutil `rgba(255, 255, 255, 0.08)`.
+   - Foco com anel visível por teclado (`:focus-visible` com `box-shadow: var(--snoopy-focus-ring)`).

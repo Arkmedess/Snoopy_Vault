@@ -115,3 +115,4 @@ if (typeof module !== 'undefined' && module.exports) {
 }
 
 return ConfigController;
+

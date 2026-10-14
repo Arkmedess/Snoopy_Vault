@@ -41,10 +41,15 @@ return {
     const estudosHeader = estudosCol.createEl('div', { cls: 'snoopy-card-header' });
 
     estudosHeader.innerHTML = `
-      <a id="link-painel-estudos" class="snoopy-section-title-link" title="Abrir Subdashboard Completo de Estudos (Framework Estudei)">
-        ESTUDOS & CICLO ATIVO <span style="font-size: 14px; opacity: 0.6;">↗</span>
-      </a>
-      <span class="snoopy-meta">${estudos.length} matérias</span>
+      <div class="snoopy-card-header-main">
+        <a id="link-painel-estudos" class="snoopy-section-title-link" title="Abrir Subdashboard Completo de Estudos (Framework Estudei)">
+          ${ctx.UIKit && ctx.UIKit.ICONS && ctx.UIKit.ICONS['graduation-cap'] ? `<span class="snoopy-icon" style="width: 16px; height: 16px; color: var(--snoopy-muted);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">${ctx.UIKit.ICONS['graduation-cap']}</svg></span>` : ''}
+          ESTUDOS
+          ${ctx.UIKit && ctx.UIKit.ICONS && ctx.UIKit.ICONS['arrow-up-right'] ? `<span class="snoopy-icon" style="width: 13px; height: 13px; opacity: 0.6;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13">${ctx.UIKit.ICONS['arrow-up-right']}</svg></span>` : ''}
+        </a>
+        <span class="snoopy-card-subtitle">Ciclo de estudos e matérias ativas</span>
+      </div>
+      <span class="snoopy-meta">${ctx.UIKit && typeof ctx.UIKit.pluralizar === 'function' ? ctx.UIKit.pluralizar(estudos.length, 'matéria', 'matérias') : `${estudos.length} matérias`}</span>
     `;
 
     const linkPainelEstudos = estudosHeader.querySelector('#link-painel-estudos');
@@ -185,11 +190,16 @@ return {
     const leiturasHeader = leiturasCol.createEl('div', { cls: 'snoopy-card-header' });
 
     leiturasHeader.innerHTML = `
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <a id="link-painel-leituras" class="snoopy-section-title-link" title="Abrir pasta de leituras">
-          BOOKSHELF <span style="font-size: 14px; opacity: 0.6;">↗</span>
-        </a>
-        ${streakLeitura > 0 ? `<span class="snoopy-micro" style="padding: 1px 6px; border-radius: 4px; background: rgba(134, 239, 172, 0.1); color: #86efac; border: 1px solid rgba(134, 239, 172, 0.2); font-weight: 600;" title="${pagsHoje} págs lidas hoje">${streakLeitura}d ofensiva</span>` : ''}
+      <div class="snoopy-card-header-main">
+        <div class="snoopy-toolbar">
+          <a id="link-painel-leituras" class="snoopy-section-title-link" title="Abrir pasta de leituras">
+            ${ctx.UIKit && ctx.UIKit.ICONS && ctx.UIKit.ICONS['library'] ? `<span class="snoopy-icon" style="width: 16px; height: 16px; color: var(--snoopy-muted);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">${ctx.UIKit.ICONS['library']}</svg></span>` : ''}
+            ESTANTE
+            ${ctx.UIKit && ctx.UIKit.ICONS && ctx.UIKit.ICONS['arrow-up-right'] ? `<span class="snoopy-icon" style="width: 13px; height: 13px; opacity: 0.6;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13">${ctx.UIKit.ICONS['arrow-up-right']}</svg></span>` : ''}
+          </a>
+          ${streakLeitura > 0 ? `<span class="snoopy-micro" style="padding: 1px 6px; border-radius: 4px; background: rgba(134, 239, 172, 0.1); color: #86efac; border: 1px solid rgba(134, 239, 172, 0.2); font-weight: 600;" title="${pagsHoje} págs lidas hoje">${streakLeitura}d ofensiva</span>` : ''}
+        </div>
+        <span class="snoopy-card-subtitle">Leituras ativas e biblioteca</span>
       </div>
       <button id="btn-buscar-livro-nuvem" class="snoopy-nav-pill-btn snoopy-btn-sm" title="Buscar metadados de livro na nuvem via API">+ BUSCAR NA NUVEM</button>
     `;
@@ -291,7 +301,7 @@ return {
           htmlContent: `
             <div class="snoopy-card-header">
               <span class="snoopy-section-title">Buscar Livro no Bookshelf</span>
-              <button class="snoopy-modal-close" title="Fechar">✕</button>
+              <button class="snoopy-modal-close" title="Fechar"></button>
             </div>
             <div class="snoopy-modal-label">Digite o título ou autor (busca online via Open Library):</div>
             

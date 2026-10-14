@@ -23,8 +23,16 @@ const HabitosView = {
     const habitsTop = habitsCard.createEl('div', { attr: { style: 'display: flex; flex-direction: column; gap: 8px;' } });
     const habitsHeader = habitsTop.createEl('div', { cls: 'snoopy-card-header' });
 
-    habitsHeader.innerHTML = `
-      <span class="snoopy-section-title">HÁBITOS DE HOJE</span>
+    const mainTitleBox = habitsHeader.createEl('div', { cls: 'snoopy-card-header-main' });
+    const linhaTitulo = mainTitleBox.createEl('div', { cls: 'snoopy-toolbar' });
+    if (ctx && ctx.renderIcon) {
+      ctx.renderIcon(linhaTitulo, 'repeat', { size: 16, color: 'var(--snoopy-muted, #a1a1aa)' });
+    }
+    linhaTitulo.createEl('span', { cls: 'snoopy-section-title', text: 'HÁBITOS' });
+    mainTitleBox.createEl('span', { cls: 'snoopy-card-subtitle', text: 'Rituais diários e frequência' });
+
+    const habitsHeaderRight = habitsHeader.createEl('div', { cls: 'snoopy-toolbar' });
+    habitsHeaderRight.innerHTML = `
       <span id="snoopy-habit-pct" class="snoopy-micro" style="color: var(--snoopy-green-done); font-weight: bold;">0%</span>
     `;
 
@@ -36,14 +44,27 @@ const HabitosView = {
       attr: { style: 'display: flex; flex-direction: column; gap: 5px; max-height: 250px; overflow-y: auto; padding-right: 4px;' } 
     });
 
+    const renderIcon = (c, name, opts) => {
+      if (ctx && typeof ctx.renderIcon === 'function') return ctx.renderIcon(c, name, opts);
+      if (ctx && ctx.UIKit && typeof ctx.UIKit.renderIcon === 'function') return ctx.UIKit.renderIcon(c, name, opts);
+      return null;
+    };
+
     const habitsFooter = habitsCard.createEl('div', { 
       cls: 'snoopy-micro',
       attr: { style: 'display: flex; justify-content: space-between; align-items: center; color: #71717a; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.06);' } 
     });
     habitsFooter.innerHTML = `
       <span id="snoopy-open-daily-link" class="snoopy-meta" style="cursor: pointer;" title="Abrir nota diária de hoje">01_Inbox/Diário</span>
-      <button id="snoopy-manage-habits-btn" class="snoopy-btn-action snoopy-btn-sm" title="Cadastrar ou Modificar Hábitos">⚙️ GERENCIAR</button>
+      <button id="snoopy-manage-habits-btn" class="snoopy-btn-action snoopy-btn-sm" title="Cadastrar ou Modificar Hábitos" style="display: inline-flex; align-items: center; gap: 4px;"></button>
     `;
+
+    const manageBtn = habitsFooter.querySelector('#snoopy-manage-habits-btn');
+    if (manageBtn) {
+      renderIcon(manageBtn, 'settings', { size: 11 });
+      manageBtn.createEl('span', { text: 'GERENCIAR' });
+      manageBtn.onclick = () => abrirModalGerenciarHabitos();
+    }
 
     const dailyLink = habitsFooter.querySelector('#snoopy-open-daily-link');
     if (dailyLink) {
@@ -60,7 +81,7 @@ const HabitosView = {
       let escopoSelecionado = 'persistente';
 
       if (habitoParaEditar) {
-        const raw = habitoParaEditar.rawText;
+        const raw = habitoParaEditar.rawText || '';
         if (raw.includes('🌅') || /manh[ãa]/i.test(raw)) periodoSelecionado = 'manha';
         else if (raw.includes('☀️') || /tarde/i.test(raw)) periodoSelecionado = 'tarde';
         else if (raw.includes('🌙') || /noite/i.test(raw)) periodoSelecionado = 'noite';
@@ -77,24 +98,24 @@ const HabitosView = {
       }
 
       const modalHtml = `
-        <div class="snoopy-card-header">
-          <span class="snoopy-section-title">🎯 ${habitoParaEditar ? 'Modificar Hábito' : 'Gestão de Hábitos'}</span>
-          <button id="modal-close-btn" class="snoopy-modal-close" title="Fechar">✕</button>
+        <div class="snoopy-card-header" style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <span class="snoopy-section-title" style="font-size: 13px; font-weight: 700;">${habitoParaEditar ? 'MODIFICAR HÁBITO' : 'GESTÃO DE HÁBITOS'}</span>
+          <button id="modal-close-btn" class="snoopy-modal-close" title="Fechar"></button>
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 11px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 12px;">
           <div>
             <div class="snoopy-modal-label" style="margin-bottom: 4px;">Nome da atividade de disciplina:</div>
-            <input id="modal-habit-input" type="text" placeholder="Ex: Leitura 20 min, Meditação..." value="${habitoParaEditar ? habitoParaEditar.cleanName : ''}" style="width: 100%; background: #14141c; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 8px; color: #ffffff; font-size: 12px; outline: none;">
+            <input id="modal-habit-input" type="text" placeholder="Ex: Leitura 20 min, Meditação..." value="${habitoParaEditar ? (habitoParaEditar.cleanName || '').replace(/"/g, '&quot;') : ''}" class="snoopy-form-input" style="width: 100%; font-size: 12px; padding: 8px;">
           </div>
 
           <div>
             <div class="snoopy-modal-label" style="margin-bottom: 5px;">Período do Dia:</div>
             <div id="habit-periodos" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;">
-              <button type="button" class="chip-h-p" data-val="manha" style="background: rgba(255,255,255,0.04); color: #a1a1aa; border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; padding: 4px; font-size: 10.5px; cursor: pointer;">🌅 Manhã</button>
-              <button type="button" class="chip-h-p" data-val="tarde" style="background: rgba(255,255,255,0.04); color: #a1a1aa; border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; padding: 4px; font-size: 10.5px; cursor: pointer;">☀️ Tarde</button>
-              <button type="button" class="chip-h-p" data-val="noite" style="background: rgba(255,255,255,0.04); color: #a1a1aa; border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; padding: 4px; font-size: 10.5px; cursor: pointer;">🌙 Noite</button>
-              <button type="button" class="chip-h-p active" data-val="qualquer" style="background: rgba(255,255,255,0.12); color: #ffffff; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; padding: 4px; font-size: 10.5px; cursor: pointer;">⚡ Livre</button>
+              <button type="button" class="chip-h-p" data-val="manha" style="background: rgba(255,255,255,0.04); color: #a1a1aa; border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; padding: 4px; font-size: 10.5px; cursor: pointer;">Manhã</button>
+              <button type="button" class="chip-h-p" data-val="tarde" style="background: rgba(255,255,255,0.04); color: #a1a1aa; border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; padding: 4px; font-size: 10.5px; cursor: pointer;">Tarde</button>
+              <button type="button" class="chip-h-p" data-val="noite" style="background: rgba(255,255,255,0.04); color: #a1a1aa; border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; padding: 4px; font-size: 10.5px; cursor: pointer;">Noite</button>
+              <button type="button" class="chip-h-p active" data-val="qualquer" style="background: rgba(255,255,255,0.12); color: #ffffff; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; padding: 4px; font-size: 10.5px; cursor: pointer;">Livre</button>
             </div>
           </div>
 
@@ -130,7 +151,7 @@ const HabitosView = {
 
           <div class="snoopy-toolbar" style="justify-content: flex-end;">
             ${habitoParaEditar ? `<button id="btn-cancel-edit" class="snoopy-btn-action snoopy-btn-sm">Cancelar</button>` : ''}
-            <button id="btn-save-habit" class="snoopy-btn-primary snoopy-btn-sm">${habitoParaEditar ? '✓ Salvar Alterações' : '+ Cadastrar Hábito'}</button>
+            <button id="btn-save-habit" class="snoopy-btn-primary snoopy-btn-sm" style="font-weight: 700;">${habitoParaEditar ? 'Salvar Alterações' : '+ Cadastrar Hábito'}</button>
           </div>
         </div>
 
@@ -147,7 +168,12 @@ const HabitosView = {
         htmlContent: modalHtml,
         maxWidth: '470px',
         onMontar: async (box, fechar) => {
-          box.querySelector('#modal-close-btn').onclick = fechar;
+          const btnClose = box.querySelector('#modal-close-btn');
+          if (btnClose) {
+            btnClose.onclick = fechar;
+            renderIcon(btnClose, 'x', { size: 13 });
+          }
+
           const inputEl = box.querySelector('#modal-habit-input');
           if (inputEl) setTimeout(() => inputEl.focus(), 40);
 
@@ -217,6 +243,10 @@ const HabitosView = {
             const listEl = box.querySelector('#modal-habits-list');
             listEl.innerHTML = '';
             const dailyF = await garantirNotaDiaria();
+            if (!dailyF) {
+              listEl.innerHTML = `<div style="font-size: 11px; color: #71717a; text-align: center; padding: 12px;">Nota diária indisponível.</div>`;
+              return;
+            }
             const raw = await app.vault.read(dailyF);
             const lines = raw.split('\n');
             let inSec = false;
@@ -240,24 +270,44 @@ const HabitosView = {
             items.forEach(item => {
               const row = document.createElement('div');
               row.style.cssText = 'background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 5px; padding: 6px 8px; display: flex; align-items: center; justify-content: space-between; gap: 6px;';
-              row.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 6px; overflow: hidden; flex: 1;">
-                  <span style="font-size: 12px; font-weight: 500; color: #ffffff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.cleanName}</span>
-                  ${item.periodoIcon ? `<span style="font-size: 9.5px; padding: 1px 4px; border-radius: 3px; background: rgba(255,255,255,0.06); color: #d4d4d8;">${item.periodoIcon}</span>` : ''}
-                  ${item.freqTag ? `<span style="font-size: 9.5px; padding: 1px 4px; border-radius: 3px; background: rgba(134,239,172,0.1); color: #86efac;">🔁 ${item.freqTag}</span>` : ''}
-                </div>
-                <div class="snoopy-toolbar">
-                  <button class="b-edit snoopy-btn-icon" title="Editar hábito">✏️</button>
-                  <button class="b-del snoopy-btn-icon snoopy-btn-danger" title="Excluir hábito">🗑️</button>
-                </div>
-              `;
+              
+              const leftCol = row.createEl('div', { attr: { style: 'display: flex; align-items: center; gap: 6px; overflow: hidden; flex: 1; min-width: 0;' } });
+              leftCol.createEl('span', {
+                text: item.cleanName,
+                attr: { style: 'font-size: 12px; font-weight: 500; color: #ffffff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;' }
+              });
+              if (item.periodoIcon) {
+                leftCol.createEl('span', {
+                  text: item.periodoIcon,
+                  attr: { style: 'font-size: 9.5px; padding: 1px 4px; border-radius: 3px; background: rgba(255,255,255,0.06); color: #d4d4d8; flex-shrink: 0;' }
+                });
+              }
+              if (item.freqTag) {
+                leftCol.createEl('span', {
+                  text: item.freqTag,
+                  attr: { style: 'font-size: 9.5px; padding: 1px 4px; border-radius: 3px; background: rgba(134,239,172,0.1); color: #86efac; flex-shrink: 0;' }
+                });
+              }
 
-              row.querySelector('.b-edit').onclick = () => { fechar(); abrirModalGerenciarHabitos(item); };
-              row.querySelector('.b-del').onclick = async () => {
+              const actionsCol = row.createEl('div', { cls: 'snoopy-toolbar', attr: { style: 'gap: 3px; flex-shrink: 0;' } });
+              const btnEdit = actionsCol.createEl('button', {
+                cls: 'b-edit snoopy-btn-icon snoopy-btn-sm',
+                attr: { title: 'Editar hábito', type: 'button' }
+              });
+              renderIcon(btnEdit, 'pencil', { size: 11 });
+
+              const btnDel = actionsCol.createEl('button', {
+                cls: 'b-del snoopy-btn-icon snoopy-btn-danger snoopy-btn-sm',
+                attr: { title: 'Excluir hábito', type: 'button', style: 'color: #f87171;' }
+              });
+              renderIcon(btnDel, 'trash-2', { size: 11, color: '#f87171' });
+
+              btnEdit.onclick = () => { fechar(); abrirModalGerenciarHabitos(item); };
+              btnDel.onclick = async () => {
                 await VaultStore.removerLinha(app, dailyF, l => l.includes(item.cleanName));
                 const tplFile = app.vault.getAbstractFileByPath('99_Meta/Templates/Template - Diário.md');
                 if (tplFile) await VaultStore.removerLinha(app, tplFile, l => l.includes(item.cleanName));
-                new Notice(`🗑️ Hábito excluído: ${item.cleanName}`);
+                new Notice(`Hábito excluído: ${item.cleanName}`);
                 await carregarLista();
                 renderHabitos();
               };
@@ -288,20 +338,22 @@ const HabitosView = {
             const dailyF = await garantirNotaDiaria();
             const linhaFinal = `- [ ] ${linha}`;
 
-            if (habitoParaEditar) {
-              await VaultStore.substituirLinha(app, dailyF, l => l.includes(habitoParaEditar.cleanName), () => linhaFinal);
-              if (escopoSelecionado === 'persistente') {
-                const tplFile = app.vault.getAbstractFileByPath('99_Meta/Templates/Template - Diário.md');
-                if (tplFile) await VaultStore.substituirLinha(app, tplFile, l => l.includes(habitoParaEditar.cleanName), () => linhaFinal);
+            if (dailyF) {
+              if (habitoParaEditar) {
+                await VaultStore.substituirLinha(app, dailyF, l => l.includes(habitoParaEditar.cleanName), () => linhaFinal);
+                if (escopoSelecionado === 'persistente') {
+                  const tplFile = app.vault.getAbstractFileByPath('99_Meta/Templates/Template - Diário.md');
+                  if (tplFile) await VaultStore.substituirLinha(app, tplFile, l => l.includes(habitoParaEditar.cleanName), () => linhaFinal);
+                }
+                new Notice(`Hábito modificado: ${nome}`);
+              } else {
+                await VaultStore.adicionarLinhaEmSecao(app, dailyF, 'Hábitos', linhaFinal);
+                if (escopoSelecionado === 'persistente') {
+                  const tplFile = app.vault.getAbstractFileByPath('99_Meta/Templates/Template - Diário.md');
+                  if (tplFile) await VaultStore.adicionarLinhaEmSecao(app, tplFile, 'Hábitos', linhaFinal);
+                }
+                new Notice(`Hábito cadastrado: ${nome}`);
               }
-              new Notice(`✓ Hábito modificado: ${nome}`);
-            } else {
-              await VaultStore.adicionarLinhaEmSecao(app, dailyF, 'Hábitos', linhaFinal);
-              if (escopoSelecionado === 'persistente') {
-                const tplFile = app.vault.getAbstractFileByPath('99_Meta/Templates/Template - Diário.md');
-                if (tplFile) await VaultStore.adicionarLinhaEmSecao(app, tplFile, 'Hábitos', linhaFinal);
-              }
-              new Notice(`🎯 Hábito cadastrado: ${nome}`);
             }
 
             fechar();
@@ -310,9 +362,6 @@ const HabitosView = {
         }
       });
     }
-
-    const manageBtn = habitsFooter.querySelector('#snoopy-manage-habits-btn');
-    if (manageBtn) manageBtn.onclick = () => abrirModalGerenciarHabitos();
 
     async function renderHabitos() {
       habitsPillsBox.innerHTML = '';
@@ -344,32 +393,42 @@ const HabitosView = {
 
       let checkedCount = 0;
       habits.forEach(h => {
-        const pill = habitsPillsBox.createEl('label', { 
+        const pill = habitsPillsBox.createEl('div', { 
           cls: 'snoopy-habit-pill',
           attr: { 
-            style: `display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 4px 9px; border-radius: 6px; ${h.checked ? 'background: rgba(134, 239, 172, 0.1); border-color: rgba(134, 239, 172, 0.35);' : 'background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08);'}` 
+            style: `display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 4px 8px; border-radius: 6px; border: 1px solid ${h.checked ? 'rgba(134, 239, 172, 0.35)' : 'rgba(255,255,255,0.08)'}; ${h.checked ? 'background: rgba(134, 239, 172, 0.1);' : 'background: rgba(255,255,255,0.03);'}` 
           }
         });
 
-        const left = pill.createEl('div', { attr: { style: 'display: flex; align-items: center; gap: 7px; overflow: hidden; flex: 1;' } });
+        const left = pill.createEl('label', { 
+          attr: { style: 'display: flex; align-items: center; gap: 7px; overflow: hidden; flex: 1; cursor: pointer; user-select: none;' } 
+        });
         const cb = left.createEl('input', { cls: 'snoopy-circle-check', attr: { type: 'checkbox' } });
         cb.checked = h.checked;
         if (h.checked) checkedCount++;
 
         cb.onchange = async () => {
           const dailyFile = await garantirNotaDiaria();
-          await VaultStore.substituirLinha(
-            app, 
-            dailyFile, 
-            l => l.includes(h.cleanName), 
-            l => cb.checked ? l.replace(/- \[ \]/, '- [x]') : l.replace(/- \[[xX]\]/, '- [ ]')
-          );
-          new Notice(`Hábito: ${h.cleanName}`);
-          renderHabitos();
+          if (dailyFile) {
+            await VaultStore.substituirLinha(
+              app, 
+              dailyFile, 
+              l => l.includes(h.cleanName), 
+              l => cb.checked ? l.replace(/- \[ \]/, '- [x]') : l.replace(/- \[[xX]\]/, '- [ ]')
+            );
+            new Notice(`Hábito: ${h.cleanName}`);
+            renderHabitos();
+          }
         };
 
         if (h.periodoIcon) {
-          left.createEl('span', { text: h.periodoIcon, attr: { style: 'font-size: 11px;', title: `Período: ${h.periodoIcon}` } });
+          const isManha = /manh|🌅/i.test(h.periodoIcon);
+          const isTarde = /tard|☀️/i.test(h.periodoIcon);
+          const isNoite = /noit|🌙/i.test(h.periodoIcon);
+          const pSpan = left.createEl('span', { attr: { style: 'display: inline-flex; align-items: center; flex-shrink: 0;', title: `Período: ${isManha ? 'Manhã' : isTarde ? 'Tarde' : 'Noite'}` } });
+          if (isManha) renderIcon(pSpan, 'sunrise', { size: 12, color: '#fdba74' });
+          else if (isTarde) renderIcon(pSpan, 'sun', { size: 12, color: '#fbbf24' });
+          else if (isNoite) renderIcon(pSpan, 'moon', { size: 12, color: '#818cf8' });
         }
 
         left.createEl('span', { 
@@ -386,10 +445,13 @@ const HabitosView = {
           });
         }
 
-        const btnOpt = right.createEl('span', {
-          text: '⋮',
-          attr: { style: 'font-size: 12px; color: #71717a; cursor: pointer; padding: 0 3px;', title: 'Modificar hábito' }
+        const btnOpt = right.createEl('button', {
+          cls: 'snoopy-btn-icon snoopy-btn-sm',
+          attr: { title: 'Modificar hábito', type: 'button', style: 'width: 22px; height: 22px; min-width: 22px; padding: 0;' }
         });
+        if (renderIcon) renderIcon(btnOpt, 'more-vertical', { size: 12 });
+        else btnOpt.textContent = '⋮';
+
         btnOpt.onclick = (e) => {
           e.preventDefault();
           e.stopPropagation();

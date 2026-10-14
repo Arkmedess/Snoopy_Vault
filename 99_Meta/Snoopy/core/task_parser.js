@@ -14,6 +14,7 @@ const REGEX_PRIO_CHARS = /[\u{23EB}\u{1F53C}\u{1F53D}]/gu;
 const REGEX_PERIODO = /(\u{1F305}\s*Manh[ãa]|\u{2600}\s*Tarde|\u{1F319}\s*Noite)/giu;
 const REGEX_REPETICAO = /\u{1F501}[^\n]+/gu;
 const REGEX_HABIT_TASK = /^- \[([ xX])\] (.*)$/;
+const REGEX_PROGRESSO_QUANTIDADE = /\[\s*(?:(\d+(?:\.\d+)?)\s*\/\s*)?(\d+(?:\.\d+)?)\s*([a-zA-ZÀ-ÿ]+)\s*\]/u;
 
 const TaskParser = {
   /**
@@ -22,7 +23,7 @@ const TaskParser = {
    * @param {string} textRaw - Linha de texto original da tarefa.
    * @param {string} todayStr - Data de referência de hoje em ISO ('YYYY-MM-DD').
    * @param {object} [dateUtils] - Instância de DateUtils para normalização.
-   * @returns {object} Objeto com cleanText, dueStr, prio, pomosEst, periodo, statusPrazo.
+   * @returns {object} Objeto com cleanText, dueStr, prio, pomosEst, periodo, statusPrazo, progresso.
    */
   parseMetadata(textRaw, todayStr, dateUtils) {
     const dateMatch = textRaw.match(REGEX_DATA_TASKS);
@@ -51,6 +52,23 @@ const TaskParser = {
     const pomoMatch = textRaw.match(REGEX_POMO);
     const pomosEst = pomoMatch ? pomoMatch[1] : null;
 
+    const progMatch = textRaw.match(REGEX_PROGRESSO_QUANTIDADE);
+    let progresso = null;
+    if (progMatch) {
+      const meta = parseFloat(progMatch[2]);
+      const feito = progMatch[1] !== undefined ? parseFloat(progMatch[1]) : null;
+      const unidade = progMatch[3];
+      const pct = (feito !== null && meta > 0) ? Math.min(100, Math.round((feito / meta) * 100)) : null;
+      progresso = {
+        raw: progMatch[0],
+        feito,
+        meta,
+        unidade,
+        pct,
+        rotulo: feito !== null ? `${feito}/${meta} ${unidade}` : `${meta} ${unidade}`
+      };
+    }
+
     const cleanText = textRaw
       .replace(REGEX_DATA_TASKS, '')
       .replace(REGEX_PRIO_CHARS, '')
@@ -58,6 +76,7 @@ const TaskParser = {
       .replace(REGEX_CHECKED_TASKS, '')
       .replace(REGEX_REPETICAO, '')
       .replace(REGEX_PERIODO, '')
+      .replace(REGEX_PROGRESSO_QUANTIDADE, '')
       .trim();
 
     let statusPrazo = 'sem_prazo';
@@ -67,7 +86,7 @@ const TaskParser = {
       else statusPrazo = 'futura';
     }
 
-    return { cleanText, dueStr, rawDueStr, prio, pomosEst, periodo, statusPrazo };
+    return { cleanText, dueStr, rawDueStr, prio, pomosEst, periodo, statusPrazo, progresso };
   },
 
   /**

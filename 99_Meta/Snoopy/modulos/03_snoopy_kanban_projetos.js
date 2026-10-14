@@ -30,13 +30,17 @@ return {
     let currentScope = 'projetos'; // 'projetos' | 'estudos' | 'todos'
 
     kanbanHeader.innerHTML = `
-      <div class="snoopy-toolbar" style="flex-wrap: wrap;">
-        <span class="snoopy-section-title">INICIATIVAS EM ANDAMENTO</span>
-        <div id="kanban-scope-pills" class="snoopy-toolbar">
-          <button id="scope-btn-projetos" class="snoopy-btn-mode snoopy-btn-sm active">Projetos</button>
-          <button id="scope-btn-estudos" class="snoopy-btn-mode snoopy-btn-sm">Estudos</button>
-          <button id="scope-btn-todos" class="snoopy-btn-mode snoopy-btn-sm">Todos</button>
+      <div class="snoopy-card-header-main">
+        <div class="snoopy-toolbar" style="flex-wrap: wrap;">
+          ${ctx.UIKit && ctx.UIKit.ICONS && ctx.UIKit.ICONS['kanban'] ? `<span class="snoopy-icon" style="width: 16px; height: 16px; color: var(--snoopy-muted);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">${ctx.UIKit.ICONS['kanban']}</svg></span>` : ''}
+          <span class="snoopy-section-title">KANBAN</span>
+          <div id="kanban-scope-pills" class="snoopy-toolbar">
+            <button id="scope-btn-projetos" class="snoopy-btn-mode snoopy-btn-sm active">Projetos</button>
+            <button id="scope-btn-estudos" class="snoopy-btn-mode snoopy-btn-sm">Estudos</button>
+            <button id="scope-btn-todos" class="snoopy-btn-mode snoopy-btn-sm">Todos</button>
+          </div>
         </div>
+        <span class="snoopy-card-subtitle">Fluxo contínuo de iniciativas</span>
       </div>
       <div class="snoopy-toolbar">
         <button id="snoopy-add-status-btn" class="snoopy-nav-pill-btn snoopy-btn-sm" title="Adicionar nova coluna de status">+ COLUNA</button>
@@ -89,7 +93,7 @@ return {
           htmlContent: `
             <div class="snoopy-card-header">
               <span class="snoopy-section-title">Nova Coluna / Status</span>
-              <button class="snoopy-modal-close" title="Fechar">✕</button>
+              <button class="snoopy-modal-close" title="Fechar"></button>
             </div>
             <div class="snoopy-modal-label">Nome da nova coluna (ex: Backlog, Em Revisão, Pausado):</div>
             <input id="modal-status-input" class="snoopy-form-input" type="text" placeholder="Ex: Backlog" style="width: 100%;">
@@ -99,6 +103,8 @@ return {
             </div>
           `,
           onMontar: (box) => {
+            const closeBtn = box.querySelector('.snoopy-modal-close');
+            if (closeBtn && ctx.renderIcon) ctx.renderIcon(closeBtn, 'x', { size: 14 });
             const inp = box.querySelector('#modal-status-input');
             if (inp) setTimeout(() => inp.focus(), 50);
           },
@@ -141,7 +147,7 @@ return {
           htmlContent: `
             <div class="snoopy-card-header">
               <span class="snoopy-section-title">Novo Item em "${colStatus}"</span>
-              <button class="snoopy-modal-close" title="Fechar">✕</button>
+              <button class="snoopy-modal-close" title="Fechar"></button>
             </div>
 
             <div class="snoopy-modal-label">Título do Projeto / Estudo:</div>
@@ -218,7 +224,7 @@ return {
               }
 
               const newFile = await app.vault.create(targetPath, content);
-              new Notice(`🎯 "${rawTitle}" criado em ${colStatus}!`);
+              new Notice(`[Snoopy] "${rawTitle}" criado em ${colStatus}!`);
               fechar();
               await app.workspace.openLinkText(newFile.path, "", false);
               renderKanban();
@@ -236,19 +242,26 @@ return {
           htmlContent: `
             <div class="snoopy-card-header">
               <span class="snoopy-section-title">Mover "${file.basename}":</span>
-              <button class="snoopy-modal-close" title="Fechar">✕</button>
+              <button class="snoopy-modal-close" title="Fechar"></button>
             </div>
             <div id="modal-move-options" style="display: flex; flex-direction: column; gap: 6px; margin-top: 8px;"></div>
           `,
           onMontar: (box, fechar) => {
+            const closeBtn = box.querySelector('.snoopy-modal-close');
+            if (closeBtn && ctx.renderIcon) ctx.renderIcon(closeBtn, 'x', { size: 14 });
+
             const optBox = box.querySelector('#modal-move-options');
             colunas.forEach(col => {
               const isCurrent = col.status.toLowerCase() === currentStatus.toLowerCase();
               const btn = optBox.createEl('button', {
                 cls: `snoopy-btn-action`,
-                attr: { style: `width: 100%; justify-content: flex-start; padding: 8px 12px; font-size: 12px; ${isCurrent ? 'opacity: 0.5; border-color: #86efac;' : ''}` },
-                text: `${isCurrent ? '✓ ' : '→ '}${col.label}`
+                attr: { style: `width: 100%; justify-content: flex-start; padding: 8px 12px; font-size: 12px; ${isCurrent ? 'opacity: 0.5; border-color: #86efac;' : ''}` }
               });
+              if (ctx.renderIcon) {
+                ctx.renderIcon(btn, isCurrent ? 'check' : 'arrow-right', { size: 12, color: isCurrent ? '#86efac' : 'currentColor' });
+              }
+              btn.createEl('span', { text: col.label });
+
               if (!isCurrent) {
                 btn.addEventListener('click', async () => {
                   const raw = await app.vault.read(file);
@@ -261,7 +274,7 @@ return {
                     updated = `---\nstatus: "${col.status}"\n---\n\n` + raw;
                   }
                   await app.vault.modify(file, updated);
-                  new Notice(`🎯 "${file.basename}" movido para ${col.label}!`);
+                  new Notice(`[Snoopy] "${file.basename}" movido para ${col.label}!`);
                   fechar();
                   renderKanban();
                 });
@@ -273,12 +286,15 @@ return {
               attr: { style: 'margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.08);' }
             });
             const btnExcluir = sepBox.createEl('button', {
-              cls: 'snoopy-btn-action',
+              cls: 'snoopy-btn-danger',
               attr: {
-                style: 'width: 100%; justify-content: flex-start; padding: 8px 12px; font-size: 12px; color: #f87171; border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.08);'
-              },
-              text: '🗑️ Excluir Card'
+                style: 'width: 100%; justify-content: flex-start; padding: 8px 12px; font-size: 12px;'
+              }
             });
+            if (ctx.renderIcon) {
+              ctx.renderIcon(btnExcluir, 'trash-2', { size: 13, color: '#f87171' });
+            }
+            btnExcluir.createEl('span', { text: 'Excluir Card' });
 
             btnExcluir.addEventListener('click', async () => {
               try {
@@ -287,7 +303,7 @@ return {
                 } else if (app.vault.trash) {
                   await app.vault.trash(file, true);
                 }
-                new Notice(`🗑️ "${file.basename}" excluído do Kanban!`);
+                new Notice(`[Snoopy] "${file.basename}" excluído do Kanban!`);
                 fechar();
                 renderKanban();
               } catch(err) {
@@ -378,7 +394,7 @@ return {
             updated = `---\nstatus: "${col.status}"\n---\n\n` + raw;
           }
           await app.vault.modify(file, updated);
-          new Notice(`🎯 "${file.basename}" movido para ${col.label}!`);
+          new Notice(`[Snoopy] "${file.basename}" movido para ${col.label}!`);
           setTimeout(renderKanban, 150);
         });
 
@@ -503,9 +519,16 @@ return {
                 } 
               });
               
-              dueRow.innerHTML = `
-                <span style="color: var(--interactive-accent, #60a5fa); text-decoration: underline; text-underline-offset: 2px;" title="Abrir data no Calendar">📅 ${info.label}</span>
-              `;
+              const dueSpan = dueRow.createEl('span', {
+                attr: {
+                  style: 'display: inline-flex; align-items: center; gap: 4px; color: var(--interactive-accent, #60a5fa); text-decoration: underline; text-underline-offset: 2px;',
+                  title: 'Abrir data no Calendar'
+                }
+              });
+              if (ctx.renderIcon) {
+                ctx.renderIcon(dueSpan, 'calendar', { size: 11, color: '#60a5fa' });
+              }
+              dueSpan.createEl('span', { text: info.label });
 
               dueRow.addEventListener('click', (e) => {
                 e.stopPropagation();

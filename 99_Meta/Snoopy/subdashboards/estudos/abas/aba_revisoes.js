@@ -133,13 +133,20 @@ function renderAbaRevisoes(rootContainer, ctx) {
       <div class="snoopy-toolbar">
         ${rev.status !== 'concluida' ? `
           <button class="snoopy-btn-action snoopy-btn-sm btn-rev-open">Abrir Nota</button>
-          <button class="snoopy-btn-primary snoopy-btn-sm btn-rev-done">✓ Concluir</button>
+          <button class="snoopy-btn-primary snoopy-btn-sm btn-rev-done">Concluir</button>
         ` : `
-          <span class="snoopy-meta" style="color: #86efac; font-weight: bold;">✓ Concluída</span>
+          <span class="snoopy-meta" style="color: #86efac; font-weight: bold; display: inline-flex; align-items: center; gap: 4px;">
+            <span class="rev-done-icon"></span>
+            <span>Concluída</span>
+          </span>
         `}
       </div>
     `;
 
+    const iconSpan = row.querySelector('.rev-done-icon');
+    if (iconSpan && ctx.renderIcon) {
+      ctx.renderIcon(iconSpan, 'check', { size: 12, color: '#86efac' });
+    }
     const btnOpen = row.querySelector('.btn-rev-open');
     if (btnOpen) {
       btnOpen.onclick = () => {
@@ -151,6 +158,9 @@ function renderAbaRevisoes(rootContainer, ctx) {
 
     const btnDone = row.querySelector('.btn-rev-done');
     if (btnDone) {
+      if (ctx.renderIcon) {
+        ctx.renderIcon(btnDone, 'check', { size: 12 });
+      }
       btnDone.onclick = async () => {
         const proxMap = { 1: 7, 7: 14, 14: 30, 30: 30 };
         const novoIntervalo = proxMap[rev.intervaloDias || 1] || 7;
