@@ -6,7 +6,7 @@
  * @module subdashboards/configuracoes/view
  */
 
-(async () => {
+async function renderConfiguracoes(dv, app) {
   // 1. Carregamento Dinâmico via ModuleLoader
   let ModuleLoader = null;
   try {
@@ -368,4 +368,14 @@
       </ul>
     `
   });
-})();
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { renderConfiguracoes };
+}
+
+if (typeof dv !== 'undefined' && typeof app !== 'undefined') {
+  (async () => {
+    await renderConfiguracoes(dv, app);
+  })();
+}
