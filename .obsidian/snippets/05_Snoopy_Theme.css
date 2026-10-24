@@ -1549,4 +1549,142 @@ button.snoopy-btn-danger:hover {
   min-width: 140px !important;
 }
 
+/* =========================================================================
+   CALENDÁRIO INTERATIVO DE TAREFAS (TECH MINIMAL COCKPIT)
+   ========================================================================= */
+.snoopy-cal-box {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  width: 100% !important;
+}
+
+.snoopy-cal-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding-bottom: 6px !important;
+  border-bottom: 1px solid var(--snoopy-border) !important;
+}
+
+.snoopy-cal-title {
+  font-family: var(--snoopy-font-heading) !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  letter-spacing: 0.03em !important;
+  text-transform: capitalize !important;
+}
+
+.snoopy-cal-nav {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+
+.snoopy-cal-nav-btn {
+  background: transparent !important;
+  border: 1px solid var(--snoopy-border) !important;
+  color: var(--snoopy-muted) !important;
+  border-radius: var(--snoopy-radius-xs, 4px) !important;
+  width: 22px !important;
+  height: 22px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  font-size: 11px !important;
+  line-height: 1 !important;
+  transition: color 0.12s ease, border-color 0.12s ease, background 0.12s ease !important;
+}
+
+.snoopy-cal-nav-btn:hover {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.snoopy-cal-grid {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr) !important;
+  gap: 3px !important;
+  width: 100% !important;
+}
+
+.snoopy-cal-weekday {
+  text-align: center !important;
+  font-family: var(--snoopy-font-mono) !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  color: var(--snoopy-muted) !important;
+  padding: 4px 0 !important;
+  user-select: none !important;
+}
+
+.snoopy-cal-day {
+  height: 32px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: var(--snoopy-radius-xs, 4px) !important;
+  border: 1px solid transparent !important;
+  cursor: pointer !important;
+  font-family: var(--snoopy-font-mono) !important;
+  font-size: 11.5px !important;
+  font-weight: 500 !important;
+  color: #d4d4d8 !important;
+  background: transparent !important;
+  position: relative !important;
+  transition: all 0.12s ease !important;
+  user-select: none !important;
+}
+
+.snoopy-cal-day:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+}
+
+.snoopy-cal-day.other-month {
+  opacity: 0.25 !important;
+}
+
+.snoopy-cal-day.today {
+  border-color: #86efac !important;
+  color: #86efac !important;
+  font-weight: 700 !important;
+}
+
+.snoopy-cal-day.active {
+  background: rgba(96, 165, 250, 0.18) !important;
+  border-color: #60a5fa !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+.snoopy-cal-dot {
+  width: 4px !important;
+  height: 4px !important;
+  border-radius: 50% !important;
+  margin-top: 1px !important;
+  display: block !important;
+}
+
+.snoopy-cal-dot.dot-pending {
+  background: #60a5fa !important;
+  box-shadow: 0 0 4px rgba(96, 165, 250, 0.6) !important;
+}
+
+.snoopy-cal-dot.dot-late {
+  background: #f87171 !important;
+  box-shadow: 0 0 4px rgba(248, 113, 113, 0.6) !important;
+}
+
+.snoopy-cal-dot.dot-done {
+  background: #86efac !important;
+  box-shadow: 0 0 4px rgba(134, 239, 172, 0.6) !important;
+}
+
 

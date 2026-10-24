@@ -78,6 +78,7 @@ const TarefasView = {
 
     let currentTab = 'hoje';
     const tabBtns = {};
+    let dataFiltroAtiva = null;
 
     tabsDef.forEach((t, idx) => {
       const btn = tabsContainer.createEl('button', {
@@ -86,6 +87,10 @@ const TarefasView = {
       });
       tabBtns[t.id] = btn;
       btn.onclick = () => {
+        dataFiltroAtiva = null;
+        if (ctx.events && typeof ctx.events.emit === 'function') {
+          ctx.events.emit('tarefas:filtrar-data', { data: null });
+        }
         currentTab = t.id;
         Object.values(tabBtns).forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
@@ -104,7 +109,7 @@ const TarefasView = {
 
     async function recarregarEAtualizarTarefas() {
       const escopo = dv.pages('"01_Inbox" or "02_Projetos" or "03_Estudos" or "04_Leituras"')
-        .where(p => p.file && !p.file.path.includes('Template') && !p.file.path.includes('00_Home') && !p.file.name.includes('Painel'));
+        .where(p => p.file && !p.file.path.includes('Template') && !p.file.path.includes('00_Home') && (!p.file.name || !p.file.name.includes('Painel')));
 
       const allTasks = escopo.file.tasks
         .where(t => !t.text.includes('Leitura 20 min') && !t.text.includes('Pomodoro 4x') && !t.text.includes('Exercício Físico'));
@@ -136,7 +141,42 @@ const TarefasView = {
       const semanaStr = DateUtils.somarDias(todayStr, 7);
 
       let filtradas = [];
-      if (currentTab === 'hoje') {
+
+      if (dataFiltroAtiva) {
+        const todas = [...cacheTarefasPendentes, ...cacheTarefasConcluidasHoje];
+        filtradas = todas.filter(t => t.dueStr === dataFiltroAtiva);
+
+        const partes = dataFiltroAtiva.split('-');
+        const dataBrFormatada = partes.length === 3 ? `${partes[2]}/${partes[1]}/${partes[0]}` : dataFiltroAtiva;
+
+        const chipFilterBox = todoListContainer.createEl('div', {
+          cls: 'snoopy-task-filter-active-chip',
+          attr: {
+            style: 'display: flex; align-items: center; justify-content: space-between; background: rgba(96, 165, 250, 0.1); border: 1px solid rgba(96, 165, 250, 0.25); border-radius: 6px; padding: 6px 12px; margin-bottom: 8px; font-size: 11px; color: #93c5fd;'
+          }
+        });
+
+        const spanTxt = chipFilterBox.createEl('span');
+        spanTxt.createEl('span', { text: 'Filtrando por data: ' });
+        spanTxt.createEl('strong', { text: dataBrFormatada });
+        spanTxt.createEl('span', { text: ` (${filtradas.length} encontrada${filtradas.length === 1 ? '' : 's'})` });
+
+        const btnLimpar = chipFilterBox.createEl('button', {
+          cls: 'snoopy-chip-del',
+          attr: {
+            style: 'background: transparent; border: none; color: #93c5fd; cursor: pointer; font-size: 11px; padding: 2px 4px;'
+          },
+          text: '✕ Limpar filtro'
+        });
+
+        btnLimpar.onclick = () => {
+          dataFiltroAtiva = null;
+          if (ctx.events && typeof ctx.events.emit === 'function') {
+            ctx.events.emit('tarefas:filtrar-data', { data: null });
+          }
+          renderizarTarefasDoCache();
+        };
+      } else if (currentTab === 'hoje') {
         filtradas = cacheTarefasPendentes.filter(t => t.statusPrazo === 'atrasada' || t.statusPrazo === 'hoje');
       } else if (currentTab === 'amanha') {
         filtradas = cacheTarefasPendentes.filter(t => t.dueStr === amanhãStr);
@@ -148,7 +188,7 @@ const TarefasView = {
         filtradas = [...cacheTarefasConcluidasHoje];
       }
 
-      if (currentTab !== 'concluidas') {
+      if (!dataFiltroAtiva && currentTab !== 'concluidas') {
         filtradas.sort((a, b) => {
           const pPrazo = { atrasada: 1, hoje: 2, futura: 3, sem_prazo: 4 };
           const pPrio = { alta: 1, media: 2, baixa: 3 };
@@ -368,8 +408,13 @@ const TarefasView = {
 
     if (ctx.events) {
       const cancelConcluir = ctx.events.on('tarefa:concluir', concluirTarefa);
+      const cancelFiltroData = ctx.events.on('tarefas:filtrar-data', ({ data }) => {
+        dataFiltroAtiva = data || null;
+        renderizarTarefasDoCache();
+      });
       if (ctx.Lifecycle) {
         ctx.Lifecycle.onDispose('home', cancelConcluir);
+        ctx.Lifecycle.onDispose('home', cancelFiltroData);
       }
     }
 

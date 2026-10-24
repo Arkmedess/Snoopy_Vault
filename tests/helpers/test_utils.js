@@ -69,13 +69,24 @@ function createMockEl(tag = 'div', attrs = {}) {
     attrs.cls.split(/\s+/).filter(Boolean).forEach(c => classListSet.add(c));
   }
 
+  let customInnerText = attrs.text || '';
+
   const el = {
     tagName: tag.toUpperCase(),
     attrs: { ...attrs },
     style: {},
     children: [],
     parentElement: null,
-    innerText: attrs.text || '',
+    get innerText() {
+      if (customInnerText) return customInnerText;
+      if (el.children.length > 0) {
+        return el.children.map(c => c.innerText || '').join(' ').trim();
+      }
+      return '';
+    },
+    set innerText(val) {
+      customInnerText = val || '';
+    },
     value: attrs.value || '',
     disabled: false,
     focus: () => {},

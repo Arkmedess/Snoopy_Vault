@@ -41,6 +41,7 @@ return {
     }
 
     const HabitosView = await carregarSubmodulo("99_Meta/Snoopy/modulos/daily_tracker/habitos_view.js");
+    const CalendarioView = await carregarSubmodulo("99_Meta/Snoopy/modulos/daily_tracker/calendario_view.js");
     const TarefasModal = await carregarSubmodulo("99_Meta/Snoopy/modulos/daily_tracker/tarefas_modal.js");
     const TarefasView = await carregarSubmodulo("99_Meta/Snoopy/modulos/daily_tracker/tarefas_view.js");
 
@@ -50,15 +51,63 @@ return {
     });
 
     // =========================================================================
-    // BLOCO 1: HÁBITOS DIÁRIOS (30%)
+    // BLOCO 1: COLUNA LATERAL - HÁBITOS & CALENDÁRIO INTERATIVO (30%)
     // =========================================================================
-    const habitsCard = hubGrid.createEl('div', { 
+    const sideCard = hubGrid.createEl('div', { 
       cls: 'snoopy-card-box', 
-      attr: { style: 'display: flex; flex-direction: column; justify-content: space-between; gap: 10px;' } 
+      attr: { style: 'display: flex; flex-direction: column; justify-content: flex-start; gap: 10px;' } 
     });
 
+    const switchToolbar = sideCard.createEl('div', {
+      cls: 'snoopy-toolbar',
+      attr: { style: 'display: flex; gap: 4px; border-bottom: 1px solid var(--snoopy-border); padding-bottom: 6px; margin-bottom: 4px;' }
+    });
+
+    const btnTabHabitos = switchToolbar.createEl('button', {
+      cls: 'snoopy-btn-tab snoopy-btn-sm active',
+      text: 'HÁBITOS'
+    });
+
+    const btnTabCalendario = switchToolbar.createEl('button', {
+      cls: 'snoopy-btn-tab snoopy-btn-sm',
+      text: 'CALENDÁRIO'
+    });
+
+    const habitsContainer = sideCard.createEl('div', {
+      cls: 'snoopy-habits-panel-wrap',
+      attr: { style: 'display: flex; flex-direction: column; justify-content: space-between; gap: 10px; height: 100%;' }
+    });
+
+    const calContainer = sideCard.createEl('div', {
+      cls: 'snoopy-cal-panel-wrap',
+      attr: { style: 'display: none; height: 100%;' }
+    });
+
+    let calInstancia = null;
+
+    btnTabHabitos.onclick = () => {
+      btnTabHabitos.classList.add('active');
+      btnTabCalendario.classList.remove('active');
+      habitsContainer.style.display = 'flex';
+      calContainer.style.display = 'none';
+    };
+
+    btnTabCalendario.onclick = async () => {
+      btnTabCalendario.classList.add('active');
+      btnTabHabitos.classList.remove('active');
+      habitsContainer.style.display = 'none';
+      calContainer.style.display = 'block';
+      if (calInstancia && typeof calInstancia.recarregar === 'function') {
+        calInstancia.recarregar();
+      }
+    };
+
     if (HabitosView && typeof HabitosView.montar === 'function') {
-      await HabitosView.montar({ habitsCard, ctx });
+      await HabitosView.montar({ habitsCard: habitsContainer, ctx });
+    }
+
+    if (CalendarioView && typeof CalendarioView.montar === 'function') {
+      calInstancia = await CalendarioView.montar({ container: calContainer, ctx });
     }
 
     // =========================================================================
