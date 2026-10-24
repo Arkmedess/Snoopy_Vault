@@ -484,17 +484,25 @@ return {
             });
 
             // Análise de tarefas vinculadas & alertas de atraso
-            const tasks = proj.file.tasks;
-            const totalTasks = tasks.length;
-            const completedTasks = tasks.where(t => t.completed).length;
+            const tasks = proj.file.tasks || [];
+            const totalTasks = tasks.length || 0;
+            const completedTasks = typeof tasks.where === 'function'
+              ? tasks.where(t => t.completed).length
+              : (Array.isArray(tasks) ? tasks.filter(t => t.completed).length : 0);
             const pct = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : (col.status === 'Concluído' ? 100 : 0);
 
             // Verifica se há tarefas atrasadas dentro deste projeto
-            const tarefasAtrasadas = tasks.where(t => {
-              if (t.completed) return false;
-              const match = t.text.match(/📅\s*(\d{4}-\d{2}-\d{2})/);
-              return match && match[1] < todayStr;
-            }).length;
+            const tarefasAtrasadas = typeof tasks.where === 'function'
+              ? tasks.where(t => {
+                  if (t.completed) return false;
+                  const match = t.text && t.text.match(/📅\s*(\d{4}-\d{2}-\d{2})/);
+                  return match && match[1] < todayStr;
+                }).length
+              : (Array.isArray(tasks) ? tasks.filter(t => {
+                  if (t.completed) return false;
+                  const match = t.text && t.text.match(/📅\s*(\d{4}-\d{2}-\d{2})/);
+                  return match && match[1] < todayStr;
+                }).length : 0);
 
             const progRow = card.createEl('div');
             progRow.innerHTML = `

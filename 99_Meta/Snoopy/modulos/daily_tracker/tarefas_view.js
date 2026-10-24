@@ -374,7 +374,9 @@ const TarefasView = {
     }
 
     // Mantém compatibilidade temporária com chamadas legadas
-    window._snoopyConcluirTarefaAtiva = concluirTarefa;
+    if (typeof window !== 'undefined') {
+      window._snoopyConcluirTarefaAtiva = concluirTarefa;
+    }
 
     await recarregarEAtualizarTarefas();
     return { recarregarEAtualizarTarefas, renderizarTarefasDoCache };

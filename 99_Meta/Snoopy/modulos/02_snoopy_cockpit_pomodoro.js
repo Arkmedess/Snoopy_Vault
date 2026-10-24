@@ -623,8 +623,10 @@ return {
       });
     }
 
-    window.snoopySetPomodoroFocus = (titulo) => definirAlvoFoco({ texto: titulo });
-    window._snoopyDefinirTarefaFoco = (d) => definirAlvoFoco(d);
+    if (typeof window !== 'undefined') {
+      window.snoopySetPomodoroFocus = (titulo) => definirAlvoFoco({ texto: titulo });
+      window._snoopyDefinirTarefaFoco = (d) => definirAlvoFoco(d);
+    }
 
     const btnTargetClear = targetBanner.querySelector('#snoopy-btn-target-clear');
     if (btnTargetClear) {
