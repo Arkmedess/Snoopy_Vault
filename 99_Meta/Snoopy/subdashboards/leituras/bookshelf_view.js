@@ -484,12 +484,14 @@ const BookshelfView = {
 
       // Ribbons
       if (isLido) {
-        coverWrapper.createEl('div', {
+        const ribbon = coverWrapper.createEl('div', {
           attr: {
             style: 'position: absolute; top: 0; right: 8px; width: 22px; height: 26px; background: #86efac; color: #000; font-size: 11px; font-weight: bold; display: flex; align-items: center; justify-content: center; clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 75%, 0 100%);'
-          },
-          text: '✓'
+          }
         });
+        if (ctx.renderIcon) {
+          ctx.renderIcon(ribbon, 'check', { size: 12, color: '#000000' });
+        }
       } else if (isSintetizando) {
         coverWrapper.createEl('div', {
           attr: {
@@ -729,7 +731,7 @@ const BookshelfView = {
         <button id="btn-step-open-file" class="snoopy-btn-primary snoopy-btn-sm" title="Abrir nota do livro no Obsidian">Abrir Nota ↗</button>
         <button id="btn-foco-pomodoro" class="snoopy-btn-action snoopy-btn-sm" title="Direcionar Pomodoro da Home para este livro">Foco na Home</button>
         <button id="btn-edit-metadados" class="snoopy-btn-action snoopy-btn-sm" title="Editar dados da obra">Editar</button>
-        <button id="btn-trash-book" class="snoopy-btn-danger snoopy-btn-sm" title="Excluir livro da estante">✕</button>
+        <button id="btn-trash-book" class="snoopy-btn-danger snoopy-btn-sm" title="Excluir livro da estante"></button>
       </div>
     `;
 
@@ -814,8 +816,15 @@ const BookshelfView = {
     }
 
     const btnTrashBook = infoBox.querySelector('#btn-trash-book');
-    if (btnTrashBook && modais && modais.abrirModalConfirmarExclusao) {
-      btnTrashBook.onclick = () => modais.abrirModalConfirmarExclusao(livroDestaque);
+    if (btnTrashBook) {
+      if (ctx.renderIcon) {
+        ctx.renderIcon(btnTrashBook, 'trash-2', { size: 12, color: '#f87171' });
+      } else {
+        btnTrashBook.textContent = 'Excluir';
+      }
+      if (modais && modais.abrirModalConfirmarExclusao) {
+        btnTrashBook.onclick = () => modais.abrirModalConfirmarExclusao(livroDestaque);
+      }
     }
 
     const starsContainer = infoBox.querySelector('#companion-star-rating');
@@ -1007,9 +1016,13 @@ const BookshelfView = {
           attr: {
             style: 'padding: 2px 6px; font-size: 10px; line-height: 1; flex-shrink: 0;',
             title: 'Excluir esta citação'
-          },
-          text: '✕'
+          }
         });
+        if (ctx.renderIcon) {
+          ctx.renderIcon(btnDelQuote, 'trash-2', { size: 10, color: '#f87171' });
+        } else {
+          btnDelQuote.textContent = 'x';
+        }
 
         if (modais && modais.removerAnotacao) {
           btnDelQuote.onclick = async (e) => {
@@ -1067,9 +1080,13 @@ const BookshelfView = {
           attr: {
             style: 'padding: 0 4px; font-size: 9px; line-height: 1; border: none; background: transparent; cursor: pointer; color: #71717a;',
             title: `Desvincular ${nomeEstudo}`
-          },
-          text: '✕'
+          }
         });
+        if (ctx.renderIcon) {
+          ctx.renderIcon(btnUnlink, 'x', { size: 10 });
+        } else {
+          btnUnlink.textContent = 'x';
+        }
         if (modais && modais.desvincularEstudo) {
           btnUnlink.onclick = async (e) => {
             if (e && e.stopPropagation) e.stopPropagation();

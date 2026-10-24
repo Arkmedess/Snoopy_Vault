@@ -211,13 +211,13 @@ const TarefasModal = {
 
           if (destino === 'daily') {
             const dailyFile = await garantirNotaDiaria();
-            await VaultStore.adicionarLinhaEmSecao(app, dailyFile, '🎯 Foco Principal de Hoje', taskLine);
-            new Notice('📋 Tarefa registrada na nota diária!');
+            await VaultStore.adicionarLinhaEmSecao(app, dailyFile, 'Foco Principal de Hoje', taskLine);
+            new Notice('[Snoopy] Tarefa registrada na nota diária!');
           } else {
             const targetFile = app.vault.getAbstractFileByPath(destino);
             if (targetFile) {
               await VaultStore.adicionarLinhaEmSecao(app, targetFile, 'Tarefas', taskLine);
-              new Notice(`🎯 Tarefa vinculada a "${targetFile.basename}"!`);
+              new Notice(`[Snoopy] Tarefa vinculada a "${targetFile.basename}"!`);
             }
           }
 

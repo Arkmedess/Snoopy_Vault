@@ -326,6 +326,27 @@ describe('Subdashboard Leituras - BookshelfView', () => {
     assert.match(rootHist.innerHTML, /Maior Leitura:/);
     assert.match(rootHist.innerHTML, /snoopy-heat-grid/);
   });
+
+  test('renderShelfGrid renderiza ribbons com iconografia vetorial sem caracteres literais', () => {
+    const rootShelf = createMockEl('div');
+    const livros = [
+      {
+        file: { name: 'Livro Lido', path: '04_Leituras/Livros/Livro Lido.md' },
+        status: 'Lido',
+        total_paginas: 200,
+        paginas_lidas: 200
+      }
+    ];
+    let iconRendered = false;
+    const ctx = {
+      renderIcon: (el, name) => {
+        if (name === 'check') iconRendered = true;
+        return el.createEl('span', { text: `[icon:${name}]` });
+      }
+    };
+    BookshelfView.renderShelfGrid(rootShelf, livros, null, ctx);
+    assert.ok(iconRendered, 'Deve renderizar ícone check vetorial na ribbon de livro concluído');
+  });
 });
 
 
