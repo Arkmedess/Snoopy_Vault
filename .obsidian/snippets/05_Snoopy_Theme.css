@@ -468,9 +468,11 @@ button.snoopy-nav-pill-btn:active,
 
 .snoopy-card-box {
   background: var(--snoopy-panel);
-  border: 1px solid rgba(255, 255, 255, 0.13) !important;
-  border-radius: 10px !important;
-  padding: 18px;
+  border: 1px solid var(--snoopy-border) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: var(--snoopy-radius-lg, 10px) !important;
+  padding: 18px 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35) !important;
   display: flex;
   flex-direction: column;
@@ -854,14 +856,31 @@ button.snoopy-btn-danger:hover {
   transform: scale(1.15) !important;
 }
 
+/* Hub de Tarefas & Hábitos Diários */
+.snoopy-daily-hub-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 32%) 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+  align-items: stretch;
+}
+
+@media (max-width: 900px) {
+  .snoopy-daily-hub-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* --------------------------------------------------------------------------
    6. KANBAN MINIMALISTA DE PROJETOS (DRAG & DROP)
    -------------------------------------------------------------------------- */
 .snoopy-kanban-section {
   background: var(--snoopy-panel);
-  border: 1px solid rgba(255, 255, 255, 0.13) !important;
-  border-radius: 10px !important;
-  padding: 20px;
+  border: 1px solid var(--snoopy-border) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: var(--snoopy-radius-lg, 10px) !important;
+  padding: 18px 20px;
   margin-bottom: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35) !important;
   transition: border-color 0.15s ease !important;
