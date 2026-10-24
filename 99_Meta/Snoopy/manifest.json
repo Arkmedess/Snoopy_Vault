@@ -1,7 +1,7 @@
 {
   "versao": "0.9.0",
   "repositorio": "Arkmedess/Snoopy_Vault",
-  "dataGeracao": "2026-10-24T22:23:26.175Z",
+  "dataGeracao": "2026-10-24T23:11:43.790Z",
   "changelog": [
     "Sistema de fontes embutidas offline-first (Inter, JetBrains Mono e Source Serif 4)",
     "UIKit v2 com 16 novos vetores SVG Lucide nativos e componentes de Estado Vazio e Pluralização",
@@ -10,7 +10,7 @@
   ],
   "motor": {
     ".obsidian/snippets/00_Snoopy_Fonts.css": "sha256:4bbce684cddeb3da442c314bbd9353260034b86a17cc3fb1f2c1c84d8bd53404",
-    ".obsidian/snippets/05_Snoopy_Theme.css": "sha256:3743cfd233f911dcc2117f620fde96fddae993b4cfb3b4942c443ae45b7e6b7e",
+    ".obsidian/snippets/05_Snoopy_Theme.css": "sha256:bc460cc426129f02cf56ee3dcd8127a55885a6b3d8d467cabd96d3fac63032ac",
     "99_Meta/Snoopy/README.md": "sha256:1ff33ef39f1fbb9db14d72ccd2c74ee9a4695b754e192a27a0cafcd92c308d6a",
     "99_Meta/Snoopy/core/config_controller.js": "sha256:92fd1943df84a918e9d158c6bd96dda187f570e3b9e199c5997ef6a79bec150c",
     "99_Meta/Snoopy/core/date_utils.js": "sha256:59314f4c6ef85776397ee6b2585d610bf0d9b444aff16056adf3706239be8ed1",
@@ -46,7 +46,7 @@
     "99_Meta/Snoopy/subdashboards/estudos/graficos_svg.js": "sha256:3cdad4e6fead33399a7ba72d27083bb12c2224a3292f310256e8da9f5ff19040",
     "99_Meta/Snoopy/subdashboards/estudos/modais.js": "sha256:f065e76091e20f3a7010ddf7366bc23f42c8e57d356f9d589b5f0a11b68eb416",
     "99_Meta/Snoopy/subdashboards/estudos/view.js": "sha256:ee8de2ed283945dad91449e7342e974e26c7c43e885761b53c362241cd7f770b",
-    "99_Meta/Snoopy/subdashboards/leituras/bookshelf_view.js": "sha256:47f1c1fd3435d825a9fdcf16623f8aad679a7215f78f61263803359491ea2def",
+    "99_Meta/Snoopy/subdashboards/leituras/bookshelf_view.js": "sha256:7816d67313c4c4f05f7cb9935b3c735755ac21ebb97805220c8165384b9967b6",
     "99_Meta/Snoopy/subdashboards/leituras/gamificacao.js": "sha256:793dd7bb859c27bd61b50cf843f5f5ea3faa464fc9f8c26649a8dd401f618997",
     "99_Meta/Snoopy/subdashboards/leituras/modais.js": "sha256:9e8562415cc4f98ac9e937f704053f7bcb656dcb2bbe5f368b48ce5f1b3c6561",
     "99_Meta/Snoopy/subdashboards/leituras/view.js": "sha256:b1c11fa271dc624fbb9acea587325b3276add713df5463fb279c62a11e1bc12e",

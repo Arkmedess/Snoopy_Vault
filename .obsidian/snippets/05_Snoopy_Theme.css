@@ -26,6 +26,19 @@
   --snoopy-fs-meta: 11px;
   --snoopy-fs-micro: 10px;
 
+  /* Ritmo Espacial e Raios de Borda Padronizados */
+  --snoopy-radius-lg: 10px;
+  --snoopy-radius-md: 8px;
+  --snoopy-radius-sm: 6px;
+  --snoopy-radius-xs: 4px;
+  --snoopy-radius-full: 9999px;
+
+  --snoopy-space-xs: 4px;
+  --snoopy-space-sm: 8px;
+  --snoopy-space-md: 12px;
+  --snoopy-space-lg: 16px;
+  --snoopy-space-xl: 20px;
+
   /* Tracking */
   --snoopy-tracking-tight: -0.02em;
   --snoopy-tracking-normal: 0;
@@ -53,8 +66,10 @@
   --snoopy-card-hover: var(--background-secondary-alt);
   --snoopy-border: var(--snoopy-border-val, inherit);
   --snoopy-border: var(--background-modifier-border);
+  --snoopy-border-subtle: rgba(255, 255, 255, 0.05);
   --snoopy-border-hover: var(--snoopy-border-hover-val, inherit);
   --snoopy-border-hover: var(--color-base-40, rgba(128, 128, 128, 0.25));
+  --snoopy-border-active: rgba(255, 255, 255, 0.28);
   --snoopy-text: var(--snoopy-text-val, inherit);
   --snoopy-text: var(--text-normal);
   --snoopy-text-body: var(--snoopy-text-body-val, inherit);
@@ -164,21 +179,35 @@
 
 /* Ocupar a largura fluida da nota respeitando as barras laterais abertas */
 .home-dashboard .markdown-preview-sizer,
-.home-dashboard.markdown-source-view.mod-cm6 .cm-sizer {
+.home-dashboard.markdown-source-view.mod-cm6 .cm-sizer,
+.snoopy-home .markdown-preview-sizer,
+.snoopy-home.markdown-source-view.mod-cm6 .cm-sizer,
+.snoopy-dashboard .markdown-preview-sizer,
+.snoopy-dashboard.markdown-source-view.mod-cm6 .cm-sizer,
+.snoopy-leituras .markdown-preview-sizer,
+.snoopy-leituras.markdown-source-view.mod-cm6 .cm-sizer,
+.snoopy-estudos .markdown-preview-sizer,
+.snoopy-estudos.markdown-source-view.mod-cm6 .cm-sizer {
   --file-line-width: 100% !important;
   max-width: 100% !important;
-  padding-inline: 14px !important;
+  padding-inline: 12px !important;
 }
 
-.home-dashboard .markdown-preview-view {
-  padding-left: 6px !important;
-  padding-right: 6px !important;
+.home-dashboard .markdown-preview-view,
+.snoopy-home .markdown-preview-view,
+.snoopy-dashboard .markdown-preview-view,
+.snoopy-leituras .markdown-preview-view,
+.snoopy-estudos .markdown-preview-view {
+  padding-left: 4px !important;
+  padding-right: 4px !important;
 }
 
 .snoopy-container {
   width: 100%;
-  max-width: 1320px;
+  max-width: 1400px;
   margin: 0 auto;
+  padding: 0 16px;
+  box-sizing: border-box;
   color: var(--snoopy-text);
   font-family: var(--snoopy-font-sans);
 }
@@ -426,7 +455,7 @@ button.snoopy-nav-pill-btn:active,
 .snoopy-top-grid {
   display: grid;
   grid-template-columns: 7fr 5fr;
-  gap: 18px;
+  gap: 16px;
   align-items: stretch;
   margin-bottom: 20px;
 }
@@ -741,6 +770,90 @@ button.snoopy-btn-danger:hover {
   border: 1px solid rgba(161, 161, 170, 0.25);
 }
 
+/* Sistema Universal de Tags, Badges & Chips */
+.snoopy-chip,
+.snoopy-badge {
+  font-family: var(--snoopy-font-mono) !important;
+  font-size: var(--snoopy-fs-meta, 11px) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
+  padding: 2px 7px !important;
+  border-radius: var(--snoopy-radius-xs, 4px) !important;
+  border: 1px solid transparent !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  line-height: 1.3 !important;
+  white-space: nowrap !important;
+  vertical-align: middle !important;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease !important;
+  user-select: none !important;
+}
+
+.snoopy-chip-muted {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #e4e4e7 !important;
+}
+
+.snoopy-chip-muted:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  color: #ffffff !important;
+}
+
+.snoopy-chip-blue {
+  background: rgba(96, 165, 250, 0.12) !important;
+  border-color: rgba(96, 165, 250, 0.28) !important;
+  color: #93c5fd !important;
+}
+
+.snoopy-chip-green {
+  background: rgba(134, 239, 172, 0.12) !important;
+  border-color: rgba(134, 239, 172, 0.28) !important;
+  color: #86efac !important;
+}
+
+.snoopy-chip-orange {
+  background: rgba(253, 186, 116, 0.12) !important;
+  border-color: rgba(253, 186, 116, 0.28) !important;
+  color: #fdba74 !important;
+}
+
+.snoopy-chip-red {
+  background: rgba(248, 113, 113, 0.12) !important;
+  border-color: rgba(248, 113, 113, 0.28) !important;
+  color: #fca5a5 !important;
+}
+
+.snoopy-chip-purple {
+  background: rgba(168, 85, 247, 0.12) !important;
+  border-color: rgba(168, 85, 247, 0.28) !important;
+  color: #d8b4fe !important;
+}
+
+.snoopy-chip-del {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin-left: 2px !important;
+  color: inherit !important;
+  opacity: 0.6 !important;
+  cursor: pointer !important;
+  font-size: 10px !important;
+  line-height: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: opacity 0.12s ease, transform 0.12s ease !important;
+}
+
+.snoopy-chip-del:hover {
+  opacity: 1 !important;
+  transform: scale(1.15) !important;
+}
+
 /* --------------------------------------------------------------------------
    6. KANBAN MINIMALISTA DE PROJETOS (DRAG & DROP)
    -------------------------------------------------------------------------- */
@@ -943,8 +1056,8 @@ button.snoopy-btn-danger:hover {
 .snoopy-bottom-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 18px;
-  margin-bottom: 24px;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
 @media (max-width: 800px) {
@@ -1196,6 +1309,122 @@ button.snoopy-btn-danger:hover {
 /* Espaçamento de ícones dentro de botões padronizados */
 .btn-icon-pad {
   margin-right: 5px !important;
+}
+
+/* =========================================================================
+   POLIMENTO DA ESTANTE DIGITAL & KOREADER BOOKSHELF
+   ========================================================================= */
+.snoopy-shelf-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
+  gap: 16px !important;
+}
+
+.snoopy-shelf-card {
+  display: flex !important;
+  flex-direction: column !important;
+  cursor: pointer !important;
+  position: relative !important;
+  border-radius: var(--snoopy-radius-md, 8px) !important;
+  padding: 6px !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease !important;
+}
+
+.snoopy-shelf-card:hover {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  transform: translateY(-2px) !important;
+}
+
+.snoopy-shelf-card.selected {
+  outline: 2px solid var(--interactive-accent, #60a5fa) !important;
+  background: rgba(96, 165, 250, 0.08) !important;
+  border-color: transparent !important;
+}
+
+.snoopy-shelf-cover-box {
+  position: relative !important;
+  width: 100% !important;
+  aspect-ratio: 2 / 3 !important;
+  min-height: 180px !important;
+  border-radius: var(--snoopy-radius-sm, 6px) !important;
+  overflow: hidden !important;
+  background: #161622 !important;
+  border: 1px solid var(--background-modifier-border) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35) !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.snoopy-shelf-card:hover .snoopy-shelf-cover-box {
+  border-color: rgba(255, 255, 255, 0.22) !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5) !important;
+}
+
+.snoopy-shelf-ribbon-done {
+  position: absolute !important;
+  top: 0 !important;
+  right: 8px !important;
+  width: 22px !important;
+  height: 26px !important;
+  background: #86efac !important;
+  color: #000 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 75%, 0 100%) !important;
+  z-index: 5 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+}
+
+.snoopy-shelf-badge-notes {
+  position: absolute !important;
+  top: 6px !important;
+  right: 6px !important;
+  background: #fdba74 !important;
+  color: #000000 !important;
+  font-family: var(--snoopy-font-mono) !important;
+  font-size: 9px !important;
+  font-weight: 800 !important;
+  padding: 2px 5px !important;
+  border-radius: var(--snoopy-radius-xs, 4px) !important;
+  letter-spacing: 0.04em !important;
+  z-index: 5 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+.snoopy-shelf-badge-reading {
+  position: absolute !important;
+  bottom: 6px !important;
+  left: 6px !important;
+  background: rgba(0, 0, 0, 0.78) !important;
+  backdrop-filter: blur(2px) !important;
+  color: #60a5fa !important;
+  border: 1px solid rgba(96, 165, 250, 0.3) !important;
+  font-family: var(--snoopy-font-mono) !important;
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  padding: 2px 5px !important;
+  border-radius: var(--snoopy-radius-xs, 4px) !important;
+  letter-spacing: 0.04em !important;
+  z-index: 5 !important;
+}
+
+.snoopy-shelf-popover {
+  position: absolute !important;
+  top: 32px !important;
+  left: 6px !important;
+  background: #0d0d12 !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border-radius: var(--snoopy-radius-sm, 6px) !important;
+  padding: 6px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  z-index: 99 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.85) !important;
+  min-width: 140px !important;
 }
 
 

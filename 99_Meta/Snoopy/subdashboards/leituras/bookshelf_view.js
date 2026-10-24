@@ -437,8 +437,9 @@ const BookshelfView = {
     }
 
     const gridShelf = container.createEl('div', {
+      cls: 'snoopy-shelf-grid',
       attr: {
-        style: 'display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 14px;'
+        style: 'display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 16px;'
       }
     });
 
@@ -452,8 +453,9 @@ const BookshelfView = {
       const isSintetizando = statusStr.includes('sintetiz');
 
       const bookItem = gridShelf.createEl('div', {
+        cls: `snoopy-shelf-card ${isSelecionado ? 'selected' : ''}`.trim(),
         attr: {
-          style: `display: flex; flex-direction: column; cursor: pointer; position: relative; border-radius: 8px; padding: 4px; transition: transform 0.15s ease; ${isSelecionado ? 'outline: 2px solid var(--interactive-accent, #60a5fa); background: rgba(96, 165, 250, 0.08);' : 'background: transparent;'}`
+          style: `display: flex; flex-direction: column; cursor: pointer; position: relative; border-radius: var(--snoopy-radius-md, 8px); padding: 5px; transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease; ${isSelecionado ? 'outline: 2px solid var(--interactive-accent, #60a5fa); background: rgba(96, 165, 250, 0.08);' : 'background: transparent;'}`
         }
       });
 
@@ -462,7 +464,8 @@ const BookshelfView = {
       };
 
       const coverWrapper = bookItem.createEl('div', {
-        attr: { style: 'position: relative; width: 100%; height: 185px; border-radius: 6px; overflow: hidden; background: #161622; border: 1px solid var(--background-modifier-border); box-shadow: 0 4px 12px rgba(0,0,0,0.35);' }
+        cls: 'snoopy-shelf-cover-box',
+        attr: { style: 'position: relative; width: 100%; aspect-ratio: 2 / 3; min-height: 180px; border-radius: var(--snoopy-radius-sm, 6px); overflow: hidden; background: #161622; border: 1px solid var(--background-modifier-border); box-shadow: 0 4px 12px rgba(0,0,0,0.35); transition: border-color 0.15s ease, box-shadow 0.15s ease;' }
       });
 
       if (b.cover && b.cover.startsWith('http')) {
@@ -485,8 +488,9 @@ const BookshelfView = {
       // Ribbons
       if (isLido) {
         const ribbon = coverWrapper.createEl('div', {
+          cls: 'snoopy-shelf-ribbon-done',
           attr: {
-            style: 'position: absolute; top: 0; right: 8px; width: 22px; height: 26px; background: #86efac; color: #000; font-size: 11px; font-weight: bold; display: flex; align-items: center; justify-content: center; clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 75%, 0 100%);'
+            style: 'position: absolute; top: 0; right: 8px; width: 22px; height: 26px; background: #86efac; color: #000; font-size: 11px; font-weight: bold; display: flex; align-items: center; justify-content: center; clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 75%, 0 100%); z-index: 5;'
           }
         });
         if (ctx.renderIcon) {
@@ -494,15 +498,17 @@ const BookshelfView = {
         }
       } else if (isSintetizando) {
         coverWrapper.createEl('div', {
+          cls: 'snoopy-shelf-badge-notes',
           attr: {
-            style: 'position: absolute; top: 6px; right: 6px; background: #fdba74; color: #000; font-size: 9px; font-weight: 800; padding: 2px 5px; border-radius: 4px;'
+            style: 'position: absolute; top: 6px; right: 6px; background: #fdba74; color: #000; font-size: 9px; font-weight: 800; padding: 2px 5px; border-radius: var(--snoopy-radius-xs, 4px); z-index: 5;'
           },
           text: 'NOTAS'
         });
       } else if (b.status && String(b.status).toLowerCase().includes('lendo')) {
         coverWrapper.createEl('div', {
+          cls: 'snoopy-shelf-badge-reading',
           attr: {
-            style: 'position: absolute; bottom: 6px; left: 6px; background: rgba(0,0,0,0.75); color: #60a5fa; font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 3px;'
+            style: 'position: absolute; bottom: 6px; left: 6px; background: rgba(0,0,0,0.75); color: #60a5fa; font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: var(--snoopy-radius-xs, 4px); z-index: 5;'
           },
           text: 'LENDO'
         });
@@ -512,7 +518,7 @@ const BookshelfView = {
       const btnDots = coverWrapper.createEl('button', {
         cls: 'snoopy-btn-icon snoopy-btn-sm',
         attr: {
-          style: 'position: absolute; top: 6px; left: 6px; width: 22px; height: 22px; min-width: 22px; padding: 0; background: rgba(0,0,0,0.75); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: #ffffff; display: flex; align-items: center; justify-content: center; z-index: 10; cursor: pointer;',
+          style: 'position: absolute; top: 6px; left: 6px; width: 22px; height: 22px; min-width: 22px; padding: 0; background: rgba(0,0,0,0.75); border: 1px solid rgba(255,255,255,0.2); border-radius: var(--snoopy-radius-xs, 4px); color: #ffffff; display: flex; align-items: center; justify-content: center; z-index: 10; cursor: pointer;',
           title: 'Ações do Livro'
         },
         text: '⋮'
@@ -710,9 +716,9 @@ const BookshelfView = {
       <!-- Tags de Gêneros Interativas -->
       <div id="companion-genres-row" style="display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin-top: 2px;">
         ${(Array.isArray(livroDestaque.categories) && livroDestaque.categories.length > 0 ? livroDestaque.categories : [livroDestaque.category || 'Geral']).map(g => `
-          <span style="display: inline-flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.04); border: 1px solid var(--snoopy-border); padding: 2px 6px; border-radius: 4px; color: #e4e4e7; font-size: 9.5px;">
+          <span class="snoopy-chip snoopy-chip-muted">
             <span>${g}</span>
-            <button class="btn-del-genre" data-genre="${String(g).replace(/"/g, '&quot;')}" style="border: none; background: transparent; padding: 0; color: #71717a; cursor: pointer; font-size: 9px; line-height: 1;" title="Remover tema ${g}">✕</button>
+            <button class="btn-del-genre snoopy-chip-del" data-genre="${String(g).replace(/"/g, '&quot;')}" title="Remover tema ${g}">✕</button>
           </span>
         `).join('')}
         <button id="btn-add-genre-chip" class="snoopy-btn-action snoopy-btn-sm" style="font-size: 9px; padding: 1px 5px;" title="Adicionar tema a este livro">+ Tema</button>
@@ -1203,7 +1209,7 @@ const BookshelfView = {
       const card = kpisRow.createEl('div', {
         cls: 'snoopy-card-box',
         attr: {
-          style: 'padding: 10px 14px; display: flex; flex-direction: column; gap: 4px; background: #0e0e14; border: 1px solid var(--snoopy-border); border-radius: 8px;'
+          style: 'padding: 10px 14px; display: flex; flex-direction: column; gap: 4px; background: #0e0e14; border: 1px solid var(--snoopy-border); border-radius: var(--snoopy-radius-md, 8px);'
         }
       });
       card.innerHTML = `
@@ -1218,7 +1224,7 @@ const BookshelfView = {
       const bannerAtivo = dashContainer.createEl('div', {
         cls: 'snoopy-card-box',
         attr: {
-          style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-left: 3px solid #60a5fa; border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px;'
+          style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-left: 3px solid #60a5fa; border-radius: var(--snoopy-radius-lg, 10px); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px;'
         }
       });
 
@@ -1227,9 +1233,9 @@ const BookshelfView = {
         attr: { style: 'display: flex; align-items: center; gap: 14px; overflow: hidden; flex: 1;' }
       });
 
-      // Capa da Obra (com fallback tipográfico)
+      // Capa da Obra (com fallback tipográfico e proporção áurea)
       const coverWrapper = esqInfo.createEl('div', {
-        attr: { style: 'width: 48px; height: 68px; border-radius: 4px; overflow: hidden; flex-shrink: 0; background: #161622; border: 1px solid rgba(255,255,255,0.12); box-shadow: 0 4px 12px rgba(0,0,0,0.5); position: relative;' }
+        attr: { style: 'width: 52px; height: 78px; aspect-ratio: 2 / 3; border-radius: var(--snoopy-radius-sm, 6px); overflow: hidden; flex-shrink: 0; background: #161622; border: 1px solid rgba(255,255,255,0.12); box-shadow: 0 4px 12px rgba(0,0,0,0.5); position: relative;' }
       });
 
       const livroObj = leituraAtiva.livro || {};
@@ -1260,7 +1266,7 @@ const BookshelfView = {
       detalhesBox.innerHTML = `
         <div style="display: flex; align-items: center; gap: 6px;">
           <span class="snoopy-micro" style="color: #60a5fa; font-weight: 700; text-transform: uppercase;">Leitura em Andamento</span>
-          <span class="snoopy-micro" style="background: rgba(96, 165, 250, 0.12); color: #60a5fa; border: 1px solid rgba(96, 165, 250, 0.25); padding: 1px 6px; border-radius: 4px;">
+          <span class="snoopy-chip snoopy-chip-blue">
             ~${leituraAtiva.diasEstimados} dias estimados
           </span>
         </div>
@@ -1281,7 +1287,7 @@ const BookshelfView = {
       // Botão de Ação Direta
       const btnFocarAtivo = bannerAtivo.createEl('button', {
         cls: 'snoopy-btn-action snoopy-btn-sm',
-        attr: { id: 'btn-dash-focar-ativo', style: 'flex-shrink: 0; font-size: 14px;' },
+        attr: { id: 'btn-dash-focar-ativo', style: 'flex-shrink: 0; font-size: 13px; padding: 4px 10px;' },
         text: 'Focar Leitura ↗'
       });
 
@@ -1293,7 +1299,7 @@ const BookshelfView = {
     // 3. GRID PRINCIPAL (2 COLUNAS COESAS)
     const mainGrid = dashContainer.createEl('div', {
       attr: {
-        style: 'display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px;'
+        style: 'display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;'
       }
     });
 
@@ -1301,14 +1307,14 @@ const BookshelfView = {
     // COLUNA 1: RITMO, HÁBITO & PADRÃO SEMANAL
     // =========================================================================
     const colEsq = mainGrid.createEl('div', {
-      attr: { style: 'display: flex; flex-direction: column; gap: 14px;' }
+      attr: { style: 'display: flex; flex-direction: column; gap: 16px;' }
     });
 
     // Card 1: Relógio e Foco de Leitura
     const cardTempo = colEsq.createEl('div', {
       cls: 'snoopy-card-box',
       attr: {
-        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 12px;'
+        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: var(--snoopy-radius-lg, 10px); padding: 16px; display: flex; flex-direction: column; gap: 12px;'
       }
     });
 
@@ -1336,8 +1342,8 @@ const BookshelfView = {
       </div>
 
       <div class="snoopy-toolbar" style="margin-top: 2px;">
-        <button id="dash-btn-foco" class="snoopy-btn-action snoopy-btn-sm" style="font-size: 14px;" title="Direcionar Pomodoro da Home para leitura">Foco na Home</button>
-        <button id="dash-btn-meta" class="snoopy-btn-action snoopy-btn-sm" style="font-size: 14px;" title="Alterar meta diária de páginas">Ajustar Meta Diária</button>
+        <button id="dash-btn-foco" class="snoopy-btn-action snoopy-btn-sm" style="font-size: 13px; padding: 4px 10px;" title="Direcionar Pomodoro da Home para leitura">Foco na Home</button>
+        <button id="dash-btn-meta" class="snoopy-btn-action snoopy-btn-sm" style="font-size: 13px; padding: 4px 10px;" title="Alterar meta diária de páginas">Ajustar Meta Diária</button>
       </div>
     `;
 
@@ -1381,7 +1387,7 @@ const BookshelfView = {
     const cardOfensiva = colEsq.createEl('div', {
       cls: 'snoopy-card-box',
       attr: {
-        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 10px;'
+        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: var(--snoopy-radius-lg, 10px); padding: 16px; display: flex; flex-direction: column; gap: 10px;'
       }
     });
 
@@ -1432,7 +1438,7 @@ const BookshelfView = {
     const cardSemanal = colEsq.createEl('div', {
       cls: 'snoopy-card-box',
       attr: {
-        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 10px;'
+        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: var(--snoopy-radius-lg, 10px); padding: 16px; display: flex; flex-direction: column; gap: 10px;'
       }
     });
 
@@ -1466,14 +1472,14 @@ const BookshelfView = {
     // COLUNA 2: ACERVO, GÊNEROS & CONTEÚDO
     // =========================================================================
     const colDir = mainGrid.createEl('div', {
-      attr: { style: 'display: flex; flex-direction: column; gap: 14px;' }
+      attr: { style: 'display: flex; flex-direction: column; gap: 16px;' }
     });
 
     // Card 4: Distribuição do Acervo (Barra Segmentada Tricolor)
     const cardDistribuicao = colDir.createEl('div', {
       cls: 'snoopy-card-box',
       attr: {
-        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 10px;'
+        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: var(--snoopy-radius-lg, 10px); padding: 16px; display: flex; flex-direction: column; gap: 10px;'
       }
     });
 
@@ -1511,7 +1517,7 @@ const BookshelfView = {
     const cardGeneros = colDir.createEl('div', {
       cls: 'snoopy-card-box',
       attr: {
-        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 10px;'
+        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: var(--snoopy-radius-lg, 10px); padding: 16px; display: flex; flex-direction: column; gap: 10px;'
       }
     });
 
@@ -1546,7 +1552,7 @@ const BookshelfView = {
     const cardCitacoes = colDir.createEl('div', {
       cls: 'snoopy-card-box',
       attr: {
-        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 10px;'
+        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: var(--snoopy-radius-lg, 10px); padding: 16px; display: flex; flex-direction: column; gap: 10px;'
       }
     });
 
@@ -1577,7 +1583,7 @@ const BookshelfView = {
     const cardSeries = colDir.createEl('div', {
       cls: 'snoopy-card-box',
       attr: {
-        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 10px;'
+        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: var(--snoopy-radius-lg, 10px); padding: 16px; display: flex; flex-direction: column; gap: 10px;'
       }
     });
 
@@ -1606,7 +1612,7 @@ const BookshelfView = {
     const cardDescoberta = colDir.createEl('div', {
       cls: 'snoopy-card-box',
       attr: {
-        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: 8px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px;'
+        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: var(--snoopy-radius-lg, 10px); padding: 14px 16px; display: flex; flex-direction: column; gap: 8px;'
       }
     });
 
