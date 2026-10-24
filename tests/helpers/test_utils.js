@@ -145,6 +145,14 @@ function createMockEl(tag = 'div', attrs = {}) {
       return child;
     },
 
+    appendChild: (child) => {
+      if (child) {
+        child.parentElement = el;
+        el.children.push(child);
+      }
+      return child;
+    },
+
     empty: () => {
       el.children = [];
       innerHtmlVal = '';

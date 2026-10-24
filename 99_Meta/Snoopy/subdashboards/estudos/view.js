@@ -6,7 +6,7 @@
  * @module subdashboards/estudos/view
  */
 
-(async () => {
+async function renderEstudos(dv, app) {
   const root = dv.container;
   root.innerHTML = '';
 
@@ -182,4 +182,14 @@
   }
 
   renderFramework();
-})();
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { renderEstudos };
+}
+
+if (typeof dv !== 'undefined' && typeof app !== 'undefined') {
+  (async () => {
+    await renderEstudos(dv, app);
+  })();
+}

@@ -60,6 +60,7 @@ class SnoopyEventBus {
 // 2. MICROSSERVIÇOS TRANSVERSAIS COMPARTILHADOS (Injetados no ctx)
 // =============================================================================
 
+async function renderHome(dv, app) {
 // Carregamento dinâmico do ModuleLoader (Cache V8 de Compilação & Economia de RAM)
 let ModuleLoader = null;
 try {
@@ -279,7 +280,7 @@ const ctx = {
   mapaFoco,
   completedCyclesToday,
   // Barramento e Serviços Centrais
-  events: window._snoopyEvents || (window._snoopyEvents = new SnoopyEventBus()),
+  events: (typeof window !== 'undefined' ? (window._snoopyEvents || (window._snoopyEvents = new SnoopyEventBus())) : new SnoopyEventBus()),
   DateUtils,
   VaultStore,
   ModalFactory,
@@ -335,16 +336,27 @@ const modulosSnoopy = [
   "99_Meta/Snoopy/modulos/03_snoopy_kanban_projetos.js"
 ];
 
-for (const moduloPath of modulosSnoopy) {
-  try {
-    const modulo = await ModuleLoader.carregar(app, moduloPath);
-    if (modulo && typeof modulo.render === 'function') {
-      if (Array.isArray(config.modulos_ativos) && !config.modulos_ativos.includes(modulo.id)) {
-        continue;
+  for (const moduloPath of modulosSnoopy) {
+    try {
+      const modulo = await ModuleLoader.carregar(app, moduloPath);
+      if (modulo && typeof modulo.render === 'function') {
+        if (Array.isArray(config.modulos_ativos) && !config.modulos_ativos.includes(modulo.id)) {
+          continue;
+        }
+        await modulo.render(ctx);
       }
-      await modulo.render(ctx);
+    } catch (err) {
+      console.error(`[Snoopy Vault] Erro ao carregar módulo "${moduloPath}":`, err);
     }
-  } catch (err) {
-    console.error(`[Snoopy Vault] Erro ao carregar módulo "${moduloPath}":`, err);
   }
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { SnoopyEventBus, renderHome };
+}
+
+if (typeof dv !== 'undefined' && typeof app !== 'undefined') {
+  (async () => {
+    await renderHome(dv, app);
+  })();
 }

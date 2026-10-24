@@ -10,7 +10,7 @@
  * @module subdashboards/leituras/view
  */
 
-(async () => {
+async function renderLeituras(dv, app) {
   // Carregamento dinâmico do ModuleLoader central
   let ModuleLoader = null;
   try {
@@ -177,7 +177,7 @@
       renderIcon,
       modais,
       gamificacao: GamificacaoLeituras,
-      events: window._snoopyEvents || null,
+      events: (typeof window !== 'undefined' ? window._snoopyEvents : null),
       onDefinirMetaDiaria: (novaMeta) => {
         metaDiariaPaginas = novaMeta;
         if (typeof window !== 'undefined') window.snoopyMetaDiariaLeitura = novaMeta;
@@ -444,4 +444,14 @@
   }
 
   await renderBookshelf();
-})();
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { renderLeituras };
+}
+
+if (typeof dv !== 'undefined' && typeof app !== 'undefined') {
+  (async () => {
+    await renderLeituras(dv, app);
+  })();
+}
