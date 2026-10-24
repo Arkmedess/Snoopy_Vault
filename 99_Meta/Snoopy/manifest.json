@@ -1,7 +1,7 @@
 {
   "versao": "0.9.0",
   "repositorio": "Arkmedess/Snoopy_Vault",
-  "dataGeracao": "2026-10-24T23:11:43.790Z",
+  "dataGeracao": "2026-10-24T23:51:04.061Z",
   "changelog": [
     "Sistema de fontes embutidas offline-first (Inter, JetBrains Mono e Source Serif 4)",
     "UIKit v2 com 16 novos vetores SVG Lucide nativos e componentes de Estado Vazio e Pluralização",
@@ -10,7 +10,7 @@
   ],
   "motor": {
     ".obsidian/snippets/00_Snoopy_Fonts.css": "sha256:4bbce684cddeb3da442c314bbd9353260034b86a17cc3fb1f2c1c84d8bd53404",
-    ".obsidian/snippets/05_Snoopy_Theme.css": "sha256:bc460cc426129f02cf56ee3dcd8127a55885a6b3d8d467cabd96d3fac63032ac",
+    ".obsidian/snippets/05_Snoopy_Theme.css": "sha256:05e32b041351d970aea9222048a7112ef9466c25ca753cb6fe388948d4b2834e",
     "99_Meta/Snoopy/README.md": "sha256:1ff33ef39f1fbb9db14d72ccd2c74ee9a4695b754e192a27a0cafcd92c308d6a",
     "99_Meta/Snoopy/core/config_controller.js": "sha256:92fd1943df84a918e9d158c6bd96dda187f570e3b9e199c5997ef6a79bec150c",
     "99_Meta/Snoopy/core/date_utils.js": "sha256:59314f4c6ef85776397ee6b2585d610bf0d9b444aff16056adf3706239be8ed1",
@@ -26,7 +26,7 @@
     "99_Meta/Snoopy/docs/ARCHITECTURE.md": "sha256:2049a99a165fe22f38b21f50b307bdf21df9feaac1ab59f46e3af0188e18549f",
     "99_Meta/Snoopy/docs/DESIGN_GUIDELINES.md": "sha256:569e17220947462dd2f15a150b0b959eaba8e5e333169742f6a07102795eb79d",
     "99_Meta/Snoopy/home/view.js": "sha256:2169149ed782d410a2af635ef125d46463a2bb8ec318594c7954da7e13ba1411",
-    "99_Meta/Snoopy/modulos/01_snoopy_banner_cabecalho.js": "sha256:52a438024a60747fbce74e6e3a3a8fcf2cc27a3c87ab47b44544210d210cc793",
+    "99_Meta/Snoopy/modulos/01_snoopy_banner_cabecalho.js": "sha256:3e1da16c0ff74ea6ee1cd7ed4bbce99c432ddaef917df4611e8ecce291f06573",
     "99_Meta/Snoopy/modulos/02_snoopy_cockpit_pomodoro.js": "sha256:0494769724362722be098345eee00f12175bfbae8f780ba4f7ffb5434532777c",
     "99_Meta/Snoopy/modulos/03_snoopy_kanban_projetos.js": "sha256:f8d08dbd13285741c492e40c37a65fb2792ecfb6875ca46d4771f6b7dcad1311",
     "99_Meta/Snoopy/modulos/04_snoopy_daily_tracker.js": "sha256:926f415a93c2285163722bbc102fa4db2b9108cc53267562fba7e2754fba859f",

@@ -354,30 +354,133 @@
 }
 
 /* --------------------------------------------------------------------------
-   3. BANNER PANORÂMICO DO SNOOPY (Sem cortes, sem amassar)
+   3. HERO COMMAND & SEARCH BAR (Fundo Tematizado com Banner do Snoopy)
    -------------------------------------------------------------------------- */
 .snoopy-banner-box {
   width: 100%;
-  background-color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 12px;
-  padding: 6px 12px;
+  min-height: 130px;
+  border: 1px solid var(--snoopy-border) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: var(--snoopy-radius-lg, 10px) !important;
+  padding: 24px 20px;
   margin-bottom: 20px;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  position: relative;
+  overflow: visible;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6) !important;
 }
 
 .snoopy-banner-box img {
-  width: 100% !important;
-  max-height: 220px !important;
-  height: auto !important;
-  object-fit: contain !important;
-  display: block !important;
-  margin: 0 auto !important;
-  background-color: #ffffff !important;
+  display: none !important;
+}
+
+.snoopy-omni-container {
+  width: 100%;
+  max-width: 620px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.snoopy-omni-input-wrapper {
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.snoopy-omni-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--snoopy-muted);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.snoopy-omni-input {
+  width: 100%;
+  height: 44px;
+  background: rgba(13, 13, 18, 0.88) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border-radius: var(--snoopy-radius-md, 8px) !important;
+  color: #ffffff !important;
+  font-family: var(--snoopy-font-sans) !important;
+  font-size: 14px !important;
+  padding: 0 40px 0 42px !important;
+  outline: none !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45) !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.snoopy-omni-input:focus {
+  border-color: rgba(96, 165, 250, 0.55) !important;
+  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.4), 0 6px 20px rgba(0, 0, 0, 0.6) !important;
+}
+
+.snoopy-omni-clear-btn {
+  position: absolute;
+  right: 12px;
+  background: transparent !important;
+  border: none !important;
+  color: var(--snoopy-muted) !important;
+  cursor: pointer !important;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 4px !important;
+  font-size: 12px !important;
+  z-index: 2;
+}
+
+.snoopy-omni-clear-btn:hover {
+  color: #ffffff !important;
+}
+
+/* Painel de Resultados e Live Preview */
+.snoopy-omni-preview-box {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: #0d0d12 !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border-radius: var(--snoopy-radius-md, 8px) !important;
+  padding: 8px !important;
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 999;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85) !important;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.snoopy-omni-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: var(--snoopy-radius-sm, 6px);
+  cursor: pointer;
+  background: transparent;
+  transition: background 0.12s ease;
+  gap: 10px;
+}
+
+.snoopy-omni-item:hover,
+.snoopy-omni-item.active {
+  background: rgba(255, 255, 255, 0.06);
 }
 
 /* --------------------------------------------------------------------------

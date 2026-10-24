@@ -110,4 +110,104 @@ describe('Módulo 01 - Banner e Cabeçalho (01_snoopy_banner_cabecalho)', () => 
     assert.strictEqual(linksAbertos.length, 3);
     assert.strictEqual(linksAbertos[2], '99_Meta/⚙️ Configurações.md');
   });
+
+  test('Hero Command & Search Bar: interpreta comando "> adicionar nota tarefa" e cria tarefa', async () => {
+    const root = createMockEl('div');
+    let tarefaGravada = null;
+
+    const mockApp = {
+      vault: {
+        adapter: { getResourcePath: () => 'app://local/banner.jpg' },
+        getMarkdownFiles: () => [
+          { basename: 'Arquitetura Hexagonal', path: '03_Estudos/Arquitetura Hexagonal.md' }
+        ]
+      },
+      workspace: { openLinkText: async () => {} }
+    };
+
+    const mockCtx = {
+      root,
+      app: mockApp,
+      now: new Date(2026, 9, 24),
+      formattedDate: 'sábado, 24 de outubro de 2026',
+      garantirNotaDiaria: async () => ({ path: '01_Inbox/Diário/2026-10-24.md', basename: '2026-10-24' }),
+      criarNotaInstantanea: () => {},
+      VaultStore: {
+        adicionarLinhaNaSecao: async (app, path, secao, linha) => {
+          tarefaGravada = { path, secao, linha };
+        }
+      },
+      events: { emit: () => {} },
+      UIKit
+    };
+
+    await moduloBanner.render(mockCtx);
+
+    const input = root.querySelector('.snoopy-omni-input');
+    const previewBox = root.querySelector('.snoopy-omni-preview-box');
+    assert.ok(input, 'Input de comando deve existir');
+    assert.ok(previewBox, 'Preview box deve existir');
+
+    // Digitar comando
+    input.value = '> adicionar nota tarefa Estudar Rust e Cargo';
+    input.dispatchEvent('input');
+
+    // Valida que o preview apareceu com a badge correspondente
+    assert.strictEqual(previewBox.style.display, 'flex');
+    assert.match(previewBox.innerHTML, /\[Nova Tarefa\]/);
+    assert.match(previewBox.innerHTML, /Estudar Rust e Cargo/);
+
+    // Pressionar Enter para executar
+    input.dispatchEvent('keydown', { key: 'Enter' });
+    await new Promise(r => setImmediate(r));
+
+    assert.ok(tarefaGravada, 'Tarefa deve ter sido gravada no diário');
+    assert.strictEqual(tarefaGravada.secao, 'Tarefas');
+    assert.strictEqual(tarefaGravada.linha, '- [ ] Estudar Rust e Cargo');
+  });
+
+  test('Hero Command & Search Bar: busca notas do cofre em tempo real', async () => {
+    const root = createMockEl('div');
+    let linkAberto = null;
+
+    const mockApp = {
+      vault: {
+        adapter: { getResourcePath: () => 'app://local/banner.jpg' },
+        getMarkdownFiles: () => [
+          { basename: 'Algoritmos e Estruturas', path: '03_Estudos/Algoritmos e Estruturas.md' },
+          { basename: 'Clean Code', path: '04_Leituras/Livros/Clean Code.md' }
+        ]
+      },
+      workspace: {
+        openLinkText: async (p) => { linkAberto = p; }
+      }
+    };
+
+    const mockCtx = {
+      root,
+      app: mockApp,
+      now: new Date(2026, 9, 24),
+      formattedDate: 'sábado, 24 de outubro de 2026',
+      garantirNotaDiaria: async () => ({}),
+      criarNotaInstantanea: () => {},
+      UIKit
+    };
+
+    await moduloBanner.render(mockCtx);
+
+    const input = root.querySelector('.snoopy-omni-input');
+    const previewBox = root.querySelector('.snoopy-omni-preview-box');
+
+    input.value = 'Clean';
+    input.dispatchEvent('input');
+
+    assert.strictEqual(previewBox.style.display, 'flex');
+    assert.match(previewBox.innerHTML, /Clean Code/);
+
+    // Pressionar Enter no resultado ativo
+    input.dispatchEvent('keydown', { key: 'Enter' });
+    await new Promise(r => setImmediate(r));
+
+    assert.strictEqual(linkAberto, '04_Leituras/Livros/Clean Code.md');
+  });
 });

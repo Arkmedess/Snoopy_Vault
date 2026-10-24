@@ -82,6 +82,9 @@ function createMockEl(tag = 'div', attrs = {}) {
     blur: () => {},
 
     get innerHTML() {
+      if (el.children.length > 0) {
+        return innerHtmlVal + el.children.map(c => c.innerHTML || c.innerText || '').join('');
+      }
       return innerHtmlVal;
     },
     set innerHTML(val) {
