@@ -20,7 +20,8 @@ const PomodoroJardim = {
         ciclosMin: 0,
         iconName: 'sprout',
         badge: 'NÍVEL 1',
-        descricao: 'Inicie seu primeiro foco para germinar a plantinha.'
+        descricao: 'Inicie seu primeiro foco para germinar a plantinha.',
+        lore: 'Toda grande floresta começa com uma única semente no solo fértil.'
       },
       {
         nivel: 1,
@@ -28,7 +29,8 @@ const PomodoroJardim = {
         ciclosMin: 1,
         iconName: 'sprout',
         badge: 'NÍVEL 1',
-        descricao: 'Primeiro ciclo do dia consolidado com sucesso.'
+        descricao: 'Primeiro ciclo do dia consolidado com sucesso.',
+        lore: 'Primeira folhinha buscando a luz. O início da sua constância diária.'
       },
       {
         nivel: 2,
@@ -36,7 +38,8 @@ const PomodoroJardim = {
         ciclosMin: 2,
         iconName: 'sprout',
         badge: 'NÍVEL 2',
-        descricao: 'Constância em desenvolvimento acelerado.'
+        descricao: 'Constância em desenvolvimento acelerado.',
+        lore: 'As raízes ganham firmeza no solo conforme as distrações silenciam.'
       },
       {
         nivel: 3,
@@ -44,7 +47,8 @@ const PomodoroJardim = {
         ciclosMin: 4,
         iconName: 'flower-2',
         badge: 'NÍVEL 3',
-        descricao: 'Meta diária batida com primor! Florescimento mental.'
+        descricao: 'Meta diária batida com primor! Florescimento mental.',
+        lore: 'Tome um gole de Matcha e aprecie as flores da sua disciplina diária.'
       },
       {
         nivel: 4,
@@ -52,7 +56,8 @@ const PomodoroJardim = {
         ciclosMin: 6,
         iconName: 'tree-pine',
         badge: 'NÍVEL 4',
-        descricao: 'Foco inabalável. Raízes profundas e resiliência.'
+        descricao: 'Foco inabalável. Raízes profundas e resiliência.',
+        lore: 'Tronco forte e copas altas. Resistente a qualquer vendaval de distrações.'
       },
       {
         nivel: 5,
@@ -60,7 +65,8 @@ const PomodoroJardim = {
         ciclosMin: 8,
         iconName: 'trees',
         badge: 'MESTRE',
-        descricao: 'Mestria absoluta! Você construiu um ecossistema produtivo.'
+        descricao: 'Mestria absoluta! Você construiu um ecossistema produtivo.',
+        lore: 'Um ecossistema místico onde a mente opera no ápice do flow produtivo.'
       }
     ];
   },
@@ -78,6 +84,7 @@ const PomodoroJardim = {
         iconName: 'trees',
         titulo: 'Floresta Mágica',
         descricao: 'Mestria absoluta! Você construiu um ecossistema produtivo.',
+        fraseInspiradora: 'Mestre da Floresta! Um ecossistema lendário de foco floresce hoje.',
         badge: 'MESTRE',
         pct: 100,
         proximoNivel: null
@@ -88,6 +95,7 @@ const PomodoroJardim = {
         iconName: 'tree-pine',
         titulo: 'Pinheiro Robusto',
         descricao: 'Foco inabalável. Raízes profundas e resiliência.',
+        fraseInspiradora: 'Raízes profundas. Como um Pinheiro Alpino, seu foco resiste a tudo.',
         badge: 'NÍVEL 4',
         pct: 85,
         proximoNivel: { nome: 'Floresta Mágica', ciclosFaltantes: 8 - c }
@@ -98,6 +106,7 @@ const PomodoroJardim = {
         iconName: 'flower-2',
         titulo: 'Cerejeira em Flor',
         descricao: 'Meta diária batida com primor! Florescimento mental.',
+        fraseInspiradora: 'Meta diária batida! Sua Cerejeira floresceu com esplendor e vigor.',
         badge: 'NÍVEL 3',
         pct: 65,
         proximoNivel: { nome: 'Pinheiro Robusto', ciclosFaltantes: 6 - c }
@@ -108,6 +117,7 @@ const PomodoroJardim = {
         iconName: 'sprout',
         titulo: 'Brotinho Verdejante',
         descricao: 'Constância em desenvolvimento acelerado.',
+        fraseInspiradora: 'Constância em expansão! Seu broto ganha firmeza e luz solar.',
         badge: 'NÍVEL 2',
         pct: 40,
         proximoNivel: { nome: 'Cerejeira em Flor', ciclosFaltantes: 4 - c }
@@ -118,6 +128,7 @@ const PomodoroJardim = {
         iconName: 'sprout',
         titulo: 'Plântula Ativa',
         descricao: 'Primeiro ciclo do dia consolidado com sucesso.',
+        fraseInspiradora: 'Primeira folhinha brotou! Guarde distrações e nutra suas raízes.',
         badge: 'NÍVEL 1',
         pct: 20,
         proximoNivel: { nome: 'Brotinho Verdejante', ciclosFaltantes: 2 - c }
@@ -127,6 +138,7 @@ const PomodoroJardim = {
       iconName: 'sprout',
       titulo: 'Semente Plantada',
       descricao: 'Inicie seu primeiro foco para germinar a plantinha.',
+      fraseInspiradora: 'Uma semente plantada hoje é uma floresta amanhã. Inicie seu foco.',
       badge: 'NÍVEL 1',
       pct: 0,
       proximoNivel: { nome: 'Plântula Ativa', ciclosFaltantes: 1 }
@@ -270,11 +282,12 @@ const PomodoroJardim = {
     }
     if (pTit) pTit.textContent = estagio.titulo;
     if (pDesc) {
+      const frase = estagio.fraseInspiradora || estagio.descricao;
       if (estagio.proximoNivel) {
         const plural = estagio.proximoNivel.ciclosFaltantes > 1 ? 's' : '';
-        pDesc.textContent = `${estagio.descricao} (Próximo: ${estagio.proximoNivel.nome} em +${estagio.proximoNivel.ciclosFaltantes} foco${plural})`;
+        pDesc.innerHTML = `<span style="color: #d4d4d8;">${frase}</span> <span style="color: #86efac; font-weight: 600; font-size: 10.5px;">(${estagio.proximoNivel.nome} em +${estagio.proximoNivel.ciclosFaltantes} foco${plural})</span>`;
       } else {
-        pDesc.textContent = estagio.descricao;
+        pDesc.textContent = frase;
       }
     }
     if (pBdg) pBdg.textContent = estagio.badge;
@@ -460,6 +473,7 @@ const PomodoroJardim = {
               <span class="snoopy-micro" style="padding: 2px 6px; border-radius: 4px; ${badgeCor} font-weight: bold;">${g.ciclosMin === 0 ? 'Inicial' : `${g.ciclosMin}+ ciclos`}</span>
             </div>
             <div class="snoopy-meta" style="font-size: 11px; color: #a1a1aa; margin-top: 2px;">${g.descricao}</div>
+            ${g.lore ? `<div style="font-size: 10.5px; color: #71717a; font-style: italic; margin-top: 2px;">"${g.lore}"</div>` : ''}
           </div>
         </div>
       `;
@@ -490,11 +504,11 @@ const PomodoroJardim = {
           <button class="snoopy-modal-close" title="Fechar"></button>
         </div>
 
-        <div style="background: #14141c; border: 1px solid rgba(74, 222, 128, 0.3); border-radius: 8px; padding: 12px 14px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
+        <div style="background: radial-gradient(circle at 10% 20%, rgba(30, 58, 47, 0.4) 0%, #14141c 100%); border: 1px solid rgba(74, 222, 128, 0.35); border-radius: 8px; padding: 12px 14px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
           <div>
             <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #86efac; font-weight: 800;">Estágio Atual de Hoje</div>
             <div style="font-size: 16px; font-weight: 800; color: #ffffff; margin-top: 2px;">${estagioAtual.titulo} (${completedCyclesToday} ciclos • ${completedCyclesToday * focusMin}m)</div>
-            <div class="snoopy-meta" style="font-size: 11px; color: #a1a1aa; margin-top: 2px;">${estagioAtual.descricao}</div>
+            <div class="snoopy-meta" style="font-size: 11px; color: #a1a1aa; margin-top: 2px;">${estagioAtual.fraseInspiradora || estagioAtual.descricao}</div>
           </div>
           <span class="snoopy-micro" style="padding: 4px 10px; border-radius: 6px; background: rgba(74, 222, 128, 0.2); color: #86efac; font-weight: 800; font-size: 11px;">${estagioAtual.badge}</span>
         </div>

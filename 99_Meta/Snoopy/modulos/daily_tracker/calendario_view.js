@@ -87,10 +87,30 @@ const CalendarioView = {
 
       // 1. Cabeçalho com Mês/Ano e Navegação
       const header = calBox.createEl('div', { cls: 'snoopy-cal-header' });
-      const title = header.createEl('span', {
+
+      const pad = (n) => String(n).padStart(2, '0');
+      const prefixoMes = `${anoExibicao}-${pad(mesExibicao + 1)}`;
+      let totalTarefasMes = 0;
+      let totalPendentesMes = 0;
+      mapaTarefas.forEach((v, k) => {
+        if (k.startsWith(prefixoMes)) {
+          totalTarefasMes += v.total;
+          totalPendentesMes += v.pendentes;
+        }
+      });
+
+      const titleBox = header.createEl('div', { attr: { style: 'display: flex; align-items: baseline; gap: 8px;' } });
+      titleBox.createEl('span', {
         cls: 'snoopy-cal-title',
         text: `${mesesNomes[mesExibicao]} ${anoExibicao}`
       });
+      if (totalTarefasMes > 0) {
+        titleBox.createEl('span', {
+          cls: 'snoopy-micro',
+          attr: { style: 'color: #94a3b8; font-size: 11px;' },
+          text: `(${totalTarefasMes} tarefa${totalTarefasMes === 1 ? '' : 's'} • ${totalPendentesMes} pendente${totalPendentesMes === 1 ? '' : 's'})`
+        });
+      }
 
       const nav = header.createEl('div', { cls: 'snoopy-cal-nav' });
 

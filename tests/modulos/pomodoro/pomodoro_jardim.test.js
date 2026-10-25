@@ -32,6 +32,8 @@ describe('Módulo Pomodoro - PomodoroJardim', () => {
       nome: 'Pinheiro Robusto',
       ciclosFaltantes: 2
     });
+    assert.strictEqual(typeof PomodoroJardim.calcularEstagioPlanta(0).fraseInspiradora, 'string');
+    assert.ok(PomodoroJardim.calcularEstagioPlanta(0).fraseInspiradora.length > 10);
   });
 
   test('calcularHistorico30Dias() agrega métricas e calcula sequência de dias', () => {
@@ -102,6 +104,8 @@ describe('Módulo Pomodoro - PomodoroJardim', () => {
     assert.strictEqual(guia[3].ciclosMin, 4);
     assert.strictEqual(guia[5].titulo, 'Floresta Mágica');
     assert.strictEqual(guia[5].ciclosMin, 8);
+    assert.strictEqual(typeof guia[0].lore, 'string');
+    assert.ok(guia[0].lore.length > 5);
   });
 });
 

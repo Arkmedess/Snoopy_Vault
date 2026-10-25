@@ -279,18 +279,21 @@ return {
       attr: { style: 'display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: #13131c; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); margin: 4px 0 8px 0;' }
     });
     plantCard.innerHTML = `
-      <div id="snoopy-plant-avatar" style="width: 48px; height: 48px; border-radius: 50%; background: radial-gradient(circle, #1f2937 0%, #111827 100%); border: 1.5px solid rgba(74, 222, 128, 0.25); display: flex; align-items: center; justify-content: center; flex-shrink: 0; user-select: none; cursor: pointer; transition: transform 0.15s ease, border-color 0.15s ease;" title="Clique para abrir a Estufa Botânica & Estágios de Foco"></div>
+      <div id="snoopy-plant-avatar" class="snoopy-planter-pot" title="Clique para abrir a Estufa Botânica & Estágios de Foco"></div>
       <div style="flex: 1; overflow: hidden;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <span id="snoopy-stage-title" style="font-size: 13.5px; font-weight: 700; color: #ffffff;">Semente Plantada</span>
           <div style="display: flex; align-items: center; gap: 6px;">
-            <button id="snoopy-btn-open-jardim" class="snoopy-micro" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; padding: 2px 7px; color: #86efac; cursor: pointer; font-weight: 700;" title="Abrir Guia Botânico">🌿 Estufa</button>
+            <button id="snoopy-btn-open-jardim" class="snoopy-micro" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; padding: 2px 7px; color: #86efac; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;" title="Abrir Guia Botânico & Bosque">
+              <span class="snoopy-estufa-btn-icon"></span>
+              <span>Estufa</span>
+            </button>
             <span id="snoopy-stage-badge" class="snoopy-micro" style="padding: 2px 7px; border-radius: 4px; background: rgba(74, 222, 128, 0.15); color: #86efac; font-weight: bold;">NÍVEL 1</span>
           </div>
         </div>
         <div id="snoopy-stage-desc" class="snoopy-meta" style="font-size: 11px; color: #a1a1aa; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Inicie seu primeiro foco para germinar a plantinha.</div>
         <div class="snoopy-prog-track" style="height: 6px; width: 100%; margin-top: 6px; border-radius: 3px;">
-          <div id="snoopy-plant-bar" class="snoopy-prog-fill" style="width: 0%; background: #4ade80; border-radius: 3px;"></div>
+          <div id="snoopy-plant-bar" class="snoopy-prog-fill" style="width: 0%; background: linear-gradient(90deg, #10b981 0%, #4ade80 100%); border-radius: 3px;"></div>
         </div>
         <div class="snoopy-daily-grove-row" style="display: flex; align-items: center; gap: 6px; margin-top: 6px; min-height: 20px;">
           <span class="snoopy-micro" style="font-size: 10px; color: #71717a; text-transform: uppercase; font-weight: 700; letter-spacing: 0.04em; white-space: nowrap;">Bosque do dia:</span>
@@ -298,6 +301,9 @@ return {
         </div>
       </div>
     `;
+
+    const estufaBtnIcon = plantCard.querySelector('.snoopy-estufa-btn-icon');
+    if (estufaBtnIcon && renderIconFn) renderIconFn(estufaBtnIcon, 'trees', { size: 12, color: '#86efac' });
 
     const abrirEstufa = () => {
       if (PomodoroJardim && typeof PomodoroJardim.abrirModalEstufa === 'function') {

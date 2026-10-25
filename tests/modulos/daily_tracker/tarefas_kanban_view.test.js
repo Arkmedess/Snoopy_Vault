@@ -128,11 +128,16 @@ describe('TarefasView - Modo de Visualização Kanban', () => {
     assert.ok(cardKanban, 'Deve renderizar cards dentro das colunas do Kanban');
     assert.ok(cardKanban.querySelector('.snoopy-btn-task-focus'), 'Card pendente no Kanban deve ter botão Foco');
 
-    // 6. Alterna para o modo Calendário
+    // 6. Alterna para o modo Calendário (oculta abas HOJE/AMANHÃ para maximizar espaço do calendário)
     assert.strictEqual(typeof btnCalendario.onclick, 'function');
     btnCalendario.onclick();
-    assert.notStrictEqual(tabs.style.display, 'none', 'Abas continuam fixas no topo no modo Calendário');
+    assert.strictEqual(tabs.style.display, 'none', 'Abas devem ser ocultadas no modo Calendário para otimizar espaço');
     const calWrap = tasksCard.querySelector('.snoopy-task-calendar-view-wrap');
     assert.ok(calWrap, 'Container do Calendário deve ser renderizado no modo Calendário');
+
+    // 7. Retorna para o modo Lista (reexibe abas normalmente)
+    assert.strictEqual(typeof btnLista.onclick, 'function');
+    btnLista.onclick();
+    assert.notStrictEqual(tabs.style.display, 'none', 'Abas devem reaparecer no modo Lista');
   });
 });
