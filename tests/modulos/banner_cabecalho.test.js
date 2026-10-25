@@ -210,4 +210,96 @@ describe('Módulo 01 - Banner e Cabeçalho (01_snoopy_banner_cabecalho)', () => 
 
     assert.strictEqual(linkAberto, '04_Leituras/Livros/Clean Code.md');
   });
+
+  test('Hero Command Bar CLI: suporta flags --prio, --data e --kanban em "> tarefa add"', async () => {
+    const root = createMockEl('div');
+    let tarefaGravada = null;
+
+    const mockApp = {
+      vault: {
+        adapter: { getResourcePath: () => 'app://local/banner.jpg' },
+        getMarkdownFiles: () => []
+      },
+      workspace: { openLinkText: async () => {} }
+    };
+
+    const mockCtx = {
+      root,
+      app: mockApp,
+      now: new Date(2026, 9, 24),
+      formattedDate: 'sábado, 24 de outubro de 2026',
+      garantirNotaDiaria: async () => ({ path: '01_Inbox/Diário/2026-10-24.md', basename: '2026-10-24' }),
+      criarNotaInstantanea: () => {},
+      VaultStore: {
+        adicionarLinhaNaSecao: async (app, path, secao, linha) => {
+          tarefaGravada = { path, secao, linha };
+        }
+      },
+      events: { emit: () => {} },
+      UIKit
+    };
+
+    await moduloBanner.render(mockCtx);
+
+    const input = root.querySelector('.snoopy-omni-input');
+    const previewBox = root.querySelector('.snoopy-omni-preview-box');
+
+    input.value = '> tarefa add Finalizar relatório técnico --prio alta --data 2026-10-28 --kanban';
+    input.dispatchEvent('input');
+
+    assert.strictEqual(previewBox.style.display, 'flex');
+    assert.match(previewBox.innerHTML, /\[Nova Tarefa\]/);
+    assert.match(previewBox.innerHTML, /Finalizar relatório técnico/);
+
+    input.dispatchEvent('keydown', { key: 'Enter' });
+    await new Promise(r => setImmediate(r));
+
+    assert.ok(tarefaGravada, 'Tarefa deve ter sido gravada com metadados');
+    assert.strictEqual(tarefaGravada.secao, 'Tarefas');
+    assert.ok(tarefaGravada.linha.includes('Finalizar relatório técnico'));
+    assert.ok(tarefaGravada.linha.includes('#prio/alta'));
+    assert.ok(tarefaGravada.linha.includes('📅 2026-10-28'));
+    assert.ok(tarefaGravada.linha.includes('#kanban'));
+  });
+
+  test('Hero Command Bar CLI: interpreta comando "> pomodoro start" e dispara evento', async () => {
+    const root = createMockEl('div');
+    let eventoEmitido = null;
+
+    const mockApp = {
+      vault: {
+        adapter: { getResourcePath: () => 'app://local/banner.jpg' },
+        getMarkdownFiles: () => []
+      },
+      workspace: { openLinkText: async () => {} }
+    };
+
+    const mockCtx = {
+      root,
+      app: mockApp,
+      now: new Date(2026, 9, 24),
+      formattedDate: 'sábado, 24 de outubro de 2026',
+      garantirNotaDiaria: async () => ({}),
+      criarNotaInstantanea: () => {},
+      events: {
+        emit: (nome, dados) => {
+          eventoEmitido = { nome, dados };
+        }
+      },
+      UIKit
+    };
+
+    await moduloBanner.render(mockCtx);
+
+    const input = root.querySelector('.snoopy-omni-input');
+    input.value = '> pomodoro start';
+    input.dispatchEvent('input');
+
+    input.dispatchEvent('keydown', { key: 'Enter' });
+    await new Promise(r => setImmediate(r));
+
+    assert.ok(eventoEmitido);
+    assert.strictEqual(eventoEmitido.nome, 'pomodoro:comando');
+    assert.strictEqual(eventoEmitido.dados.acao, 'start');
+  });
 });

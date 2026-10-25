@@ -359,6 +359,33 @@ const TarefasView = {
             if (typeof window._snoopyDefinirTarefaFoco === 'function') window._snoopyDefinirTarefaFoco({ texto: item.cleanText, path: filePath, line: t.line });
           };
 
+          const btnFila = badgesCol.createEl('button', {
+            cls: 'snoopy-btn-icon snoopy-btn-sm',
+            attr: { title: 'Adicionar à Playlist / Fila de Foco do Pomodoro' }
+          });
+          if (ctx.renderIcon) ctx.renderIcon(btnFila, 'list-plus', { size: 11 });
+          else btnFila.textContent = '+Fila';
+
+          btnFila.onclick = (e) => {
+            e.stopPropagation();
+            const pomosNum = Number(item.pomosEst) || 1;
+            if (ctx.events) {
+              ctx.events.emit('pomodoro:enfileirar', {
+                titulo: item.cleanText,
+                path: filePath,
+                line: t.line,
+                pomosTotal: pomosNum
+              });
+            } else if (typeof window._snoopyAdicionarFilaPomodoro === 'function') {
+              window._snoopyAdicionarFilaPomodoro({
+                titulo: item.cleanText,
+                path: filePath,
+                line: t.line,
+                pomosTotal: pomosNum
+              });
+            }
+          };
+
           const btnMenu = badgesCol.createEl('button', {
             cls: 'snoopy-btn-icon snoopy-btn-sm',
             attr: { title: 'Ações da tarefa' }

@@ -55,7 +55,7 @@ return {
     // =========================================================================
     const sideCard = hubGrid.createEl('div', { 
       cls: 'snoopy-card-box', 
-      attr: { style: 'display: flex; flex-direction: column; justify-content: flex-start; gap: 10px;' } 
+      attr: { style: 'display: flex; flex-direction: column; justify-content: flex-start; gap: 8px; min-height: 380px; max-height: 380px; overflow: hidden;' } 
     });
 
     const switchToolbar = sideCard.createEl('div', {
@@ -75,12 +75,12 @@ return {
 
     const habitsContainer = sideCard.createEl('div', {
       cls: 'snoopy-habits-panel-wrap',
-      attr: { style: 'display: flex; flex-direction: column; justify-content: space-between; gap: 10px; height: 100%;' }
+      attr: { style: 'display: flex; flex-direction: column; justify-content: space-between; gap: 8px; flex: 1; overflow-y: auto;' }
     });
 
     const calContainer = sideCard.createEl('div', {
       cls: 'snoopy-cal-panel-wrap',
-      attr: { style: 'display: none; height: 100%;' }
+      attr: { style: 'display: none; flex-direction: column; justify-content: flex-start; gap: 8px; flex: 1; overflow-y: auto;' }
     });
 
     let calInstancia = null;
@@ -115,7 +115,7 @@ return {
     // =========================================================================
     const tasksCard = hubGrid.createEl('div', { 
       cls: 'snoopy-card-box', 
-      attr: { style: 'display: flex; flex-direction: column; gap: 10px;' } 
+      attr: { style: 'display: flex; flex-direction: column; gap: 10px; min-height: 380px; max-height: 380px; overflow: hidden;' } 
     });
 
     if (TarefasView && typeof TarefasView.montar === 'function') {

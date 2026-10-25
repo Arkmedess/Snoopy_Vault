@@ -358,20 +358,21 @@
    -------------------------------------------------------------------------- */
 .snoopy-banner-box {
   width: 100%;
-  min-height: 130px;
+  min-height: 155px;
+  max-height: 180px;
   border: 1px solid var(--snoopy-border) !important;
   border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
   border-radius: var(--snoopy-radius-lg, 10px) !important;
-  padding: 24px 20px;
+  padding: 16px 20px 18px 20px;
   margin-bottom: 20px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
   position: relative;
   overflow: visible;
   background-size: cover !important;
-  background-position: center !important;
+  background-position: center 36% !important;
   background-repeat: no-repeat !important;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6) !important;
 }
@@ -382,7 +383,7 @@
 
 .snoopy-omni-container {
   width: 100%;
-  max-width: 620px;
+  max-width: 860px;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -1555,21 +1556,22 @@ button.snoopy-btn-danger:hover {
 .snoopy-cal-box {
   display: flex !important;
   flex-direction: column !important;
-  gap: 8px !important;
+  gap: 4px !important;
   width: 100% !important;
+  height: 100% !important;
 }
 
 .snoopy-cal-header {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  padding-bottom: 6px !important;
+  padding-bottom: 4px !important;
   border-bottom: 1px solid var(--snoopy-border) !important;
 }
 
 .snoopy-cal-title {
   font-family: var(--snoopy-font-heading) !important;
-  font-size: 13px !important;
+  font-size: 12px !important;
   font-weight: 700 !important;
   color: #ffffff !important;
   letter-spacing: 0.03em !important;
@@ -1579,7 +1581,7 @@ button.snoopy-btn-danger:hover {
 .snoopy-cal-nav {
   display: flex !important;
   align-items: center !important;
-  gap: 4px !important;
+  gap: 3px !important;
 }
 
 .snoopy-cal-nav-btn {
@@ -1587,8 +1589,8 @@ button.snoopy-btn-danger:hover {
   border: 1px solid var(--snoopy-border) !important;
   color: var(--snoopy-muted) !important;
   border-radius: var(--snoopy-radius-xs, 4px) !important;
-  width: 22px !important;
-  height: 22px !important;
+  width: 20px !important;
+  height: 20px !important;
   padding: 0 !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -1608,22 +1610,23 @@ button.snoopy-btn-danger:hover {
 .snoopy-cal-grid {
   display: grid !important;
   grid-template-columns: repeat(7, 1fr) !important;
-  gap: 3px !important;
+  gap: 2px !important;
   width: 100% !important;
 }
 
 .snoopy-cal-weekday {
   text-align: center !important;
   font-family: var(--snoopy-font-mono) !important;
-  font-size: 10px !important;
+  font-size: 9px !important;
   font-weight: 700 !important;
   color: var(--snoopy-muted) !important;
-  padding: 4px 0 !important;
+  padding: 2px 0 !important;
   user-select: none !important;
 }
 
 .snoopy-cal-day {
-  height: 32px !important;
+  height: 24px !important;
+  min-height: 24px !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
@@ -1632,13 +1635,14 @@ button.snoopy-btn-danger:hover {
   border: 1px solid transparent !important;
   cursor: pointer !important;
   font-family: var(--snoopy-font-mono) !important;
-  font-size: 11.5px !important;
+  font-size: 11px !important;
   font-weight: 500 !important;
   color: #d4d4d8 !important;
   background: transparent !important;
   position: relative !important;
   transition: all 0.12s ease !important;
   user-select: none !important;
+  padding: 1px 0 !important;
 }
 
 .snoopy-cal-day:hover {
@@ -1665,8 +1669,8 @@ button.snoopy-btn-danger:hover {
 }
 
 .snoopy-cal-dot {
-  width: 4px !important;
-  height: 4px !important;
+  width: 3px !important;
+  height: 3px !important;
   border-radius: 50% !important;
   margin-top: 1px !important;
   display: block !important;
@@ -1685,6 +1689,127 @@ button.snoopy-btn-danger:hover {
 .snoopy-cal-dot.dot-done {
   background: #86efac !important;
   box-shadow: 0 0 4px rgba(134, 239, 172, 0.6) !important;
+}
+
+/* =========================================================================
+   POMODORO PLAYER DOCK & FOCUS PLAYLIST (SPOTIFY VIBE)
+   ========================================================================= */
+.snoopy-player-dock {
+  display: flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  flex-wrap: wrap !important;
+  padding: 4px 0 !important;
+}
+
+.snoopy-player-btn-main {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: var(--snoopy-accent, #60a5fa) !important;
+  color: #09090b !important;
+  border: none !important;
+  cursor: pointer !important;
+  box-shadow: 0 0 12px rgba(96, 165, 250, 0.35) !important;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease !important;
+}
+
+.snoopy-player-btn-main:hover {
+  transform: scale(1.08) !important;
+  background: #93c5fd !important;
+  box-shadow: 0 0 16px rgba(96, 165, 250, 0.55) !important;
+}
+
+.snoopy-player-btn-icon {
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: var(--snoopy-radius-sm, 6px) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #d4d4d8 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.12s ease !important;
+  padding: 0 !important;
+}
+
+.snoopy-player-btn-icon:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.snoopy-player-divider {
+  width: 1px !important;
+  height: 20px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  margin: 0 2px !important;
+}
+
+.snoopy-pomodoro-playlist {
+  background: rgba(13, 13, 18, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-radius: var(--snoopy-radius-md, 8px) !important;
+  padding: 8px 10px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 5px !important;
+  max-height: 130px !important;
+  overflow-y: auto !important;
+}
+
+.snoopy-playlist-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding-bottom: 4px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+.snoopy-playlist-track {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  padding: 4px 6px !important;
+  border-radius: 4px !important;
+  font-size: 11.5px !important;
+  color: #a1a1aa !important;
+  cursor: pointer !important;
+  transition: all 0.12s ease !important;
+}
+
+.snoopy-playlist-track:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #ffffff !important;
+}
+
+.snoopy-playlist-track.active {
+  background: rgba(96, 165, 250, 0.12) !important;
+  border: 1px solid rgba(96, 165, 250, 0.25) !important;
+  color: #93c5fd !important;
+  font-weight: 600 !important;
+}
+
+.snoopy-playlist-track-del {
+  background: transparent !important;
+  border: none !important;
+  color: #71717a !important;
+  cursor: pointer !important;
+  padding: 0 4px !important;
+  font-size: 11px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  transition: color 0.12s ease !important;
+}
+
+.snoopy-playlist-track-del:hover {
+  color: #f87171 !important;
 }
 
 

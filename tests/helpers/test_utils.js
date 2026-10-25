@@ -197,6 +197,15 @@ function createMockEl(tag = 'div', attrs = {}) {
 function matchesSelector(node, sel) {
   if (sel.startsWith('#')) return node.attrs.id === sel.slice(1);
   if (sel.startsWith('.')) return node.classList && node.classList.contains(sel.slice(1));
+  const attrMatch = sel.match(/^([a-zA-Z0-9_-]*)\[([a-zA-Z0-9_-]+)([\*\^~]?=)?["']?([^"']*)["']?\]$/);
+  if (attrMatch) {
+    const [, tag, attrKey, op, expectedVal] = attrMatch;
+    if (tag && node.tagName.toLowerCase() !== tag.toLowerCase()) return false;
+    const actualVal = (node.getAttribute && node.getAttribute(attrKey)) || node.attrs[attrKey] || '';
+    if (op === '*=') return String(actualVal).includes(expectedVal);
+    if (op === '^=') return String(actualVal).startsWith(expectedVal);
+    return String(actualVal) === expectedVal;
+  }
   return node.tagName.toLowerCase() === sel.toLowerCase();
 }
 

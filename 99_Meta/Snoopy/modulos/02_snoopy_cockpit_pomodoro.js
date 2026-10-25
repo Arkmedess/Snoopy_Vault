@@ -1,11 +1,13 @@
 /**
  * Snoopy Vault - Módulo 02: Cockpit de Foco Pomodoro & Histórico de Constância
- * Renderiza o temporizador circular SVG, jardim botânico evolutivo de foco, heatmap real de 30 dias
- * e integra-se reativamente via Barramento de Eventos (`ctx.events`).
+ * Renderiza o temporizador circular SVG com controles iconizados no estilo player (Spotify vibe),
+ * Playlist de Ciclos / Fila de Foco contínua ligada às tarefas, jardim botânico evolutivo e heatmap real de 30 dias.
  *
  * @module modulos/02_snoopy_cockpit_pomodoro
  * @fires pomodoro:complete - Notifica término de ciclo com minutos acumulados.
- * @listens pomodoro:focar - Inicia sessão direcionada a uma tarefa específica.
+ * @listens pomodoro:foco - Aponta foco imediato para uma tarefa.
+ * @listens pomodoro:enfileirar - Adiciona tarefa à playlist de foco.
+ * @listens pomodoro:comando - Executa comandos CLI do timer (start, pause, reset, proximo).
  */
 
 return {
@@ -16,14 +18,6 @@ return {
    * Ponto de entrada do ciclo de vida de renderização do Módulo 02.
    *
    * @param {object} ctx - Contexto compartilhado com microsserviços transversais.
-   * @param {HTMLElement} ctx.root - Contêiner raiz da dashboard.
-   * @param {object} ctx.app - Instância global do Obsidian.
-   * @param {string} ctx.todayStr - Data atual no formato ISO 'YYYY-MM-DD'.
-   * @param {string} ctx.dailyPath - Caminho relativo da nota diária atual.
-   * @param {object} ctx.mapaFoco - Dicionário histórico { 'YYYY-MM-DD': totalPomodoros }.
-   * @param {SnoopyEventBus} ctx.events - Barramento reativo de eventos.
-   * @param {object} ctx.ModalFactory - Fábrica central de janelas modais.
-   * @param {object} ctx.VaultStore - Microsserviço de I/O de notas Markdown.
    * @returns {Promise<void>}
    */
   async render(ctx) {
@@ -51,11 +45,14 @@ return {
     const PomodoroJardim = await carregarModulo("99_Meta/Snoopy/modulos/pomodoro/pomodoro_jardim.js");
     const PomodoroTimerClass = await carregarModulo("99_Meta/Snoopy/modulos/pomodoro/pomodoro_timer.js");
     const PomodoroModalClass = await carregarModulo("99_Meta/Snoopy/modulos/pomodoro/pomodoro_modal.js");
+    const PomodoroPlaylistClass = await carregarModulo("99_Meta/Snoopy/modulos/pomodoro/pomodoro_playlist.js");
 
     let completedCyclesToday = ctx.completedCyclesToday || 0;
     let focusMin = (ctx.config && ctx.config.tempo_foco) ? Number(ctx.config.tempo_foco) : 25;
     let breakMin = (ctx.config && ctx.config.tempo_pausa_curta) ? Number(ctx.config.tempo_pausa_curta) : 5;
     const dailyGoal = (ctx.config && ctx.config.meta_ciclos_diarios) ? Number(ctx.config.meta_ciclos_diarios) : 4;
+
+    const renderIconFn = ctx.renderIcon || (ctx.UIKit && ctx.UIKit.renderIcon ? (c, n, o) => ctx.UIKit.renderIcon(c, n, o) : null);
 
     // SEÇÃO TOPO: GRADE DE 2 COLUNAS
     const topGrid = root.createEl('div', { cls: 'snoopy-top-grid' });
@@ -98,7 +95,7 @@ return {
       <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
         <span id="snoopy-target-icon-box" style="display: inline-flex; align-items: center;"></span>
         <div style="overflow: hidden;">
-          <div class="snoopy-micro" style="font-weight: 700; color: #86efac; letter-spacing: 0.05em;">FOCO SELECIONADO:</div>
+          <div class="snoopy-micro" style="font-weight: 700; color: #86efac; letter-spacing: 0.05em;">FOCO ATIVO (TOCANDO AGORA):</div>
           <div id="snoopy-target-name" style="font-size: 12px; font-weight: 700; color: #ffffff; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">-</div>
         </div>
       </div>
@@ -110,112 +107,127 @@ return {
     const tIconBox = targetBanner.querySelector('#snoopy-target-icon-box');
     const tDoneBtn = targetBanner.querySelector('#snoopy-btn-target-done');
     const tClearBtn = targetBanner.querySelector('#snoopy-btn-target-clear');
-    const renderIconFn = ctx.renderIcon || (ctx.UIKit && ctx.UIKit.renderIcon ? (c, n, o) => ctx.UIKit.renderIcon(c, n, o) : null);
     if (renderIconFn) {
       renderIconFn(tIconBox, 'target', { size: 14, color: '#86efac' });
       renderIconFn(tDoneBtn, 'check', { size: 12, color: '#86efac' });
       renderIconFn(tClearBtn, 'x', { size: 12 });
     }
 
-    // Centro do Pomodoro: Anel SVG + Controles
+    // Centro do Pomodoro: Anel SVG + Controles do Player + Focus Playlist (Spotify vibe)
     const pomoCenter = pomoBox.createEl('div', {
-      attr: { style: 'display: grid; grid-template-columns: 5fr 7fr; gap: 20px; align-items: center; padding: 14px 0;' }
+      attr: { style: 'display: grid; grid-template-columns: 5fr 7fr; gap: 16px; align-items: center; padding: 12px 0;' }
     });
 
     const ringWrapper = pomoCenter.createEl('div', { attr: { style: 'display: flex; justify-content: center;' } });
-    const svgBox = ringWrapper.createEl('div', { attr: { style: 'position: relative; width: 170px; height: 170px; display: flex; align-items: center; justify-content: center;' } });
+    const svgBox = ringWrapper.createEl('div', { attr: { style: 'position: relative; width: 160px; height: 160px; display: flex; align-items: center; justify-content: center;' } });
     svgBox.innerHTML = `
-      <svg style="width: 170px; height: 170px;" viewBox="0 0 170 170">
+      <svg style="width: 160px; height: 160px;" viewBox="0 0 170 170">
         <circle class="circle-progress-bg" cx="85" cy="85" r="74" fill="none" stroke-width="7" />
         <circle id="snoopy-circle-bar" class="circle-progress-bar" cx="85" cy="85" r="74" fill="none" stroke-width="7" stroke-dasharray="464.96" stroke-dashoffset="0" />
       </svg>
       <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; pointer-events: none; user-select: none;">
-        <span id="snoopy-timer-display" class="snoopy-meta" style="font-size: 34px; font-weight: 800; color: #ffffff; letter-spacing: 0.06em; line-height: 1;">${String(focusMin).padStart(2, '0')}:00</span>
-        <span id="snoopy-cycle-label" class="snoopy-meta" style="font-size: 13px; font-weight: bold; color: #86efac; margin-top: 6px;">Ciclo 1 de ${dailyGoal}</span>
+        <span id="snoopy-timer-display" class="snoopy-meta" style="font-size: 32px; font-weight: 800; color: #ffffff; letter-spacing: 0.06em; line-height: 1;">${String(focusMin).padStart(2, '0')}:00</span>
+        <span id="snoopy-cycle-label" class="snoopy-meta" style="font-size: 12px; font-weight: bold; color: #86efac; margin-top: 4px;">Ciclo 1 de ${dailyGoal}</span>
       </div>
     `;
 
-    const controlsCol = pomoCenter.createEl('div', { attr: { style: 'display: flex; flex-direction: column; gap: 12px;' } });
-    const criarBtn = (parent, opts) => {
-      if (ctx.UIKit && typeof ctx.UIKit.criarBotao === 'function') {
-        return ctx.UIKit.criarBotao(parent, opts, ctx);
-      }
-      const b = parent.createEl('button', { cls: `snoopy-btn-${opts.variant || 'action'} ${opts.cls || ''}` });
-      if (opts.label) b.createEl('span', { text: opts.label });
-      return b;
-    };
+    const playerCol = pomoCenter.createEl('div', { attr: { style: 'display: flex; flex-direction: column; gap: 10px;' } });
 
-    // Controles de Play / Pause / Reset / Modo Foco
-    const ctrlBlock1 = controlsCol.createEl('div');
-    ctrlBlock1.innerHTML = '<div class="snoopy-sub-title" style="margin-bottom: 6px;">Controle do Timer</div>';
-    const btnsRow1 = ctrlBlock1.createEl('div', { cls: 'snoopy-toolbar' });
-    const startBtn = criarBtn(btnsRow1, {
-      label: 'Iniciar Foco',
-      icon: 'play',
-      iconSize: 13,
-      variant: 'primary',
-      cls: 'snoopy-btn-block'
+    // 1. DOCK DE CONTROLES DO PLAYER (Estilo Spotify Compacto & Iconizado)
+    const dockWrap = playerCol.createEl('div');
+    dockWrap.innerHTML = '<div class="snoopy-sub-title" style="margin-bottom: 5px; font-size: 11px;">CONTROLE DE REPRODUÇÃO</div>';
+    const playerDock = dockWrap.createEl('div', { cls: 'snoopy-player-dock' });
+
+    // Botão Reset
+    const btnReset = playerDock.createEl('button', {
+      cls: 'snoopy-player-btn-icon',
+      attr: { title: 'Reiniciar ciclo atual (Reset)' }
     });
-    const resetBtn = criarBtn(btnsRow1, {
-      label: 'Reset',
-      icon: 'rotate-ccw',
-      iconSize: 12,
-      variant: 'action'
+    if (renderIconFn) renderIconFn(btnReset, 'rotate-ccw', { size: 14 });
+
+    // Botão Ciclo/Faixa Anterior
+    const btnPrev = playerDock.createEl('button', {
+      cls: 'snoopy-player-btn-icon',
+      attr: { title: 'Ciclo / Faixa anterior' }
     });
-    const btnModoImersivo = criarBtn(btnsRow1, {
-      label: 'Modo Foco',
-      icon: 'search',
-      iconSize: 12,
-      variant: 'action'
+    if (renderIconFn) renderIconFn(btnPrev, 'skip-back', { size: 14 });
+
+    // Botão Principal Play/Pause (Circular, 40px, em destaque)
+    const btnMainPlay = playerDock.createEl('button', {
+      cls: 'snoopy-player-btn-main',
+      attr: { title: 'Iniciar / Pausar foco' }
+    });
+    if (renderIconFn) renderIconFn(btnMainPlay, 'play', { size: 18, color: '#070709' });
+
+    // Botão Próximo Ciclo/Faixa
+    const btnNext = playerDock.createEl('button', {
+      cls: 'snoopy-player-btn-icon',
+      attr: { title: 'Avançar para próximo ciclo / próxima faixa' }
+    });
+    if (renderIconFn) renderIconFn(btnNext, 'skip-forward', { size: 14 });
+
+    // Divisor
+    playerDock.createEl('div', { cls: 'snoopy-player-divider' });
+
+    // Alternar Modo Foco / Pausa
+    const btnToggleMode = playerDock.createEl('button', {
+      cls: 'snoopy-player-btn-icon',
+      attr: { title: 'Alternar entre Foco e Pausa' }
+    });
+    if (renderIconFn) renderIconFn(btnToggleMode, 'clock', { size: 14 });
+
+    // Modo Foco Imersivo (Tela Cheia)
+    const btnImersivo = playerDock.createEl('button', {
+      cls: 'snoopy-player-btn-icon',
+      attr: { title: 'Modo Foco Imersivo sem distrações' }
+    });
+    if (renderIconFn) renderIconFn(btnImersivo, 'search', { size: 14 });
+
+    // Botão Testar / Concluir Rápido
+    const btnTestar = playerDock.createEl('button', {
+      cls: 'snoopy-player-btn-icon',
+      attr: { title: 'Simular término do ciclo (Testar)' }
+    });
+    if (renderIconFn) renderIconFn(btnTestar, 'zap', { size: 14, color: '#facc15' });
+
+    // 2. FILA DE FOCO / PLAYLIST (Spotify Vibe)
+    const playlistWrap = playerCol.createEl('div', { cls: 'snoopy-pomodoro-playlist' });
+
+    const playlistHeader = playlistWrap.createEl('div', { cls: 'snoopy-playlist-header' });
+    playlistHeader.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 6px;">
+        <span class="snoopy-micro" style="font-weight: 700; color: #a1a1aa; letter-spacing: 0.05em;">FILA DE FOCO (PLAYLIST)</span>
+        <span id="snoopy-playlist-count" class="snoopy-micro" style="color: #60a5fa; font-weight: bold;">0 faixas</span>
+      </div>
+      <button id="snoopy-playlist-clear" class="snoopy-micro" style="background: transparent; border: none; color: #71717a; cursor: pointer;">Limpar</button>
+    `;
+
+    const playlistTracksBox = playlistWrap.createEl('div', {
+      attr: { id: 'snoopy-playlist-tracks', style: 'display: flex; flex-direction: column; gap: 4px;' }
     });
 
-    // Modos Foco / Pausa / Testar
-    const ctrlBlock2 = controlsCol.createEl('div');
-    ctrlBlock2.innerHTML = '<div class="snoopy-sub-title" style="margin-bottom: 6px;">Alternar Modo</div>';
-    const btnsRow2 = ctrlBlock2.createEl('div', { cls: 'snoopy-toolbar' });
-    const btnModeFoco = criarBtn(btnsRow2, {
-      label: `Foco (${focusMin}m)`,
-      variant: 'mode',
-      active: true,
-      cls: 'snoopy-btn-block'
+    // 3. Ações Rápidas de Registro
+    const quickLogRow = playerCol.createEl('div', { cls: 'snoopy-toolbar', attr: { style: 'margin-top: 2px;' } });
+    const btnAnotar = quickLogRow.createEl('button', {
+      cls: 'snoopy-btn-action snoopy-btn-sm snoopy-btn-block',
+      attr: { style: 'font-size: 11px;' }
     });
-    const btnModePausa = criarBtn(btnsRow2, {
-      label: `Pausa (${breakMin}m)`,
-      variant: 'mode',
-      cls: 'snoopy-btn-block'
-    });
-    const btnTestar = criarBtn(btnsRow2, {
-      label: 'Testar',
-      icon: 'zap',
-      iconSize: 12,
-      variant: 'mode'
-    });
+    if (renderIconFn) renderIconFn(btnAnotar, 'pencil', { size: 11 });
+    btnAnotar.createEl('span', { text: 'O que aprendi?' });
 
-    // Botões de Anotação & Flashcard
-    const ctrlBlock3 = controlsCol.createEl('div');
-    ctrlBlock3.innerHTML = '<div class="snoopy-sub-title" style="margin-bottom: 6px;">Registro na Nota Diária</div>';
-    const btnsRow3 = ctrlBlock3.createEl('div', { cls: 'snoopy-toolbar' });
-    const btnAnotar = criarBtn(btnsRow3, {
-      label: 'O que aprendi?',
-      icon: 'pencil',
-      iconSize: 12,
-      variant: 'action',
-      cls: 'snoopy-btn-block'
+    const btnFlashcard = quickLogRow.createEl('button', {
+      cls: 'snoopy-btn-action snoopy-btn-sm snoopy-btn-block',
+      attr: { style: 'font-size: 11px;' }
     });
-    const btnFlashcard = criarBtn(btnsRow3, {
-      label: '+ Flashcard',
-      icon: 'brain',
-      iconSize: 12,
-      variant: 'action',
-      cls: 'snoopy-btn-block'
-    });
+    if (renderIconFn) renderIconFn(btnFlashcard, 'brain', { size: 11 });
+    btnFlashcard.createEl('span', { text: '+ Flashcard' });
 
     // Rodapé Cockpit
     const pomoFooter = pomoBox.createEl('div', {
       cls: 'snoopy-micro',
       attr: { style: 'display: flex; justify-content: space-between; align-items: center; color: #71717a; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08);' }
     });
-    pomoFooter.innerHTML = `<span style="color: #71717a;">Ciclo automático com nota diária</span><span style="color: #86efac; font-weight: 600;">Sincronizado</span>`;
+    pomoFooter.innerHTML = `<span style="color: #71717a;">Automação de ciclo e playlist sequencial</span><span style="color: #86efac; font-weight: 600;">Sincronizado</span>`;
 
     // --- LADO DIREITO: HISTÓRICO & JARDIM EXPANDIDO ---
     const historyBox = topGrid.createEl('div', { cls: 'snoopy-card-box' });
@@ -313,6 +325,14 @@ return {
     const timerDisplay = pomoBox.querySelector('#snoopy-timer-display');
     const modeBadge = pomoBox.querySelector('#snoopy-mode-badge');
     const targetNameEl = targetBanner.querySelector('#snoopy-target-name');
+    const playlistCountEl = playlistWrap.querySelector('#snoopy-playlist-count');
+    const playlistClearBtn = playlistWrap.querySelector('#snoopy-playlist-clear');
+
+    // Inicialização da Playlist
+    const playlist = PomodoroPlaylistClass ? new PomodoroPlaylistClass() : null;
+    if (playlist && typeof window !== 'undefined' && window.__snoopyPomodoroPlaylist) {
+      playlist.deserializar(window.__snoopyPomodoroPlaylist);
+    }
 
     const modalManager = PomodoroModalClass ? new PomodoroModalClass({
       app,
@@ -346,6 +366,92 @@ return {
       }
     };
 
+    // Renderizador da Playlist Visual (Spotify Vibe)
+    const renderizarPlaylistVisual = () => {
+      if (!playlist || !playlistTracksBox) return;
+      playlistTracksBox.innerHTML = '';
+      const total = playlist.obterTamanho();
+      if (playlistCountEl) playlistCountEl.textContent = `${total} ${total === 1 ? 'faixa' : 'faixas'}`;
+
+      if (total === 0) {
+        playlistTracksBox.innerHTML = `
+          <div class="snoopy-meta" style="color: #71717a; font-size: 11px; text-align: center; padding: 8px 4px;">
+            Nenhuma tarefa na fila. Clique no ícone de fila nas tarefas ou use <code>&gt; fila add</code>.
+          </div>
+        `;
+        return;
+      }
+
+      playlist.tracks.forEach((track, idx) => {
+        const isAtiva = (idx === playlist.currentIndex);
+        const trackEl = playlistTracksBox.createEl('div', {
+          cls: `snoopy-playlist-track ${isAtiva ? 'active' : ''}`
+        });
+
+        const leftCol = trackEl.createEl('div', {
+          attr: { style: 'display: flex; align-items: center; gap: 7px; overflow: hidden; flex: 1;' }
+        });
+
+        const numSpan = leftCol.createEl('span', {
+          attr: { style: `font-size: 10px; font-weight: 700; width: 14px; text-align: center; color: ${isAtiva ? '#93c5fd' : '#71717a'};` }
+        });
+        if (isAtiva && renderIconFn) {
+          renderIconFn(numSpan, 'play', { size: 10, color: '#93c5fd' });
+        } else {
+          numSpan.textContent = String(idx + 1);
+        }
+
+        const titleSpan = leftCol.createEl('span', {
+          text: track.titulo,
+          attr: { style: 'white-space: nowrap; overflow: hidden; text-overflow: ellipsis;' }
+        });
+
+        const rightCol = trackEl.createEl('div', {
+          attr: { style: 'display: flex; align-items: center; gap: 6px; flex-shrink: 0;' }
+        });
+
+        const pomoBadge = rightCol.createEl('span', {
+          cls: 'snoopy-micro',
+          attr: { style: `padding: 1px 4px; border-radius: 3px; font-size: 9.5px; background: ${isAtiva ? 'rgba(147, 197, 253, 0.2)' : 'rgba(255, 255, 255, 0.05)'}; color: ${isAtiva ? '#bfdbfe' : '#a1a1aa'};` },
+          text: `${track.pomosConcluidos}/${track.pomosTotal}p`
+        });
+
+        const delBtn = rightCol.createEl('button', {
+          cls: 'snoopy-playlist-track-del',
+          text: '✕',
+          attr: { title: 'Remover da fila' }
+        });
+
+        delBtn.onclick = (e) => {
+          e.stopPropagation();
+          playlist.removerFaixa(track.id);
+          renderizarPlaylistVisual();
+        };
+
+        trackEl.onclick = () => {
+          playlist.selecionarFaixa(idx);
+          const selecionada = playlist.obterFaixaAtual();
+          if (selecionada) definirAlvoFoco(selecionada);
+          renderizarPlaylistVisual();
+        };
+      });
+
+      // Salva estado da playlist
+      if (typeof window !== 'undefined') {
+        window.__snoopyPomodoroPlaylist = playlist.serializar();
+      }
+    };
+
+    if (playlist) {
+      playlist.onChange = () => renderizarPlaylistVisual();
+      if (playlistClearBtn) {
+        playlistClearBtn.onclick = () => {
+          playlist.limpar();
+          renderizarPlaylistVisual();
+        };
+      }
+    }
+
     const finalizarFoco = async () => {
       completedCyclesToday++;
       mapaFoco[todayStr] = completedCyclesToday;
@@ -356,6 +462,16 @@ return {
       }
 
       atualizarTelasJardim();
+
+      // Atualiza progresso da faixa na playlist
+      if (playlist && playlist.obterFaixaAtual()) {
+        const { atingiuTotal, faixa } = playlist.concluirCicloNaFaixaAtual();
+        if (atingiuTotal && typeof Notice !== 'undefined') {
+          new Notice(`[Snoopy Playlist] Meta de ciclos concluída para: "${faixa?.titulo}"!`);
+        }
+        renderizarPlaylistVisual();
+      }
+
       if (modalManager) {
         modalManager.abrirModalAnotacao(false);
       }
@@ -482,7 +598,7 @@ return {
       focusOverlay.querySelector('#snoopy-imm-close').onclick = fecharModoImersivo;
 
       focusOverlay.querySelector('#snoopy-imm-play-btn').onclick = () => {
-        if (startBtn) startBtn.click();
+        if (btnMainPlay) btnMainPlay.click();
         setTimeout(() => {
           const rodandoAgora = Boolean(timer && timer.timerInterval);
           const btnPP = focusOverlay?.querySelector('#snoopy-imm-play-btn');
@@ -497,8 +613,8 @@ return {
       };
     };
 
-    if (btnModoImersivo) {
-      btnModoImersivo.onclick = (e) => {
+    if (btnImersivo) {
+      btnImersivo.onclick = (e) => {
         e.preventDefault();
         ativarModoImersivo();
       };
@@ -508,7 +624,7 @@ return {
       ctx.Lifecycle.onDispose('home', fecharModoImersivo);
     }
 
-    // Recupera estado preservado do Pomodoro (se houver) para sobreviver a re-renders
+    // Recupera estado preservado do Pomodoro
     const globalState = typeof window !== 'undefined' ? window.__snoopyPomodoroState : null;
     const initialMode = globalState ? globalState.currentMode : 'foco';
     const initialRemaining = globalState ? globalState.remainingSeconds : (focusMin * 60);
@@ -548,9 +664,22 @@ return {
         tocarChimePomodoro();
         if (mode === 'foco') {
           finalizarFoco();
+          // Automação: transita para Pausa automaticamente
+          if (timer) {
+            timer.setMode('pausa');
+            timer.start();
+          }
         } else {
-          new Notice('Pausa concluída! Hora de focar.');
-          if (timer) timer.setMode('foco');
+          // Pausa concluída: avança para a próxima faixa e volta para Foco
+          if (typeof Notice !== 'undefined') new Notice('[Snoopy] Pausa concluída! Iniciando próximo ciclo.');
+          if (playlist) {
+            const proxFaixa = playlist.obterFaixaAtual();
+            if (proxFaixa) definirAlvoFoco(proxFaixa);
+          }
+          if (timer) {
+            timer.setMode('foco');
+            timer.start();
+          }
         }
       },
       onModeChange: ({ mode }) => {
@@ -560,8 +689,6 @@ return {
           modeBadge.style.color = mode === 'foco' ? '#86efac' : '#93c5fd';
           modeBadge.style.background = mode === 'foco' ? 'rgba(74, 222, 128, 0.15)' : 'rgba(96, 165, 250, 0.15)';
         }
-        if (btnModeFoco) btnModeFoco.classList.toggle('active', mode === 'foco');
-        if (btnModePausa) btnModePausa.classList.toggle('active', mode === 'pausa');
       },
       onRunningChange: ({ isRunning }) => {
         if (typeof window !== 'undefined' && timer) {
@@ -573,16 +700,14 @@ return {
             alvoAtual: timer.alvoAtual
           };
         }
-        if (!startBtn) return;
-        startBtn.innerHTML = '';
+        if (!btnMainPlay) return;
+        btnMainPlay.innerHTML = '';
         const iconName = isRunning ? 'pause' : 'play';
-        const label = isRunning ? 'Pausar' : (timer.currentMode === 'foco' ? 'Iniciar Foco' : 'Iniciar Pausa');
-        if (ctx.renderIcon) ctx.renderIcon(startBtn, iconName, { size: 13 });
-        startBtn.createEl('span', { text: label });
+        if (renderIconFn) renderIconFn(btnMainPlay, iconName, { size: 18, color: '#070709' });
       }
     }) : null;
 
-    // Hidrata visual inicial caso venha de estado anterior ou timer em execucao
+    // Hidrata visual inicial
     if (timer) {
       const initStr = timer.formatarTempo(timer.remainingSeconds);
       if (timerDisplay) timerDisplay.textContent = initStr;
@@ -595,6 +720,7 @@ return {
 
     // Alvo direcionado
     const definirAlvoFoco = (dados) => {
+      if (!dados) return;
       if (timer) timer.setAlvo(dados);
       if (targetBanner && targetNameEl) {
         targetBanner.style.display = 'flex';
@@ -602,7 +728,7 @@ return {
         pomoBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
         pomoBox.style.borderColor = 'rgba(134, 239, 172, 0.4)';
         setTimeout(() => { pomoBox.style.borderColor = ''; }, 2000);
-        new Notice(`[Snoopy] Pomodoro apontado para: ${dados.texto || dados.titulo}`);
+        if (typeof Notice !== 'undefined') new Notice(`[Snoopy] Pomodoro apontado para: ${dados.texto || dados.titulo}`);
       }
     };
 
@@ -611,12 +737,39 @@ return {
       targetNameEl.textContent = initialAlvo.texto || initialAlvo.titulo || '-';
     }
 
+    // Ouvintes de Eventos (EventBus)
     if (events) {
       const cancelPomoFoco = events.on('pomodoro:foco', definirAlvoFoco);
+      const cancelPomoFila = events.on('pomodoro:enfileirar', (dados) => {
+        if (playlist) {
+          playlist.adicionarFaixa(dados);
+          if (playlist.obterTamanho() === 1) {
+            definirAlvoFoco(playlist.obterFaixaAtual());
+          }
+          if (typeof Notice !== 'undefined') new Notice(`[Snoopy] Adicionado à fila: "${dados.titulo || dados.texto}"`);
+        }
+      });
+      const cancelPomoCmd = events.on('pomodoro:comando', ({ acao }) => {
+        if (!timer) return;
+        if (acao === 'start' || acao === 'play') timer.start();
+        else if (acao === 'pause') timer.pause();
+        else if (acao === 'reset') timer.reset();
+        else if (acao === 'proximo' || acao === 'skip') {
+          if (playlist) {
+            const prox = playlist.avancar();
+            if (prox) definirAlvoFoco(prox);
+          }
+          timer.reset();
+        }
+      });
+
       if (ctx.Lifecycle) {
         ctx.Lifecycle.onDispose('home', cancelPomoFoco);
+        ctx.Lifecycle.onDispose('home', cancelPomoFila);
+        ctx.Lifecycle.onDispose('home', cancelPomoCmd);
       }
     }
+
     if (ctx.Lifecycle && timer) {
       ctx.Lifecycle.onDispose('home', () => {
         timer.destroy();
@@ -626,6 +779,12 @@ return {
     if (typeof window !== 'undefined') {
       window.snoopySetPomodoroFocus = (titulo) => definirAlvoFoco({ texto: titulo });
       window._snoopyDefinirTarefaFoco = (d) => definirAlvoFoco(d);
+      window._snoopyAdicionarFilaPomodoro = (d) => {
+        if (playlist) {
+          playlist.adicionarFaixa(d);
+          if (playlist.obterTamanho() === 1) definirAlvoFoco(playlist.obterFaixaAtual());
+        }
+      };
     }
 
     const btnTargetClear = targetBanner.querySelector('#snoopy-btn-target-clear');
@@ -635,7 +794,7 @@ return {
         if (timer) timer.setAlvo(null);
         targetBanner.style.display = 'none';
         if (targetNameEl) targetNameEl.textContent = '-';
-        new Notice('[Snoopy] Alvo de foco liberado.');
+        if (typeof Notice !== 'undefined') new Notice('[Snoopy] Alvo de foco liberado.');
       };
     }
 
@@ -651,8 +810,14 @@ return {
         } else if (typeof window._snoopyConcluirTarefaAtiva === 'function' && alvo) {
           window._snoopyConcluirTarefaAtiva(alvo);
         }
+        if (playlist) {
+          playlist.concluirCicloNaFaixaAtual();
+          const prox = playlist.obterFaixaAtual();
+          if (prox) definirAlvoFoco(prox);
+          renderizarPlaylistVisual();
+        }
         if (timer) timer.setAlvo(null);
-        new Notice(`[Snoopy] Concluído: "${nomeAtual}"!`);
+        if (typeof Notice !== 'undefined') new Notice(`[Snoopy] Concluído: "${nomeAtual}"!`);
       };
     }
 
@@ -662,19 +827,37 @@ return {
     const atualizarTempos = () => {
       focusMin = parseInt(cfgFocusInput.value) || 25;
       breakMin = parseInt(cfgBreakInput.value) || 5;
-      if (btnModeFoco) btnModeFoco.textContent = `Foco (${focusMin}m)`;
-      if (btnModePausa) btnModePausa.textContent = `Pausa (${breakMin}m)`;
       if (timer) timer.setTempos(focusMin, breakMin);
     };
 
     if (cfgFocusInput) cfgFocusInput.onchange = atualizarTempos;
     if (cfgBreakInput) cfgBreakInput.onchange = atualizarTempos;
 
-    if (startBtn) startBtn.onclick = () => { if (timer) timer.toggle(); };
-    if (resetBtn) resetBtn.onclick = () => { if (timer) timer.reset(); };
-    if (btnModeFoco) btnModeFoco.onclick = () => { if (timer) timer.setMode('foco'); };
-    if (btnModePausa) btnModePausa.onclick = () => { if (timer) timer.setMode('pausa'); };
-
+    // Ações do Player Dock
+    if (btnMainPlay) btnMainPlay.onclick = () => { if (timer) timer.toggle(); };
+    if (btnReset) btnReset.onclick = () => { if (timer) timer.reset(); };
+    if (btnPrev) btnPrev.onclick = () => {
+      if (playlist) {
+        const ant = playlist.retroceder();
+        if (ant) definirAlvoFoco(ant);
+        renderizarPlaylistVisual();
+      }
+      if (timer) timer.reset();
+    };
+    if (btnNext) btnNext.onclick = () => {
+      if (playlist) {
+        const prox = playlist.avancar();
+        if (prox) definirAlvoFoco(prox);
+        renderizarPlaylistVisual();
+      }
+      if (timer) timer.reset();
+    };
+    if (btnToggleMode) btnToggleMode.onclick = () => {
+      if (timer) {
+        const novoModo = timer.currentMode === 'foco' ? 'pausa' : 'foco';
+        timer.setMode(novoModo);
+      }
+    };
     if (btnTestar) btnTestar.onclick = finalizarFoco;
     if (btnAnotar && modalManager) btnAnotar.onclick = () => modalManager.abrirModalAnotacao(false);
     if (btnFlashcard && modalManager) btnFlashcard.onclick = () => modalManager.abrirModalAnotacao(true);
@@ -682,5 +865,6 @@ return {
     // Inicialização Visual
     if (timer) timer._notificarTick();
     atualizarTelasJardim();
+    renderizarPlaylistVisual();
   }
 };
