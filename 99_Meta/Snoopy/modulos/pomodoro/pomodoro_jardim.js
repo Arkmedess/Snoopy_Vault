@@ -8,6 +8,64 @@
 
 const PomodoroJardim = {
   /**
+   * Retorna o catálogo dos 6 estágios botânicos disponíveis na progressão do foco.
+   *
+   * @returns {Array<{ nivel: number, titulo: string, ciclosMin: number, iconName: string, badge: string, descricao: string }>}
+   */
+  obterGuiaEstagios() {
+    return [
+      {
+        nivel: 1,
+        titulo: 'Semente Plantada',
+        ciclosMin: 0,
+        iconName: 'sprout',
+        badge: 'NÍVEL 1',
+        descricao: 'Inicie seu primeiro foco para germinar a plantinha.'
+      },
+      {
+        nivel: 1,
+        titulo: 'Plântula Ativa',
+        ciclosMin: 1,
+        iconName: 'sprout',
+        badge: 'NÍVEL 1',
+        descricao: 'Primeiro ciclo do dia consolidado com sucesso.'
+      },
+      {
+        nivel: 2,
+        titulo: 'Brotinho Verdejante',
+        ciclosMin: 2,
+        iconName: 'sprout',
+        badge: 'NÍVEL 2',
+        descricao: 'Constância em desenvolvimento acelerado.'
+      },
+      {
+        nivel: 3,
+        titulo: 'Cerejeira em Flor',
+        ciclosMin: 4,
+        iconName: 'flower-2',
+        badge: 'NÍVEL 3',
+        descricao: 'Meta diária batida com primor! Florescimento mental.'
+      },
+      {
+        nivel: 4,
+        titulo: 'Pinheiro Robusto',
+        ciclosMin: 6,
+        iconName: 'tree-pine',
+        badge: 'NÍVEL 4',
+        descricao: 'Foco inabalável. Raízes profundas e resiliência.'
+      },
+      {
+        nivel: 5,
+        titulo: 'Floresta Mágica',
+        ciclosMin: 8,
+        iconName: 'trees',
+        badge: 'MESTRE',
+        descricao: 'Mestria absoluta! Você construiu um ecossistema produtivo.'
+      }
+    ];
+  },
+
+  /**
    * Determina o estágio evolutivo da plantinha com base na quantidade de ciclos de foco de hoje.
    *
    * @param {number} ciclos - Quantidade de ciclos concluídos hoje.
@@ -208,7 +266,7 @@ const PomodoroJardim = {
 
     if (renderIcon) {
       pAv.innerHTML = '';
-      renderIcon(pAv, estagio.iconName, { size: 24, color: '#86efac' });
+      renderIcon(pAv, estagio.iconName, { size: 26, color: '#86efac' });
     }
     if (pTit) pTit.textContent = estagio.titulo;
     if (pDesc) {
@@ -366,6 +424,110 @@ const PomodoroJardim = {
     if (mPeak) mPeak.textContent = `${stats.peakPomos * focusMin}m`;
     if (mStreak) mStreak.textContent = `${stats.streak} dias`;
     if (mTotal) mTotal.textContent = `${stats.totalPomos} ciclos`;
+  },
+
+  /**
+   * Abre o modal rico com o guia de evolução botânica do jardim e histórico do dia.
+   *
+   * @param {object} ModalFactory - Fábrica nativa de modais.
+   * @param {object} params - Parâmetros de contexto.
+   * @param {number} [params.completedCyclesToday=0] - Ciclos completados hoje.
+   * @param {number} [params.dailyGoal=4] - Meta diária.
+   * @param {number} [params.focusMin=25] - Minutos por ciclo.
+   * @param {Array} [params.sessoesHoje=[]] - Sessões do dia.
+   * @param {Function} [params.renderIcon] - Utilitário de ícones.
+   * @returns {HTMLElement|null}
+   */
+  abrirModalEstufa(ModalFactory, params = {}) {
+    if (!ModalFactory || typeof ModalFactory.abrir !== 'function') return null;
+    const { completedCyclesToday = 0, dailyGoal = 4, focusMin = 25, sessoesHoje = [], renderIcon } = params;
+
+    const estagioAtual = this.calcularEstagioPlanta(completedCyclesToday);
+    const guia = this.obterGuiaEstagios();
+    const arvores = this.obterArvoresDoBosque(completedCyclesToday, sessoesHoje);
+
+    const cardsHtml = guia.map((g) => {
+      const isAtivo = g.titulo === estagioAtual.titulo;
+      const borda = isAtivo ? 'border: 1.5px solid #4ade80; background: rgba(74, 222, 128, 0.08);' : 'border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02);';
+      const badgeCor = isAtivo ? 'background: rgba(74, 222, 128, 0.2); color: #86efac;' : 'background: rgba(255,255,255,0.08); color: #a1a1aa;';
+
+      return `
+        <div style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 8px; ${borda}">
+          <div class="snoopy-estufa-icon" data-icon="${g.iconName}" style="width: 36px; height: 36px; border-radius: 50%; background: #14141c; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"></div>
+          <div style="flex: 1;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 700; font-size: 13px; color: ${isAtivo ? '#86efac' : '#e4e4e7'};">${g.titulo}</span>
+              <span class="snoopy-micro" style="padding: 2px 6px; border-radius: 4px; ${badgeCor} font-weight: bold;">${g.ciclosMin === 0 ? 'Inicial' : `${g.ciclosMin}+ ciclos`}</span>
+            </div>
+            <div class="snoopy-meta" style="font-size: 11px; color: #a1a1aa; margin-top: 2px;">${g.descricao}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    const bosqueHtml = arvores.length > 0
+      ? `<div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;">
+          ${arvores.map(a => `
+            <div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); padding: 4px 8px; border-radius: 6px;">
+              <span class="snoopy-bosque-icon" data-icon="${a.iconName}" data-color="${a.cor}"></span>
+              <span style="font-size: 11px; color: #e4e4e7; font-weight: 600;">${a.label}</span>
+            </div>
+          `).join('')}
+        </div>`
+      : `<div class="snoopy-meta" style="font-size: 11.5px; color: #71717a; font-style: italic; margin-top: 6px;">Nenhuma árvore colhida hoje ainda. Inicie seu foco para plantar seu bosque!</div>`;
+
+    const modalEl = ModalFactory.abrir({
+      maxWidth: '560px',
+      htmlContent: `
+        <div class="snoopy-card-header" style="margin-bottom: 14px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span id="snoopy-modal-estufa-header-icon"></span>
+            <div>
+              <span class="snoopy-section-title">ESTUFA BOTÂNICA & CONSTÂNCIA</span>
+              <div class="snoopy-card-subtitle">Evolução viva baseada em ciclos reais de foco</div>
+            </div>
+          </div>
+          <button class="snoopy-modal-close" title="Fechar"></button>
+        </div>
+
+        <div style="background: #14141c; border: 1px solid rgba(74, 222, 128, 0.3); border-radius: 8px; padding: 12px 14px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #86efac; font-weight: 800;">Estágio Atual de Hoje</div>
+            <div style="font-size: 16px; font-weight: 800; color: #ffffff; margin-top: 2px;">${estagioAtual.titulo} (${completedCyclesToday} ciclos • ${completedCyclesToday * focusMin}m)</div>
+            <div class="snoopy-meta" style="font-size: 11px; color: #a1a1aa; margin-top: 2px;">${estagioAtual.descricao}</div>
+          </div>
+          <span class="snoopy-micro" style="padding: 4px 10px; border-radius: 6px; background: rgba(74, 222, 128, 0.2); color: #86efac; font-weight: 800; font-size: 11px;">${estagioAtual.badge}</span>
+        </div>
+
+        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #a1a1aa; font-weight: 700; margin-bottom: 8px;">Árvores Plantadas Hoje (${arvores.length})</div>
+        <div style="margin-bottom: 16px;">
+          ${bosqueHtml}
+        </div>
+
+        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #a1a1aa; font-weight: 700; margin-bottom: 8px;">Guia de Estágios Botânicos</div>
+        <div style="display: flex; flex-direction: column; gap: 8px; max-height: 240px; overflow-y: auto; padding-right: 4px;">
+          ${cardsHtml}
+        </div>
+      `
+    });
+
+    if (modalEl && renderIcon) {
+      const hIcon = modalEl.querySelector('#snoopy-modal-estufa-header-icon');
+      if (hIcon) renderIcon(hIcon, 'sprout', { size: 18, color: '#86efac' });
+
+      modalEl.querySelectorAll('.snoopy-estufa-icon').forEach((el) => {
+        const ic = el.getAttribute('data-icon');
+        if (ic) renderIcon(el, ic, { size: 18, color: '#86efac' });
+      });
+
+      modalEl.querySelectorAll('.snoopy-bosque-icon').forEach((el) => {
+        const ic = el.getAttribute('data-icon');
+        const cor = el.getAttribute('data-color') || '#86efac';
+        if (ic) renderIcon(el, ic, { size: 14, color: cor });
+      });
+    }
+
+    return modalEl;
   }
 };
 

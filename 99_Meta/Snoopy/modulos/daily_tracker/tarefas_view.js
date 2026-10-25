@@ -15,6 +15,51 @@ const TarefasView = {
   async montar({ tasksCard, ctx, abrirModalNovaTarefa, abrirModalTemplateTarefa, abrirModalMenuTarefa }) {
     const { app, dv, todayStr, DateUtils, VaultStore, TaskParser } = ctx;
 
+    let currentViewMode = (typeof window !== 'undefined' && window.__snoopyTaskViewMode) || 'lista';
+    let tabsContainer = null;
+
+    function montarViewSwitcher(container) {
+      if (!container) return;
+      const switcher = container.createEl('div', {
+        cls: 'snoopy-view-switcher',
+        attr: { style: 'display: inline-flex; align-items: center; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 2px; gap: 2px; margin-right: 4px;' }
+      });
+
+      const btnLista = switcher.createEl('button', {
+        cls: `snoopy-btn-view-mode ${currentViewMode === 'lista' ? 'active' : ''}`,
+        attr: { 'data-mode': 'lista', title: 'Visualização em Lista com Abas' }
+      });
+      if (ctx.renderIcon) ctx.renderIcon(btnLista, 'list', { size: 13 });
+      else btnLista.textContent = 'Lista';
+
+      const btnKanban = switcher.createEl('button', {
+        cls: `snoopy-btn-view-mode ${currentViewMode === 'kanban' ? 'active' : ''}`,
+        attr: { 'data-mode': 'kanban', title: 'Visualização em Quadro Kanban por Status' }
+      });
+      if (ctx.renderIcon) ctx.renderIcon(btnKanban, 'kanban', { size: 13 });
+      else btnKanban.textContent = 'Kanban';
+
+      btnLista.onclick = () => {
+        currentViewMode = 'lista';
+        if (typeof window !== 'undefined') window.__snoopyTaskViewMode = 'lista';
+        btnLista.classList.add('active');
+        btnKanban.classList.remove('active');
+        if (tabsContainer) tabsContainer.style.display = 'flex';
+        renderizarTarefasDoCache();
+      };
+
+      btnKanban.onclick = () => {
+        currentViewMode = 'kanban';
+        if (typeof window !== 'undefined') window.__snoopyTaskViewMode = 'kanban';
+        btnKanban.classList.add('active');
+        btnLista.classList.remove('active');
+        if (tabsContainer) tabsContainer.style.display = 'none';
+        renderizarTarefasDoCache();
+      };
+
+      return switcher;
+    }
+
     let addTaskBtn = null;
     let addTplBtn = null;
     if (ctx.UIKit && typeof ctx.UIKit.criarCardHeader === 'function') {
@@ -23,6 +68,7 @@ const TarefasView = {
         icon: 'list-checks',
         subtitle: 'O que precisa sair hoje'
       });
+      montarViewSwitcher(headerEls.actionsBox);
       if (typeof abrirModalTemplateTarefa === 'function') {
         addTplBtn = ctx.UIKit.criarBotao(headerEls.actionsBox, {
           label: '+ TEMPLATE',
@@ -46,6 +92,7 @@ const TarefasView = {
         </div>
       `;
       const actionsBox = todoHeader.createEl('div', { cls: 'snoopy-toolbar' });
+      montarViewSwitcher(actionsBox);
       if (typeof abrirModalTemplateTarefa === 'function') {
         addTplBtn = actionsBox.createEl('button', {
           cls: 'snoopy-btn-action snoopy-btn-sm',
@@ -61,9 +108,9 @@ const TarefasView = {
     }
 
     // Barra de Filtros / Abas
-    const tabsContainer = tasksCard.createEl('div', { 
+    tabsContainer = tasksCard.createEl('div', { 
       cls: 'snoopy-task-tabs snoopy-toolbar', 
-      attr: { style: 'overflow-x: auto; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.05);' } 
+      attr: { style: `overflow-x: auto; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.05); ${currentViewMode === 'kanban' ? 'display: none;' : ''}` } 
     });
 
     const tabsDef = [
@@ -135,6 +182,12 @@ const TarefasView = {
 
     function renderizarTarefasDoCache() {
       todoListContainer.innerHTML = '';
+
+      if (currentViewMode === 'kanban') {
+        renderizarTarefasModoKanban();
+        return;
+      }
+
       const amanhãStr = DateUtils.somarDias(todayStr, 1);
       const semanaStr = DateUtils.somarDias(todayStr, 7);
 
@@ -419,6 +472,239 @@ const TarefasView = {
           }
         };
       });
+    }
+
+    function renderizarTarefasModoKanban() {
+      todoListContainer.innerHTML = '';
+
+      const board = todoListContainer.createEl('div', {
+        cls: 'snoopy-task-kanban-board'
+      });
+
+      const tarefasHoje = cacheTarefasPendentes.filter(t => t.statusPrazo === 'hoje' || t.statusPrazo === 'atrasada');
+      const tarefasAFazer = cacheTarefasPendentes.filter(t => t.statusPrazo !== 'hoje' && t.statusPrazo !== 'atrasada');
+      const tarefasConcluidas = [...cacheTarefasConcluidasHoje];
+
+      const colunasDef = [
+        { id: 'afazer', titulo: 'A FAZER', dotCls: 'dot-afazer', itens: tarefasAFazer },
+        { id: 'hoje', titulo: 'HOJE / EM ANDAMENTO', dotCls: 'dot-hoje', itens: tarefasHoje },
+        { id: 'concluido', titulo: 'CONCLUÍDO', dotCls: 'dot-concluido', itens: tarefasConcluidas }
+      ];
+
+      colunasDef.forEach(col => {
+        const colEl = board.createEl('div', {
+          cls: `snoopy-task-kanban-col col-${col.id}`
+        });
+
+        const headerEl = colEl.createEl('div', {
+          cls: 'snoopy-task-kanban-col-header'
+        });
+        const titleRow = headerEl.createEl('div', {
+          attr: { style: 'display: flex; align-items: center; gap: 6px;' }
+        });
+        titleRow.createEl('span', { cls: `snoopy-kanban-dot ${col.dotCls}` });
+        titleRow.createEl('span', {
+          cls: 'snoopy-sub-title',
+          attr: { style: 'font-size: 11px; font-weight: 700;' },
+          text: col.titulo
+        });
+        headerEl.createEl('span', {
+          cls: 'snoopy-micro',
+          attr: { style: 'color: #71717a; font-weight: bold;' },
+          text: String(col.itens.length)
+        });
+
+        const cardsWrap = colEl.createEl('div', {
+          cls: 'snoopy-task-kanban-col-cards',
+          attr: { style: 'display: flex; flex-direction: column; gap: 8px; overflow-y: auto; max-height: 380px; padding-right: 2px;' }
+        });
+
+        if (col.itens.length === 0) {
+          cardsWrap.createEl('div', {
+            cls: 'snoopy-meta',
+            attr: { style: 'color: #71717a; font-size: 11px; font-style: italic; text-align: center; padding: 16px 0;' },
+            text: 'Nenhum item nesta coluna'
+          });
+        } else {
+          col.itens.forEach(item => {
+            renderizarCardKanban(cardsWrap, item);
+          });
+        }
+      });
+    }
+
+    function renderizarCardKanban(cardsWrap, item) {
+      const t = item.taskRef;
+      const filePath = t.path || (t.link ? t.link.path : null);
+      const fileName = t.link ? (t.link.display || t.link.path.split('/').pop().replace(/\.md$/, '')) : (filePath ? filePath.split('/').pop().replace(/\.md$/, '') : 'Nota');
+
+      let badgeIconName = 'file-text';
+      let badgeLabel = fileName;
+      let originBadgeStyle = 'background: rgba(255, 255, 255, 0.05); color: #a1a1aa; border: 1px solid rgba(255, 255, 255, 0.08);';
+
+      if (filePath) {
+        if (filePath.startsWith('02_Projetos/')) {
+          badgeIconName = 'target';
+          originBadgeStyle = 'background: rgba(167, 139, 250, 0.12); color: #c4b5fd; border: 1px solid rgba(167, 139, 250, 0.25);';
+        } else if (filePath.startsWith('03_Estudos/')) {
+          badgeIconName = 'book-open';
+          originBadgeStyle = 'background: rgba(96, 165, 250, 0.12); color: #93c5fd; border: 1px solid rgba(96, 165, 250, 0.25);';
+        } else if (filePath.startsWith('04_Leituras/')) {
+          badgeIconName = 'book-open';
+          originBadgeStyle = 'background: rgba(56, 189, 248, 0.12); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.25);';
+        } else if (filePath.startsWith('01_Inbox/Diário/')) {
+          badgeIconName = 'calendar';
+          badgeLabel = 'Diário';
+          originBadgeStyle = 'background: rgba(255, 255, 255, 0.05); color: #a1a1aa; border: 1px solid rgba(255, 255, 255, 0.08);';
+        }
+      }
+
+      const card = cardsWrap.createEl('div', { cls: 'snoopy-task-kanban-card' });
+
+      // Topo: Checkbox + Título
+      const topRow = card.createEl('div', {
+        attr: { style: 'display: flex; align-items: flex-start; gap: 8px;' }
+      });
+      const cb = topRow.createEl('input', {
+        cls: 'snoopy-circle-check',
+        attr: { type: 'checkbox', style: 'margin-top: 2px;' }
+      });
+      cb.checked = item.completed;
+      cb.onchange = async () => {
+        if (filePath) {
+          const file = app.vault.getAbstractFileByPath(filePath);
+          if (file) {
+            await VaultStore.substituirLinha(
+              app, 
+              file, 
+              l => l.includes(t.text), 
+              l => cb.checked 
+                ? l.replace(/- \[ \]/, `- [x] ✅ ${todayStr}`) 
+                : l.replace(/- \[[xX]\]/, '- [ ]').replace(REGEX_CHECKED_TASKS, '').trim()
+            );
+            if (typeof Notice !== 'undefined') new Notice(cb.checked ? `✅ Concluída: ${item.cleanText}` : `↩ Reaberta: ${item.cleanText}`);
+            await recarregarEAtualizarTarefas();
+          }
+        }
+      };
+
+      topRow.createEl('span', {
+        text: item.cleanText,
+        attr: { style: `font-size: 12px; font-weight: 600; color: ${item.completed ? 'var(--text-muted)' : '#ffffff'}; ${item.completed ? 'text-decoration: line-through;' : ''} line-height: 1.35; flex: 1; word-break: break-word;` }
+      });
+
+      // Badges e Tags
+      const tagsRow = card.createEl('div', {
+        attr: { style: 'display: flex; align-items: center; gap: 4px; flex-wrap: wrap; margin-top: 4px;' }
+      });
+
+      if (filePath) {
+        const linkEl = tagsRow.createEl('a', {
+          cls: 'snoopy-todo-source',
+          attr: {
+            title: `Abrir nota: ${filePath}`,
+            style: `${originBadgeStyle} padding: 1px 6px; font-size: 10px; border-radius: 4px; text-decoration: none; cursor: pointer; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-flex; align-items: center; gap: 3px;`
+          }
+        });
+        if (ctx.renderIcon) ctx.renderIcon(linkEl, badgeIconName, { size: 10 });
+        linkEl.createEl('span', { text: badgeLabel });
+        linkEl.onclick = (e) => { e.preventDefault(); e.stopPropagation(); app.workspace.openLinkText(filePath, '', false); };
+      }
+
+      if (item.progresso) {
+        const progBadge = tagsRow.createEl('span', {
+          cls: `snoopy-task-prog-chip ${item.progresso.pct >= 100 || item.completed ? 'prog-concluido' : ''}`,
+          attr: { style: 'font-size: 10px;', title: `Meta: ${item.progresso.rotulo}${item.progresso.pct !== null ? ` (${item.progresso.pct}%)` : ''}` }
+        });
+        if (ctx.renderIcon) ctx.renderIcon(progBadge, item.progresso.pct >= 100 || item.completed ? 'check' : 'zap', { size: 10 });
+        progBadge.createEl('span', { text: item.progresso.rotulo });
+      }
+
+      if (item.pomosEst) {
+        const pomoBadge = tagsRow.createEl('span', {
+          cls: 'snoopy-micro',
+          attr: { style: 'padding: 1px 5px; border-radius: 4px; background: rgba(251, 146, 60, 0.12); color: #fdba74; display: inline-flex; align-items: center; gap: 3px; font-size: 10px;' }
+        });
+        if (ctx.renderIcon) ctx.renderIcon(pomoBadge, 'clock', { size: 10, color: '#fdba74' });
+        pomoBadge.createEl('span', { text: `${item.pomosEst}p` });
+      }
+
+      if (!item.completed) {
+        if (item.statusPrazo === 'atrasada') {
+          tagsRow.createEl('span', { cls: 'prio-badge prio-alta', attr: { style: 'font-size: 9px; padding: 1px 5px;' }, text: 'ATRASADA' });
+        } else if (item.statusPrazo === 'hoje') {
+          tagsRow.createEl('span', { cls: 'snoopy-micro', attr: { style: 'font-weight: bold; padding: 1px 5px; border-radius: 3px; background: rgba(96, 165, 250, 0.15); color: #93c5fa; font-size: 10px;' }, text: 'Hoje' });
+        } else if (item.dueStr) {
+          tagsRow.createEl('span', { cls: 'snoopy-micro', attr: { style: 'color: var(--text-muted); font-size: 10px;' }, text: DateUtils.formatarDDMMYYYY(item.dueStr) });
+        }
+
+        if (item.prio === 'alta') {
+          const prioIcon = tagsRow.createEl('span', { attr: { title: 'Prioridade Alta', style: 'display: inline-flex; align-items: center; color: #fb923c;' } });
+          if (ctx.renderIcon) ctx.renderIcon(prioIcon, 'arrow-up', { size: 11, color: '#fb923c' });
+        }
+      }
+
+      // Rodapé
+      const footerRow = card.createEl('div', {
+        attr: { style: 'display: flex; align-items: center; justify-content: flex-end; gap: 6px; margin-top: 6px; padding-top: 4px; border-top: 1px solid rgba(255,255,255,0.04);' }
+      });
+
+      if (!item.completed) {
+        const btnFoco = footerRow.createEl('button', {
+          cls: 'snoopy-btn-task-focus snoopy-btn-sm',
+          attr: { title: 'Carregar no Cockpit Pomodoro', style: 'padding: 2px 8px; font-size: 11px;' }
+        });
+        if (ctx.renderIcon) ctx.renderIcon(btnFoco, 'play', { size: 10, color: '#86efac' });
+        btnFoco.createEl('span', { text: 'Foco' });
+
+        btnFoco.onclick = (e) => {
+          e.stopPropagation();
+          if (typeof window.snoopySetPomodoroFocus === 'function') window.snoopySetPomodoroFocus(item.cleanText, badgeLabel);
+          if (typeof window._snoopyDefinirTarefaFoco === 'function') window._snoopyDefinirTarefaFoco({ texto: item.cleanText, path: filePath, line: t.line });
+        };
+
+        const btnFila = footerRow.createEl('button', {
+          cls: 'snoopy-task-action-btn',
+          attr: { title: 'Adicionar à Playlist / Fila de Foco do Pomodoro' }
+        });
+        if (ctx.renderIcon) ctx.renderIcon(btnFila, 'list-plus', { size: 14 });
+        else btnFila.textContent = '+Fila';
+
+        btnFila.onclick = (e) => {
+          e.stopPropagation();
+          const pomosNum = Number(item.pomosEst) || 1;
+          if (ctx.events) {
+            ctx.events.emit('pomodoro:enfileirar', {
+              titulo: item.cleanText,
+              path: filePath,
+              line: t.line,
+              pomosTotal: pomosNum
+            });
+          } else if (typeof window._snoopyAdicionarFilaPomodoro === 'function') {
+            window._snoopyAdicionarFilaPomodoro({
+              titulo: item.cleanText,
+              path: filePath,
+              line: t.line,
+              pomosTotal: pomosNum
+            });
+          }
+        };
+
+        const btnMenu = footerRow.createEl('button', {
+          cls: 'snoopy-task-action-btn',
+          attr: { title: 'Ações da tarefa' }
+        });
+        if (ctx.renderIcon) ctx.renderIcon(btnMenu, 'more-vertical', { size: 14 });
+        else btnMenu.textContent = '⋮';
+
+        btnMenu.onclick = (e) => { e.stopPropagation(); abrirModalMenuTarefa(item, t, filePath); };
+      } else {
+        footerRow.createEl('span', {
+          cls: 'snoopy-micro',
+          attr: { style: 'color: #86efac; font-weight: bold; font-size: 11px;' },
+          text: 'Concluída'
+        });
+      }
     }
 
     // Função central para conclusão de tarefa apontada pelo Pomodoro

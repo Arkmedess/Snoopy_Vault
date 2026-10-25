@@ -115,6 +115,18 @@ class PomodoroTimer {
 
     if (!this.endAt) {
       this.endAt = Date.now() + (this.remainingSeconds * 1000);
+    } else {
+      const diffMs = this.endAt - Date.now();
+      this.remainingSeconds = Math.max(0, Math.ceil(diffMs / 1000));
+    }
+
+    if (this.remainingSeconds <= 0) {
+      this.pause();
+      this.endAt = null;
+      this._notificarTick();
+      const modoFinalizado = this.currentMode;
+      this.onComplete({ mode: modoFinalizado, alvo: this.alvoAtual });
+      return;
     }
 
     this.onRunningChange({ isRunning: true });
@@ -131,6 +143,7 @@ class PomodoroTimer {
       } else {
         this.pause();
         this.endAt = null;
+        this._notificarTick();
         const modoFinalizado = this.currentMode;
         this.onComplete({ mode: modoFinalizado, alvo: this.alvoAtual });
       }
@@ -185,7 +198,10 @@ class PomodoroTimer {
    * Destrói o timer limpando qualquer intervalo pendente na memória.
    */
   destroy() {
-    this.pause();
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
   }
 }
 

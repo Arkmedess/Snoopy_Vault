@@ -603,6 +603,15 @@ button.snoopy-nav-pill-btn:active,
   transform-origin: 50% 50%;
 }
 
+.circle-progress-bar.is-break {
+  stroke: #60a5fa !important;
+}
+
+#snoopy-playlist-count {
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
 /* Heatmap Quadradinhos */
 .snoopy-heat-grid {
   display: inline-grid !important;
@@ -2033,14 +2042,21 @@ button.snoopy-btn-danger:hover {
    BOSQUE DO DIA (DAILY GROVE) NO JARDIM DE CONSTÂNCIA
    ========================================================================= */
 .snoopy-daily-grove {
-  display: flex !important;
+  display: inline-flex !important;
   align-items: center !important;
-  gap: 6px !important;
+  gap: 5px !important;
   flex-wrap: wrap !important;
-  margin-top: 8px !important;
-  padding-top: 6px !important;
-  border-top: 1px dashed rgba(255, 255, 255, 0.08) !important;
-  min-height: 22px !important;
+  min-height: 20px !important;
+}
+
+#snoopy-plant-avatar:hover {
+  transform: scale(1.06) !important;
+  border-color: rgba(74, 222, 128, 0.6) !important;
+}
+
+#snoopy-btn-open-jardim:hover {
+  background: rgba(74, 222, 128, 0.15) !important;
+  border-color: rgba(74, 222, 128, 0.3) !important;
 }
 
 .snoopy-grove-empty {
@@ -2054,8 +2070,8 @@ button.snoopy-btn-danger:hover {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  width: 22px !important;
-  height: 22px !important;
+  width: 20px !important;
+  height: 20px !important;
   border-radius: 4px !important;
   background: rgba(255, 255, 255, 0.04) !important;
   border: 1px solid rgba(255, 255, 255, 0.06) !important;
@@ -2067,6 +2083,108 @@ button.snoopy-btn-danger:hover {
   transform: translateY(-2px) scale(1.15) !important;
   background: rgba(74, 222, 128, 0.12) !important;
   border-color: rgba(74, 222, 128, 0.35) !important;
+}
+
+/* =========================================================================
+   MODO KANBAN INTEGRADO NA CENTRAL DE TAREFAS
+   ========================================================================= */
+.snoopy-view-switcher {
+  display: inline-flex !important;
+  align-items: center !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 6px !important;
+  padding: 2px !important;
+  gap: 2px !important;
+  margin-right: 4px !important;
+}
+
+.snoopy-btn-view-mode {
+  background: transparent !important;
+  border: none !important;
+  color: var(--text-muted) !important;
+  padding: 3px 7px !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.12s ease !important;
+}
+
+.snoopy-btn-view-mode:hover {
+  color: var(--text-normal) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.snoopy-btn-view-mode.active {
+  background: rgba(255, 255, 255, 0.14) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+.snoopy-task-kanban-board {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(200px, 1fr)) !important;
+  gap: 12px !important;
+  overflow-x: auto !important;
+  padding-bottom: 8px !important;
+}
+
+.snoopy-task-kanban-col {
+  background: #12121a !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 8px !important;
+  padding: 10px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  min-height: 220px !important;
+}
+
+.snoopy-task-kanban-col-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+  padding-bottom: 6px !important;
+  margin-bottom: 2px !important;
+}
+
+.snoopy-kanban-dot {
+  width: 7px !important;
+  height: 7px !important;
+  border-radius: 50% !important;
+  display: inline-block !important;
+}
+
+.snoopy-kanban-dot.dot-afazer {
+  background-color: #a1a1aa !important;
+}
+
+.snoopy-kanban-dot.dot-hoje {
+  background-color: #60a5fa !important;
+  box-shadow: 0 0 6px rgba(96, 165, 250, 0.4) !important;
+}
+
+.snoopy-kanban-dot.dot-concluido {
+  background-color: #4ade80 !important;
+}
+
+.snoopy-task-kanban-card {
+  background: #171722 !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-radius: 6px !important;
+  padding: 8px 10px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  transition: border-color 0.15s ease, background 0.15s ease !important;
+}
+
+.snoopy-task-kanban-card:hover {
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  background: #1a1a27 !important;
 }
 
 

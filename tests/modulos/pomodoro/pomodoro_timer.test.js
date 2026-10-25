@@ -41,5 +41,37 @@ describe('Módulo Pomodoro - PomodoroTimer', () => {
     assert.strictEqual(timer.currentMode, 'foco');
     assert.strictEqual(timer.totalSeconds, 3000);
   });
+
+  test('destroy() descarta intervalo com seguranca sem emitir onRunningChange', () => {
+    let mudouRunning = false;
+    const timer = new PomodoroTimer({
+      focusMin: 25,
+      onRunningChange: () => { mudouRunning = true; }
+    });
+
+    timer.start();
+    mudouRunning = false; // Reset da flag apos start
+
+    timer.destroy();
+    assert.strictEqual(timer.timerInterval, null);
+    assert.strictEqual(mudouRunning, false, 'destroy() nao deve emitir onRunningChange para preservar estado');
+  });
+
+  test('start() recupera e finaliza com seguranca quando endAt esta no passado', (t, done) => {
+    let completado = false;
+    const timer = new PomodoroTimer({
+      focusMin: 25,
+      endAt: Date.now() - 5000,
+      initialRemaining: 0,
+      onComplete: () => { completado = true; }
+    });
+
+    timer.start();
+    setTimeout(() => {
+      assert.strictEqual(completado, true, 'Deve finalizar ciclo expirado imediatamente');
+      timer.destroy();
+      done();
+    }, 20);
+  });
 });
 

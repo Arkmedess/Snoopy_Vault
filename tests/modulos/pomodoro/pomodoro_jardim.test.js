@@ -91,5 +91,17 @@ describe('Módulo Pomodoro - PomodoroJardim', () => {
     assert.strictEqual(diaVazio.atingiuMeta, false);
     assert.ok(diaVazio.label.includes('Nenhum foco'));
   });
+
+  test('obterGuiaEstagios() retorna catálogo completo dos 6 níveis botânicos', () => {
+    const guia = PomodoroJardim.obterGuiaEstagios();
+    assert.strictEqual(Array.isArray(guia), true);
+    assert.strictEqual(guia.length, 6);
+    assert.strictEqual(guia[0].titulo, 'Semente Plantada');
+    assert.strictEqual(guia[0].ciclosMin, 0);
+    assert.strictEqual(guia[3].titulo, 'Cerejeira em Flor');
+    assert.strictEqual(guia[3].ciclosMin, 4);
+    assert.strictEqual(guia[5].titulo, 'Floresta Mágica');
+    assert.strictEqual(guia[5].ciclosMin, 8);
+  });
 });
 

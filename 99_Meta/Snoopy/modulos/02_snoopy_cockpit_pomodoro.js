@@ -217,11 +217,11 @@ return {
 
     const playlistHeader = playlistWrap.createEl('div', { cls: 'snoopy-playlist-header' });
     playlistHeader.innerHTML = `
-      <div style="display: flex; align-items: center; gap: 6px;">
-        <span class="snoopy-micro" style="font-weight: 700; color: #a1a1aa; letter-spacing: 0.05em;">FILA DE FOCO (PLAYLIST)</span>
-        <span id="snoopy-playlist-count" class="snoopy-micro" style="color: #60a5fa; font-weight: bold;">0 faixas</span>
+      <div style="display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+        <span class="snoopy-micro" style="font-weight: 700; color: #a1a1aa; letter-spacing: 0.05em; white-space: nowrap;">FILA DE FOCO (PLAYLIST)</span>
+        <span id="snoopy-playlist-count" class="snoopy-micro" style="color: #60a5fa; font-weight: bold; white-space: nowrap; flex-shrink: 0;">0 faixas</span>
       </div>
-      <div style="display: flex; align-items: center; gap: 6px;">
+      <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
         <button id="snoopy-playlist-btn-add" class="snoopy-playlist-btn-edit" title="Adicionar nova tarefa na fila">+ Fila</button>
         <button id="snoopy-playlist-clear" class="snoopy-micro" style="background: transparent; border: none; color: #71717a; cursor: pointer; padding: 2px 4px;">Limpar</button>
       </div>
@@ -279,19 +279,45 @@ return {
       attr: { style: 'display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: #13131c; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); margin: 4px 0 8px 0;' }
     });
     plantCard.innerHTML = `
-      <div id="snoopy-plant-avatar" style="width: 46px; height: 46px; border-radius: 50%; background: #181824; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; user-select: none;"></div>
+      <div id="snoopy-plant-avatar" style="width: 48px; height: 48px; border-radius: 50%; background: radial-gradient(circle, #1f2937 0%, #111827 100%); border: 1.5px solid rgba(74, 222, 128, 0.25); display: flex; align-items: center; justify-content: center; flex-shrink: 0; user-select: none; cursor: pointer; transition: transform 0.15s ease, border-color 0.15s ease;" title="Clique para abrir a Estufa Botânica & Estágios de Foco"></div>
       <div style="flex: 1; overflow: hidden;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <span id="snoopy-stage-title" style="font-size: 13.5px; font-weight: 700; color: #ffffff;">Semente Plantada</span>
-          <span id="snoopy-stage-badge" class="snoopy-micro" style="padding: 2px 7px; border-radius: 4px; background: rgba(74, 222, 128, 0.15); color: #86efac; font-weight: bold;">NÍVEL 1</span>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <button id="snoopy-btn-open-jardim" class="snoopy-micro" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; padding: 2px 7px; color: #86efac; cursor: pointer; font-weight: 700;" title="Abrir Guia Botânico">🌿 Estufa</button>
+            <span id="snoopy-stage-badge" class="snoopy-micro" style="padding: 2px 7px; border-radius: 4px; background: rgba(74, 222, 128, 0.15); color: #86efac; font-weight: bold;">NÍVEL 1</span>
+          </div>
         </div>
         <div id="snoopy-stage-desc" class="snoopy-meta" style="font-size: 11px; color: #a1a1aa; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Inicie seu primeiro foco para germinar a plantinha.</div>
         <div class="snoopy-prog-track" style="height: 6px; width: 100%; margin-top: 6px; border-radius: 3px;">
           <div id="snoopy-plant-bar" class="snoopy-prog-fill" style="width: 0%; background: #4ade80; border-radius: 3px;"></div>
         </div>
-        <div id="snoopy-daily-grove" class="snoopy-daily-grove"></div>
+        <div class="snoopy-daily-grove-row" style="display: flex; align-items: center; gap: 6px; margin-top: 6px; min-height: 20px;">
+          <span class="snoopy-micro" style="font-size: 10px; color: #71717a; text-transform: uppercase; font-weight: 700; letter-spacing: 0.04em; white-space: nowrap;">Bosque do dia:</span>
+          <div id="snoopy-daily-grove" class="snoopy-daily-grove" style="margin: 0; padding: 0; border: none; display: inline-flex; align-items: center; gap: 5px;"></div>
+        </div>
       </div>
     `;
+
+    const abrirEstufa = () => {
+      if (PomodoroJardim && typeof PomodoroJardim.abrirModalEstufa === 'function') {
+        const sessoesHoje = (typeof window !== 'undefined' && Array.isArray(window.__snoopyTodaySessions))
+          ? window.__snoopyTodaySessions
+          : [];
+        PomodoroJardim.abrirModalEstufa(ModalFactory, {
+          completedCyclesToday,
+          dailyGoal,
+          focusMin,
+          sessoesHoje,
+          renderIcon: ctx.renderIcon
+        });
+      }
+    };
+
+    const plantAvatarEl = plantCard.querySelector('#snoopy-plant-avatar');
+    const btnOpenJardim = plantCard.querySelector('#snoopy-btn-open-jardim');
+    if (plantAvatarEl) plantAvatarEl.onclick = abrirEstufa;
+    if (btnOpenJardim) btnOpenJardim.onclick = abrirEstufa;
 
     const historySplit = historyBox.createEl('div', { attr: { style: 'padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.08);' } });
     historySplit.innerHTML = `
@@ -345,6 +371,7 @@ return {
     // --- INSTANCIAÇÃO DOS SUBMÓDULOS E BINDINGS ---
     const circleBar = pomoBox.querySelector('#snoopy-circle-bar');
     const timerDisplay = pomoBox.querySelector('#snoopy-timer-display');
+    const cycleLabel = pomoBox.querySelector('#snoopy-cycle-label');
     const modeBadge = pomoBox.querySelector('#snoopy-mode-badge');
     const targetNameEl = targetBanner.querySelector('#snoopy-target-name');
     const playlistCountEl = playlistWrap.querySelector('#snoopy-playlist-count');
@@ -785,11 +812,21 @@ return {
         }
       },
       onModeChange: ({ mode }) => {
-        if (circleBar) circleBar.style.stroke = mode === 'foco' ? '#4ade80' : '#60a5fa';
+        const isFoco = mode === 'foco';
+        if (circleBar) {
+          circleBar.style.stroke = isFoco ? '#4ade80' : '#60a5fa';
+          if (typeof circleBar.classList?.toggle === 'function') {
+            circleBar.classList.toggle('is-break', !isFoco);
+          }
+        }
+        if (cycleLabel) {
+          cycleLabel.textContent = isFoco ? `Ciclo ${completedCyclesToday + 1} de ${dailyGoal}` : 'PAUSA';
+          cycleLabel.style.color = isFoco ? '#86efac' : '#93c5fd';
+        }
         if (modeBadge) {
-          modeBadge.textContent = mode === 'foco' ? 'FOCO ATIVO' : 'PAUSA ATIVA';
-          modeBadge.style.color = mode === 'foco' ? '#86efac' : '#93c5fd';
-          modeBadge.style.background = mode === 'foco' ? 'rgba(74, 222, 128, 0.15)' : 'rgba(96, 165, 250, 0.15)';
+          modeBadge.textContent = isFoco ? 'FOCO ATIVO' : 'PAUSA ATIVA';
+          modeBadge.style.color = isFoco ? '#86efac' : '#93c5fd';
+          modeBadge.style.background = isFoco ? 'rgba(74, 222, 128, 0.15)' : 'rgba(96, 165, 250, 0.15)';
         }
       },
       onRunningChange: ({ isRunning }) => {
@@ -809,14 +846,41 @@ return {
       }
     }) : null;
 
+    // Prevenção estrita de timers fantasmas concorrentes
+    if (typeof window !== 'undefined' && timer) {
+      if (window.__snoopyActiveTimerInstance && typeof window.__snoopyActiveTimerInstance.destroy === 'function') {
+        window.__snoopyActiveTimerInstance.destroy();
+      }
+      window.__snoopyActiveTimerInstance = timer;
+    }
+
     // Hidrata visual inicial
     if (timer) {
+      const isFoco = timer.currentMode === 'foco';
+      if (circleBar) {
+        circleBar.style.stroke = isFoco ? '#4ade80' : '#60a5fa';
+        if (typeof circleBar.classList?.toggle === 'function') {
+          circleBar.classList.toggle('is-break', !isFoco);
+        }
+      }
+      if (cycleLabel) {
+        cycleLabel.textContent = isFoco ? `Ciclo ${completedCyclesToday + 1} de ${dailyGoal}` : 'PAUSA';
+        cycleLabel.style.color = isFoco ? '#86efac' : '#93c5fd';
+      }
       const initStr = timer.formatarTempo(timer.remainingSeconds);
       if (timerDisplay) timerDisplay.textContent = initStr;
       const initOffset = timer.calcularStrokeOffset(timer.remainingSeconds, timer.totalSeconds);
       if (circleBar) circleBar.style.strokeDashoffset = initOffset;
-      if (globalState && globalState.isRunning && globalState.endAt && globalState.endAt > Date.now()) {
-        timer.start();
+
+      if (globalState && globalState.isRunning && globalState.endAt) {
+        if (globalState.endAt > Date.now()) {
+          timer.start();
+        } else {
+          // Tempo finalizado durante estado inativo / segundo plano
+          timer.remainingSeconds = 0;
+          timer.onTick({ remaining: 0, total: timer.totalSeconds, timeStr: '00:00', offset: 0 });
+          timer.onComplete({ mode: timer.currentMode, alvo: timer.alvoAtual });
+        }
       }
     }
 
@@ -875,6 +939,9 @@ return {
     if (ctx.Lifecycle && timer) {
       ctx.Lifecycle.onDispose('home', () => {
         timer.destroy();
+        if (typeof window !== 'undefined' && window.__snoopyActiveTimerInstance === timer) {
+          window.__snoopyActiveTimerInstance = null;
+        }
       });
     }
 
