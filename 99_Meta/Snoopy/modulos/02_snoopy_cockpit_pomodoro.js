@@ -266,21 +266,24 @@ return {
       });
       headerActions.createEl('span', {
         cls: 'snoopy-meta',
-        attr: { id: 'snoopy-today-stats', style: 'color: #86efac; font-weight: bold;' },
+        attr: { id: 'snoopy-today-stats', style: 'color: #86efac; font-weight: 800; font-size: 12px; white-space: nowrap;' },
         text: '0 ciclos hoje (0 min)'
       });
     } else {
-      const historyHeader = historyBox.createEl('div', { cls: 'snoopy-card-header' });
+      const historyHeader = historyBox.createEl('div', { 
+        cls: 'snoopy-card-header',
+        attr: { style: 'display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px;' }
+      });
       historyHeader.innerHTML = `
-        <div class="snoopy-card-header-main">
-          <div class="snoopy-toolbar">
+        <div class="snoopy-card-header-main" style="display: flex; flex-direction: column; justify-content: center;">
+          <div class="snoopy-toolbar" style="display: flex; align-items: center; gap: 6px;">
             <span class="snoopy-section-title">JARDIM DE CONSTÂNCIA</span>
           </div>
           <span class="snoopy-card-subtitle">Histórico e ciclos acumulados</span>
         </div>
-        <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
           <div id="snoopy-jardim-moedas" class="snoopy-moedas-badge" title="Ganhe 1 moeda de seiva a cada 5m de foco">🪙 <span id="snoopy-moedas-val">0</span> <span style="font-size: 9.5px; opacity: 0.75; font-weight: 500; margin-left: 2px;">(+1/5m)</span></div>
-          <span id="snoopy-today-stats" class="snoopy-meta" style="color: #86efac; font-weight: bold;">0 ciclos hoje (0 min)</span>
+          <span id="snoopy-today-stats" class="snoopy-meta" style="color: #86efac; font-weight: 800; font-size: 12px; white-space: nowrap;">0 ciclos hoje (0 min)</span>
         </div>
       `;
     }
@@ -294,24 +297,23 @@ return {
     });
     plantCard.innerHTML = `
       <div id="snoopy-plant-avatar" class="snoopy-planter-pot" title="Árvore ativa em cultivo"></div>
-      <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 4px;">
+      <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 6px;">
         <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
-          <div style="display: flex; align-items: center; gap: 6px; overflow: hidden;">
-            <span id="snoopy-stage-title" style="font-size: 13px; font-weight: 700; color: #ffffff; white-space: nowrap;">Brotinho Verdejante</span>
-            <span id="snoopy-stage-badge" class="snoopy-micro" style="padding: 1px 6px; border-radius: 4px; background: rgba(255, 255, 255, 0.08); color: #86efac; font-weight: 700; font-size: 10px;">NÍVEL 1</span>
+          <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
+            <span id="snoopy-stage-title" style="font-size: 15px; font-weight: 800; color: #ffffff; white-space: nowrap; letter-spacing: -0.01em;">Brotinho Verdejante</span>
+            <span id="snoopy-stage-badge" class="snoopy-micro" style="padding: 2px 7px; border-radius: 4px; background: rgba(74, 222, 128, 0.15); color: #86efac; font-weight: 800; font-size: 10.5px;">NÍVEL 1</span>
           </div>
-          <div id="snoopy-stage-next-chip" class="snoopy-micro" style="color: #a1a1aa; font-size: 10.5px; white-space: nowrap;">
+          <div id="snoopy-stage-next-chip" class="snoopy-micro" style="color: #a1a1aa; font-size: 11px; white-space: nowrap;">
             Próximo: <strong style="color: #86efac;">Plântula</strong> (+1 foco)
           </div>
         </div>
-        <div class="snoopy-prog-track" style="height: 4px; width: 100%; border-radius: 2px; margin: 1px 0;">
-          <div id="snoopy-plant-bar" class="snoopy-prog-fill" style="width: 0%; background: #4ade80; border-radius: 2px;"></div>
+        <div class="snoopy-prog-track" style="height: 5px; width: 100%; border-radius: 3px; margin: 1px 0;">
+          <div id="snoopy-plant-bar" class="snoopy-prog-fill" style="width: 0%; background: linear-gradient(90deg, #10b981 0%, #4ade80 100%); border-radius: 3px;"></div>
         </div>
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 10px; color: #71717a;">
-          <div style="display: flex; align-items: center; gap: 6px; white-space: nowrap;">
-            <span style="color: #facc15; font-weight: 600;">🪙 +1 a cada 5m</span>
-            <span>•</span>
-            <span id="snoopy-card-taxa-foco">Ciclo ${focusMin}m = ${Math.max(1, Math.floor(focusMin / 5))} 🪙</span>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 11px; color: #a1a1aa;">
+          <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
+            <span style="color: #facc15; font-weight: 700; display: inline-flex; align-items: center; gap: 3px;">🪙 +1 a cada 5m</span>
+            <span id="snoopy-combo-chip" style="display: none; color: #fb923c; font-weight: 700; font-size: 10.5px; background: rgba(251, 146, 60, 0.12); padding: 1px 6px; border-radius: 4px; border: 1px solid rgba(251, 146, 60, 0.25);">🔥 Combo 3x (+1🪙)</span>
           </div>
           <button id="snoopy-btn-open-jardim" class="snoopy-btn-santuario" title="Abrir Santuário Botânico & Loja de Espécies">
             <span class="snoopy-estufa-btn-icon"></span>
@@ -520,6 +522,19 @@ return {
           renderIcon: ctx.renderIcon,
           arvoreAtiva: storeData ? storeData.arvoreAtiva : 'sprout'
         });
+
+        const comboAtual = (typeof window !== 'undefined' && window.__snoopyPomodoroCombo) || 0;
+        const comboChipEl = historyBox.querySelector('#snoopy-combo-chip');
+        if (comboChipEl) {
+          if (comboAtual >= 3) {
+            const bonus = comboAtual >= 10 ? 3 : (comboAtual >= 5 ? 2 : 1);
+            comboChipEl.style.display = 'inline-flex';
+            comboChipEl.textContent = `🔥 Combo x${comboAtual} (+${bonus}🪙)`;
+          } else {
+            comboChipEl.style.display = 'none';
+          }
+        }
+
         PomodoroJardim.renderizarHeatmap(historyBox, {
           mapaFoco,
           todayStr,
@@ -643,11 +658,25 @@ return {
         await modalManager.sincronizarComCicloEstudos(focusMin);
       }
 
+      let comboCiclos = (typeof window !== 'undefined' && window.__snoopyPomodoroCombo) || 0;
+      comboCiclos++;
+      if (typeof window !== 'undefined') window.__snoopyPomodoroCombo = comboCiclos;
+
       if (JardimStore && typeof JardimStore.creditarFoco === 'function' && app) {
         try {
-          const resEconomia = await JardimStore.creditarFoco(app, focusMin);
-          if (resEconomia && typeof Notice !== 'undefined') {
-            new Notice(`🪙 +${resEconomia.moedasGanhas} Moedas de Seiva ganhas! (Saldo: ${resEconomia.moedas} 🪙)`);
+          const resEconomia = await JardimStore.creditarFoco(app, focusMin, comboCiclos);
+          if (resEconomia) {
+            const moedasBoxEl = historyBox.querySelector('#snoopy-jardim-moedas');
+            if (moedasBoxEl) {
+              moedasBoxEl.classList.remove('snoopy-coin-pulse');
+              void moedasBoxEl.offsetWidth;
+              moedasBoxEl.classList.add('snoopy-coin-pulse');
+            }
+
+            const txtBonus = resEconomia.bonusCombo > 0 ? ` (+${resEconomia.bonusCombo} bônus Combo x${resEconomia.combo} 🔥)` : '';
+            if (typeof Notice !== 'undefined') {
+              new Notice(`🪙 +${resEconomia.moedasGanhas} Moedas!${txtBonus} (Saldo: ${resEconomia.saldoAtual} 🪙)`);
+            }
           }
         } catch (e) {
           console.warn('[Pomodoro Cockpit] Erro ao creditar moedas:', e);
@@ -1070,7 +1099,11 @@ return {
 
     // Ações do Player Dock
     if (btnMainPlay) btnMainPlay.onclick = () => { if (timer) timer.toggle(); };
-    if (btnReset) btnReset.onclick = () => { if (timer) timer.reset(); };
+    if (btnReset) btnReset.onclick = () => { 
+      if (typeof window !== 'undefined') window.__snoopyPomodoroCombo = 0;
+      if (timer) timer.reset();
+      atualizarTelasJardim();
+    };
     if (btnPrev) btnPrev.onclick = () => {
       if (playlist) {
         const ant = playlist.retroceder();

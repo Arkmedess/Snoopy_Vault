@@ -25,13 +25,35 @@ describe('JardimStore - Economia e Inventário Botânico', () => {
 
   test('creditarFoco() adiciona moedas proporcionais ao tempo de foco (1 a cada 5m)', async () => {
     const mockApp = criarMockApp(null);
-    const r1 = await JardimStore.creditarFoco(mockApp, 25);
+    const r1 = await JardimStore.creditarFoco(mockApp, 25, 1);
     assert.strictEqual(r1.moedasGanhas, 5);
+    assert.strictEqual(r1.base, 5);
+    assert.strictEqual(r1.bonusCombo, 0);
     assert.strictEqual(r1.saldoAtual, 5);
 
-    const r2 = await JardimStore.creditarFoco(mockApp, 50);
+    const r2 = await JardimStore.creditarFoco(mockApp, 50, 1);
     assert.strictEqual(r2.moedasGanhas, 10);
     assert.strictEqual(r2.saldoAtual, 15);
+  });
+
+  test('creditarFoco() aplica bônus progressivo por combo de ciclos (+1 p/ 3x, +2 p/ 5x, +3 p/ 10x)', async () => {
+    const mockApp = criarMockApp({ moedas: 0 });
+    
+    // Combo 3: 25m base=5 + 1 bônus = 6 moedas
+    const c3 = await JardimStore.creditarFoco(mockApp, 25, 3);
+    assert.strictEqual(c3.moedasGanhas, 6);
+    assert.strictEqual(c3.bonusCombo, 1);
+    assert.strictEqual(c3.combo, 3);
+
+    // Combo 5: 25m base=5 + 2 bônus = 7 moedas
+    const c5 = await JardimStore.creditarFoco(mockApp, 25, 5);
+    assert.strictEqual(c5.moedasGanhas, 7);
+    assert.strictEqual(c5.bonusCombo, 2);
+
+    // Combo 10: 25m base=5 + 3 bônus = 8 moedas
+    const c10 = await JardimStore.creditarFoco(mockApp, 25, 10);
+    assert.strictEqual(c10.moedasGanhas, 8);
+    assert.strictEqual(c10.bonusCombo, 3);
   });
 
   test('comprarArvore() valida saldo e desbloqueia espécie corretamente', async () => {

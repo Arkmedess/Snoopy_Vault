@@ -665,11 +665,11 @@ button.snoopy-nav-pill-btn:active,
 
 /* Terrário do Jardim de Constância (Estilo Minimalista e Sóbrio) */
 .snoopy-planter-pot {
-  width: 44px !important;
-  height: 44px !important;
+  width: 58px !important;
+  height: 58px !important;
   border-radius: 50% !important;
-  background: #14141d !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: #14141f !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
   box-shadow: none !important;
   display: flex !important;
   align-items: center !important;
@@ -683,7 +683,7 @@ button.snoopy-nav-pill-btn:active,
 .snoopy-planter-pot:hover {
   transform: none !important;
   border-color: rgba(255, 255, 255, 0.25) !important;
-  background: #191924 !important;
+  background: #191926 !important;
   box-shadow: none !important;
 }
 
@@ -1677,23 +1677,24 @@ button.snoopy-btn-danger:hover {
 .snoopy-cal-box {
   display: flex !important;
   flex-direction: column !important;
-  gap: 8px !important;
+  gap: 4px !important;
   width: 100% !important;
   height: 100% !important;
-  padding: 4px 0 !important;
+  padding: 0 !important;
 }
 
 .snoopy-cal-header {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  padding-bottom: 6px !important;
+  padding-bottom: 4px !important;
+  margin-bottom: 2px !important;
   border-bottom: 1px solid var(--snoopy-border) !important;
 }
 
 .snoopy-cal-title {
   font-family: var(--snoopy-font-heading) !important;
-  font-size: 13.5px !important;
+  font-size: 13px !important;
   font-weight: 700 !important;
   color: #ffffff !important;
   letter-spacing: 0.03em !important;
@@ -1711,14 +1712,14 @@ button.snoopy-btn-danger:hover {
   border: 1px solid var(--snoopy-border) !important;
   color: var(--snoopy-muted) !important;
   border-radius: var(--snoopy-radius-xs, 4px) !important;
-  width: 24px !important;
-  height: 24px !important;
+  width: 22px !important;
+  height: 22px !important;
   padding: 0 !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
   cursor: pointer !important;
-  font-size: 12px !important;
+  font-size: 11px !important;
   line-height: 1 !important;
   transition: color 0.12s ease, border-color 0.12s ease, background 0.12s ease !important;
 }
@@ -1732,39 +1733,39 @@ button.snoopy-btn-danger:hover {
 .snoopy-cal-grid {
   display: grid !important;
   grid-template-columns: repeat(7, 1fr) !important;
-  gap: 6px !important;
+  gap: 3px !important;
   width: 100% !important;
 }
 
 .snoopy-cal-weekday {
   text-align: center !important;
   font-family: var(--snoopy-font-mono) !important;
-  font-size: 11px !important;
+  font-size: 10px !important;
   font-weight: 700 !important;
   color: var(--snoopy-muted) !important;
-  padding: 4px 0 !important;
+  padding: 2px 0 !important;
   user-select: none !important;
 }
 
 .snoopy-cal-day {
-  height: 38px !important;
-  min-height: 38px !important;
+  height: 28px !important;
+  min-height: 28px !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
-  border-radius: 6px !important;
+  border-radius: 4px !important;
   border: 1px solid rgba(255, 255, 255, 0.04) !important;
   cursor: pointer !important;
   font-family: var(--snoopy-font-mono) !important;
-  font-size: 13.5px !important;
+  font-size: 11.5px !important;
   font-weight: 500 !important;
   color: #d4d4d8 !important;
   background: rgba(255, 255, 255, 0.02) !important;
   position: relative !important;
   transition: all 0.14s ease !important;
   user-select: none !important;
-  padding: 2px 0 !important;
+  padding: 1px 0 !important;
 }
 
 .snoopy-cal-day:hover {
@@ -2334,6 +2335,16 @@ button.snoopy-btn-danger:hover {
   background: rgba(250, 204, 21, 0.18) !important;
   border-color: rgba(250, 204, 21, 0.45) !important;
   box-shadow: none !important;
+}
+
+@keyframes snoopyCoinPulse {
+  0% { transform: scale(1); filter: brightness(1); }
+  40% { transform: scale(1.15); filter: brightness(1.6); border-color: #facc15; }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+.snoopy-coin-pulse {
+  animation: snoopyCoinPulse 0.9s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 .snoopy-btn-santuario {

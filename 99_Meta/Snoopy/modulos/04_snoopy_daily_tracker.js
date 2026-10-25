@@ -59,7 +59,7 @@ return {
     // =========================================================================
     const sideCard = hubGrid.createEl('div', { 
       cls: 'snoopy-card-box', 
-      attr: { style: 'display: flex; flex-direction: column; justify-content: flex-start; gap: 8px; min-height: 380px; max-height: 380px; overflow: hidden;' } 
+      attr: { style: 'display: flex; flex-direction: column; justify-content: space-between; gap: 8px; min-height: 390px; max-height: 390px; overflow: hidden;' } 
     });
 
     if (ctx.UIKit && typeof ctx.UIKit.criarCardHeader === 'function') {
@@ -92,7 +92,7 @@ return {
     // =========================================================================
     const tasksCard = hubGrid.createEl('div', { 
       cls: 'snoopy-card-box', 
-      attr: { style: 'display: flex; flex-direction: column; gap: 10px; min-height: 380px; max-height: 380px; overflow: hidden;' } 
+      attr: { style: 'display: flex; flex-direction: column; gap: 10px; min-height: 390px; max-height: 390px; overflow: hidden;' } 
     });
 
     if (TarefasView && typeof TarefasView.montar === 'function') {
@@ -115,6 +115,9 @@ return {
           });
         }
       };
+      if (typeof window !== 'undefined') {
+        window.__snoopyAbrirModalNovaTarefa = abrirModalNovaTarefa;
+      }
 
       const abrirModalTemplateTarefa = () => {
         if (TarefasModal && typeof TarefasModal.abrirModalTemplateTarefa === 'function') {

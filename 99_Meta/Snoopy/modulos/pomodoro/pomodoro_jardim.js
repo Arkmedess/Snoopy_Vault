@@ -295,7 +295,7 @@ const PomodoroJardim = {
 
     if (renderIcon) {
       pAv.innerHTML = '';
-      renderIcon(pAv, iconName, { size: 22, color: iconColor });
+      renderIcon(pAv, iconName, { size: 30, color: iconColor });
     }
     if (pTit) pTit.textContent = estagio.titulo;
     if (pBdg) pBdg.textContent = estagio.badge;
@@ -521,7 +521,7 @@ const PomodoroJardim = {
           <div style="background: #13131c; border: 1px solid rgba(96, 165, 250, 0.2); border-radius: 8px; padding: 10px 14px; text-align: center;">
             <div style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; color: #93c5fd; font-weight: 800;">Tempo de Foco</div>
             <div style="font-size: 18px; font-weight: 800; color: #ffffff; margin-top: 2px;">${completedCyclesToday * focusMin}m ⏱️</div>
-            <div class="snoopy-micro" style="color: #a1a1aa; font-size: 10px;">Ciclo ${focusMin}m = ${ganhoPorCiclo} 🪙</div>
+            <div class="snoopy-micro" style="color: #a1a1aa; font-size: 10px;">acumulado hoje</div>
           </div>
         </div>
 

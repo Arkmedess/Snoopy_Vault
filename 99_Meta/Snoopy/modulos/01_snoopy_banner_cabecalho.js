@@ -594,17 +594,42 @@ return {
       text: `${dataNumericaBR} • Espaço Central de Foco • Snoopy Edition`
     });
 
-    const navPillsRow = headerRow.createEl('div', { cls: 'snoopy-nav-pills' });
-    const navItems = [
-      { label: 'HOJE', action: 'daily', icon: 'calendar' },
-      { label: 'ESTUDOS', action: 'sub_estudos', icon: 'book-open' },
-      { label: 'INBOX', folder: '01_Inbox', tpl: '99_Meta/Templates/Template - Inbox.md', prefix: 'Nota Rápida', icon: 'inbox' },
-      { label: '+ PROJETO', folder: '02_Projetos', tpl: '99_Meta/Templates/Template - Projeto.md', prefix: 'Novo Projeto', icon: 'folder-plus' },
-      { label: '+ LEITURA', folder: '04_Leituras/Livros', tpl: '99_Meta/Templates/Template - Livro.md', prefix: 'Novo Livro', icon: 'book-plus' },
-      { label: 'CONFIG', action: 'config', icon: 'settings' }
+    const navPillsRow = headerRow.createEl('div', { 
+      cls: 'snoopy-nav-pills',
+      attr: { style: 'display: flex; align-items: center; gap: 8px; flex-wrap: wrap;' } 
+    });
+
+    // 1. Grupo de Navegação: Direcionar para Módulos
+    const modulosGroup = navPillsRow.createEl('div', {
+      cls: 'snoopy-nav-group-modulos',
+      attr: { style: 'display: inline-flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); padding: 2px 4px; border-radius: 6px;' }
+    });
+
+    const moduloItems = [
+      { label: 'HOJE', action: 'daily', icon: 'calendar', title: 'Abrir nota diária de hoje' },
+      { label: 'ESTUDOS ↗', action: 'sub_estudos', icon: 'book-open', title: 'Direcionar para o Painel de Estudos' },
+      { label: 'CONFIG ↗', action: 'config', icon: 'settings', title: 'Direcionar para Configurações' }
     ];
 
-    navItems.forEach(item => {
+    // Divisor visual entre Navegação e Ações Rápidas
+    navPillsRow.createEl('div', {
+      attr: { style: 'width: 1px; height: 18px; background: rgba(255,255,255,0.12); margin: 0 1px;' }
+    });
+
+    // 2. Grupo de Ações: Adicionar Itens
+    const acoesGroup = navPillsRow.createEl('div', {
+      cls: 'snoopy-nav-group-acoes',
+      attr: { style: 'display: inline-flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); padding: 2px 4px; border-radius: 6px;' }
+    });
+
+    const acaoItems = [
+      { label: '+ TAREFA', action: 'nova_tarefa', icon: 'check-square', title: 'Adicionar nova tarefa para hoje' },
+      { label: '+ NOTA', folder: '01_Inbox', tpl: '99_Meta/Templates/Template - Inbox.md', prefix: 'Nota Rápida', icon: 'inbox', title: 'Criar nota rápida no Inbox' },
+      { label: '+ PROJETO', folder: '02_Projetos', tpl: '99_Meta/Templates/Template - Projeto.md', prefix: 'Novo Projeto', icon: 'folder-plus', title: 'Criar novo projeto a partir do template' },
+      { label: '+ LEITURA', folder: '04_Leituras/Livros', tpl: '99_Meta/Templates/Template - Livro.md', prefix: 'Novo Livro', icon: 'book-plus', title: 'Criar novo livro de leitura' }
+    ];
+
+    const renderItemBtn = (item, parentEl) => {
       const criarBtnFn = (ctx.UIKit && typeof ctx.UIKit.criarBotao === 'function')
         ? ctx.UIKit.criarBotao.bind(ctx.UIKit)
         : null;
@@ -623,13 +648,21 @@ return {
         } else if (item.action === 'config') {
           await app.workspace.openLinkText("99_Meta/⚙️ Configurações.md", "", false);
           if (typeof Notice !== 'undefined') new Notice('Configurações do Snoopy Vault abertas');
+        } else if (item.action === 'nova_tarefa') {
+          if (typeof window !== 'undefined' && typeof window.__snoopyAbrirModalNovaTarefa === 'function') {
+            window.__snoopyAbrirModalNovaTarefa();
+          } else {
+            const dailyFile = await garantirNotaDiaria();
+            await app.workspace.openLinkText(dailyFile.path, "", false);
+            if (typeof Notice !== 'undefined') new Notice('Abra a seção de tarefas na nota diária');
+          }
         } else {
           criarNotaInstantanea(item.folder, item.tpl, item.prefix);
         }
       };
 
       if (criarBtnFn) {
-        criarBtnFn(navPillsRow, {
+        criarBtnFn(parentEl, {
           label: item.label,
           icon: item.icon,
           variant: 'pill',
@@ -637,13 +670,19 @@ return {
           onClick
         }, ctx);
       } else {
-        const btn = navPillsRow.createEl('button', { cls: 'snoopy-nav-pill-btn snoopy-btn-sm' });
+        const btn = parentEl.createEl('button', { 
+          cls: 'snoopy-nav-pill-btn snoopy-btn-sm',
+          attr: { title: item.title || item.label }
+        });
         if (ctx.renderIcon && item.icon) {
           ctx.renderIcon(btn, item.icon, { size: 11 });
         }
         btn.createEl('span', { text: item.label });
         btn.addEventListener('click', onClick);
       }
-    });
+    };
+
+    moduloItems.forEach(item => renderItemBtn(item, modulosGroup));
+    acaoItems.forEach(item => renderItemBtn(item, acoesGroup));
   }
 };
