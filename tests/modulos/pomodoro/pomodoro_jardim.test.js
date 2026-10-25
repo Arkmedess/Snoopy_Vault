@@ -107,5 +107,33 @@ describe('Módulo Pomodoro - PomodoroJardim', () => {
     assert.strictEqual(typeof guia[0].lore, 'string');
     assert.ok(guia[0].lore.length > 5);
   });
+
+  test('abrirModalEstufa() monta abas, lojinha e listeners via onMontar', async () => {
+    let htmlRecebido = '';
+    let onMontarCb = null;
+    let modalAberto = false;
+
+    const mockModalFactory = {
+      abrir: ({ htmlContent, maxWidth, onMontar }) => {
+        htmlRecebido = htmlContent;
+        onMontarCb = onMontar;
+        modalAberto = true;
+        return { modalBox: {}, fechar: () => {} };
+      }
+    };
+
+    const res = await PomodoroJardim.abrirModalEstufa(mockModalFactory, {
+      completedCyclesToday: 2,
+      dailyGoal: 4,
+      focusMin: 25
+    });
+
+    assert.strictEqual(modalAberto, true);
+    assert.ok(htmlRecebido.includes('ECOSSISTEMA BOTÂNICO & LOJA DE FOCO'));
+    assert.ok(htmlRecebido.includes('MEU BOSQUE'));
+    assert.ok(htmlRecebido.includes('LOJINHA DE ÁRVORES'));
+    assert.ok(htmlRecebido.includes('GUIA DE NÍVEIS'));
+    assert.strictEqual(typeof onMontarCb, 'function');
+  });
 });
 

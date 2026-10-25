@@ -23,15 +23,15 @@ describe('JardimStore - Economia e Inventário Botânico', () => {
     assert.deepStrictEqual(estado.desbloqueadas, ['sprout']);
   });
 
-  test('creditarFoco() adiciona moedas proporcionais ao tempo de foco', async () => {
+  test('creditarFoco() adiciona moedas proporcionais ao tempo de foco (1 a cada 5m)', async () => {
     const mockApp = criarMockApp(null);
     const r1 = await JardimStore.creditarFoco(mockApp, 25);
-    assert.strictEqual(r1.moedasGanhas, 10);
-    assert.strictEqual(r1.saldoAtual, 10);
+    assert.strictEqual(r1.moedasGanhas, 5);
+    assert.strictEqual(r1.saldoAtual, 5);
 
     const r2 = await JardimStore.creditarFoco(mockApp, 50);
-    assert.strictEqual(r2.moedasGanhas, 20);
-    assert.strictEqual(r2.saldoAtual, 30);
+    assert.strictEqual(r2.moedasGanhas, 10);
+    assert.strictEqual(r2.saldoAtual, 15);
   });
 
   test('comprarArvore() valida saldo e desbloqueia espécie corretamente', async () => {

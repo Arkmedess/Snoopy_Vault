@@ -261,8 +261,8 @@ return {
       const headerActions = historyHeaderEls.actionsBox;
       headerActions.createEl('div', {
         cls: 'snoopy-moedas-badge',
-        attr: { id: 'snoopy-jardim-moedas', title: 'Moedas de Seiva acumuladas com ciclos de foco' },
-        text: '0 🪙'
+        attr: { id: 'snoopy-jardim-moedas', title: 'Ganhe 1 moeda de seiva a cada 5m de foco' },
+        text: '🪙 0 (+1/5m)'
       });
       headerActions.createEl('span', {
         cls: 'snoopy-meta',
@@ -279,7 +279,7 @@ return {
           <span class="snoopy-card-subtitle">Histórico e ciclos acumulados</span>
         </div>
         <div style="display: flex; align-items: center; gap: 8px;">
-          <div id="snoopy-jardim-moedas" class="snoopy-moedas-badge" title="Moedas de Seiva acumuladas com ciclos de foco">0 🪙</div>
+          <div id="snoopy-jardim-moedas" class="snoopy-moedas-badge" title="Ganhe 1 moeda de seiva a cada 5m de foco">🪙 <span id="snoopy-moedas-val">0</span> <span style="font-size: 9.5px; opacity: 0.75; font-weight: 500; margin-left: 2px;">(+1/5m)</span></div>
           <span id="snoopy-today-stats" class="snoopy-meta" style="color: #86efac; font-weight: bold;">0 ciclos hoje (0 min)</span>
         </div>
       `;
@@ -294,20 +294,29 @@ return {
     });
     plantCard.innerHTML = `
       <div id="snoopy-plant-avatar" class="snoopy-planter-pot" title="Árvore ativa em cultivo"></div>
-      <div style="flex: 1; overflow: hidden;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span id="snoopy-stage-title" style="font-size: 13.5px; font-weight: 700; color: #ffffff;">Semente Plantada</span>
-          <div style="display: flex; align-items: center; gap: 6px;">
-            <button id="snoopy-btn-open-jardim" class="snoopy-btn-santuario" title="Abrir Santuário Botânico & Loja de Espécies">
-              <span class="snoopy-estufa-btn-icon"></span>
-              <span>Bosque & Loja</span>
-            </button>
-            <span id="snoopy-stage-badge" class="snoopy-micro" style="padding: 2px 7px; border-radius: 4px; background: rgba(74, 222, 128, 0.15); color: #86efac; font-weight: bold;">NÍVEL 1</span>
+      <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 4px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 6px; overflow: hidden;">
+            <span id="snoopy-stage-title" style="font-size: 13px; font-weight: 700; color: #ffffff; white-space: nowrap;">Brotinho Verdejante</span>
+            <span id="snoopy-stage-badge" class="snoopy-micro" style="padding: 1px 6px; border-radius: 4px; background: rgba(255, 255, 255, 0.08); color: #86efac; font-weight: 700; font-size: 10px;">NÍVEL 1</span>
+          </div>
+          <div id="snoopy-stage-next-chip" class="snoopy-micro" style="color: #a1a1aa; font-size: 10.5px; white-space: nowrap;">
+            Próximo: <strong style="color: #86efac;">Plântula</strong> (+1 foco)
           </div>
         </div>
-        <div id="snoopy-stage-desc" class="snoopy-meta" style="font-size: 11px; color: #a1a1aa; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Inicie seu primeiro foco para germinar a plantinha.</div>
-        <div class="snoopy-prog-track" style="height: 6px; width: 100%; margin-top: 7px; border-radius: 3px;">
-          <div id="snoopy-plant-bar" class="snoopy-prog-fill" style="width: 0%; background: linear-gradient(90deg, #10b981 0%, #4ade80 100%); border-radius: 3px;"></div>
+        <div class="snoopy-prog-track" style="height: 4px; width: 100%; border-radius: 2px; margin: 1px 0;">
+          <div id="snoopy-plant-bar" class="snoopy-prog-fill" style="width: 0%; background: #4ade80; border-radius: 2px;"></div>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 10px; color: #71717a;">
+          <div style="display: flex; align-items: center; gap: 6px; white-space: nowrap;">
+            <span style="color: #facc15; font-weight: 600;">🪙 +1 a cada 5m</span>
+            <span>•</span>
+            <span id="snoopy-card-taxa-foco">Ciclo ${focusMin}m = ${Math.max(1, Math.floor(focusMin / 5))} 🪙</span>
+          </div>
+          <button id="snoopy-btn-open-jardim" class="snoopy-btn-santuario" title="Abrir Santuário Botânico & Loja de Espécies">
+            <span class="snoopy-estufa-btn-icon"></span>
+            <span>Bosque & Loja</span>
+          </button>
         </div>
       </div>
     `;
@@ -1052,6 +1061,8 @@ return {
       focusMin = parseInt(cfgFocusInput.value) || 25;
       breakMin = parseInt(cfgBreakInput.value) || 5;
       if (timer) timer.setTempos(focusMin, breakMin);
+      const taxaEl = historyBox.querySelector('#snoopy-card-taxa-foco');
+      if (taxaEl) taxaEl.textContent = `Ciclo ${focusMin}m = ${Math.max(1, Math.floor(focusMin / 5))} 🪙`;
     };
 
     if (cfgFocusInput) cfgFocusInput.onchange = atualizarTempos;

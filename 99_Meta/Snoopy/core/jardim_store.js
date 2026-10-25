@@ -134,16 +134,17 @@ const JardimStore = {
   },
 
   /**
-   * Credita moedas ganhas por ciclo de foco concluído.
+   * Credita moedas ganhas por tempo de foco concluído (1 moeda a cada 5 minutos).
    *
    * @param {object} app - Instância do Obsidian.
-   * @param {number} [minutos=25] - Duração do foco.
+   * @param {number} [minutos=25] - Duração do foco em minutos.
    * @returns {Promise<{ moedasGanhas: number, saldoAtual: number }>}
    */
   async creditarFoco(app, minutos = 25) {
     const estado = await this.carregar(app);
-    // Base: 10 moedas por ciclo de 25m + bônus proporcional para sessões maiores
-    const ganho = Math.max(5, Math.round((Number(minutos) || 25) * 0.4));
+    // Regra estrita: 1 moeda de seiva a cada 5 minutos de foco concluído
+    const m = Math.max(0, Number(minutos) || 25);
+    const ganho = Math.max(1, Math.floor(m / 5));
     estado.moedas = (Number(estado.moedas) || 0) + ganho;
     estado.totalPlantadas = (Number(estado.totalPlantadas) || 0) + 1;
     await this.salvar(app, estado);

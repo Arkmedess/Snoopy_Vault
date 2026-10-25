@@ -663,27 +663,28 @@ button.snoopy-nav-pill-btn:active,
   transition: all 0.15s ease !important;
 }
 
-/* Terrário do Jardim de Constância (Estilo Forest) */
+/* Terrário do Jardim de Constância (Estilo Minimalista e Sóbrio) */
 .snoopy-planter-pot {
-  width: 50px !important;
-  height: 50px !important;
+  width: 44px !important;
+  height: 44px !important;
   border-radius: 50% !important;
-  background: radial-gradient(circle at 50% 30%, #1e3a2f 0%, #111e17 65%, #080d0a 100%) !important;
-  border: 2px solid rgba(74, 222, 128, 0.45) !important;
-  box-shadow: 0 0 16px rgba(74, 222, 128, 0.22), inset 0 2px 5px rgba(255, 255, 255, 0.15) !important;
+  background: #14141d !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: none !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   flex-shrink: 0 !important;
   user-select: none !important;
   cursor: pointer !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition: all 0.15s ease !important;
 }
 
 .snoopy-planter-pot:hover {
-  transform: scale(1.08) !important;
-  border-color: #86efac !important;
-  box-shadow: 0 0 22px rgba(74, 222, 128, 0.5), inset 0 2px 6px rgba(255, 255, 255, 0.25) !important;
+  transform: none !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  background: #191924 !important;
+  box-shadow: none !important;
 }
 
 .snoopy-grove-tree {
@@ -2290,69 +2291,72 @@ button.snoopy-btn-danger:hover {
 }
 
 /* =========================================================================
-   PREVIEW HUB & SANTUÁRIO BOTÂNICO DO JARDIM DE CONSTÂNCIA (FOREST VIBE)
+   PREVIEW HUB & SANTUÁRIO BOTÂNICO DO JARDIM DE CONSTÂNCIA (DESIGN MINIMALISTA)
    ========================================================================= */
 .snoopy-preview-hub-card {
   display: flex !important;
   align-items: center !important;
   gap: 12px !important;
-  padding: 10px 14px !important;
-  background: radial-gradient(circle at 10% 20%, rgba(30, 58, 47, 0.25) 0%, #13131c 100%) !important;
+  padding: 8px 12px !important;
+  background: #13131c !important;
   border-radius: 8px !important;
-  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
   margin: 4px 0 8px 0 !important;
   cursor: pointer !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition: border-color 0.15s ease, background 0.15s ease !important;
+  box-shadow: none !important;
 }
 
 .snoopy-preview-hub-card:hover {
-  border-color: rgba(74, 222, 128, 0.35) !important;
-  background: radial-gradient(circle at 10% 20%, rgba(30, 58, 47, 0.45) 0%, #151520 100%) !important;
-  box-shadow: 0 4px 16px rgba(74, 222, 128, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  background: #171723 !important;
+  box-shadow: none !important;
 }
 
 .snoopy-moedas-badge {
-  background: rgba(250, 204, 21, 0.12) !important;
-  border: 1px solid rgba(250, 204, 21, 0.3) !important;
+  background: rgba(250, 204, 21, 0.1) !important;
+  border: 1px solid rgba(250, 204, 21, 0.25) !important;
   color: #facc15 !important;
-  font-weight: 800 !important;
+  font-weight: 700 !important;
   font-size: 11px !important;
-  padding: 2px 8px !important;
-  border-radius: 5px !important;
+  padding: 2px 7px !important;
+  border-radius: 4px !important;
   display: inline-flex !important;
   align-items: center !important;
   gap: 4px !important;
   cursor: pointer !important;
   transition: all 0.15s ease !important;
   user-select: none !important;
+  box-shadow: none !important;
 }
 
 .snoopy-moedas-badge:hover {
-  background: rgba(250, 204, 21, 0.22) !important;
-  border-color: rgba(250, 204, 21, 0.55) !important;
-  transform: translateY(-1px) !important;
+  background: rgba(250, 204, 21, 0.18) !important;
+  border-color: rgba(250, 204, 21, 0.45) !important;
+  box-shadow: none !important;
 }
 
 .snoopy-btn-santuario {
-  background: rgba(74, 222, 128, 0.12) !important;
-  border: 1px solid rgba(74, 222, 128, 0.3) !important;
-  border-radius: 5px !important;
-  padding: 3px 8px !important;
-  color: #86efac !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 4px !important;
+  padding: 2px 8px !important;
+  color: #d4d4d8 !important;
   cursor: pointer !important;
-  font-weight: 700 !important;
-  font-size: 11px !important;
+  font-weight: 600 !important;
+  font-size: 10.5px !important;
   display: inline-flex !important;
   align-items: center !important;
-  gap: 5px !important;
+  gap: 4px !important;
   transition: all 0.15s ease !important;
+  box-shadow: none !important;
 }
 
 .snoopy-btn-santuario:hover {
-  background: rgba(74, 222, 128, 0.25) !important;
-  border-color: #4ade80 !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
   color: #ffffff !important;
-  box-shadow: 0 0 10px rgba(74, 222, 128, 0.25) !important;
+  box-shadow: none !important;
 }
 
 
