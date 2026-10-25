@@ -1115,13 +1115,29 @@ button.snoopy-btn-danger:hover {
   box-shadow: none !important;
 }
 
-/* Container de Cards da Central de Tarefas */
+/* Barra de Abas da Central de Tarefas (Fixa no topo do card, sem saltos de layout) */
+.snoopy-task-tabs {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  overflow-x: auto !important;
+  flex-shrink: 0 !important;
+  min-height: 38px !important;
+  height: 38px !important;
+  padding-bottom: 4px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* Container de Cards da Central de Tarefas com rolagem interna isolada */
 .snoopy-tasks-list-box {
   display: flex !important;
   flex-direction: column !important;
   gap: 6px !important;
-  min-height: 180px !important;
-  max-height: 420px !important;
+  flex: 1 1 0% !important;
+  min-height: 0 !important;
+  max-height: none !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
   padding-right: 4px !important;
@@ -2121,6 +2137,16 @@ button.snoopy-btn-danger:hover {
   background: rgba(255, 255, 255, 0.14) !important;
   color: #ffffff !important;
   font-weight: 700 !important;
+}
+
+.snoopy-task-calendar-view-wrap {
+  width: 100% !important;
+  max-width: 440px !important;
+  margin: 0 auto !important;
+  padding: 4px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
 }
 
 .snoopy-task-kanban-board {

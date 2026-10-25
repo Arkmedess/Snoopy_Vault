@@ -12,7 +12,7 @@ const TarefasView = {
   /**
    * Monta o painel da Central de Tarefas.
    */
-  async montar({ tasksCard, ctx, abrirModalNovaTarefa, abrirModalTemplateTarefa, abrirModalMenuTarefa }) {
+  async montar({ tasksCard, ctx, CalendarioView, abrirModalNovaTarefa, abrirModalTemplateTarefa, abrirModalMenuTarefa }) {
     const { app, dv, todayStr, DateUtils, VaultStore, TaskParser } = ctx;
 
     let currentViewMode = (typeof window !== 'undefined' && window.__snoopyTaskViewMode) || 'lista';
@@ -22,40 +22,42 @@ const TarefasView = {
       if (!container) return;
       const switcher = container.createEl('div', {
         cls: 'snoopy-view-switcher',
-        attr: { style: 'display: inline-flex; align-items: center; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 2px; gap: 2px; margin-right: 4px;' }
+        attr: { style: 'display: inline-flex; align-items: center; background: #14141c; border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 2px; gap: 2px; margin-right: 4px;' }
       });
 
       const btnLista = switcher.createEl('button', {
         cls: `snoopy-btn-view-mode ${currentViewMode === 'lista' ? 'active' : ''}`,
         attr: { 'data-mode': 'lista', title: 'Visualização em Lista com Abas' }
       });
-      if (ctx.renderIcon) ctx.renderIcon(btnLista, 'list', { size: 13 });
+      if (ctx.renderIcon) ctx.renderIcon(btnLista, 'list', { size: 14 });
       else btnLista.textContent = 'Lista';
 
       const btnKanban = switcher.createEl('button', {
         cls: `snoopy-btn-view-mode ${currentViewMode === 'kanban' ? 'active' : ''}`,
         attr: { 'data-mode': 'kanban', title: 'Visualização em Quadro Kanban por Status' }
       });
-      if (ctx.renderIcon) ctx.renderIcon(btnKanban, 'kanban', { size: 13 });
+      if (ctx.renderIcon) ctx.renderIcon(btnKanban, 'kanban', { size: 14 });
       else btnKanban.textContent = 'Kanban';
 
-      btnLista.onclick = () => {
-        currentViewMode = 'lista';
-        if (typeof window !== 'undefined') window.__snoopyTaskViewMode = 'lista';
-        btnLista.classList.add('active');
-        btnKanban.classList.remove('active');
-        if (tabsContainer) tabsContainer.style.display = 'flex';
+      const btnCalendario = switcher.createEl('button', {
+        cls: `snoopy-btn-view-mode ${currentViewMode === 'calendario' ? 'active' : ''}`,
+        attr: { 'data-mode': 'calendario', title: 'Visualização em Calendário Mensal' }
+      });
+      if (ctx.renderIcon) ctx.renderIcon(btnCalendario, 'calendar', { size: 14 });
+      else btnCalendario.textContent = 'Calendário';
+
+      const setViewMode = (mode) => {
+        currentViewMode = mode;
+        if (typeof window !== 'undefined') window.__snoopyTaskViewMode = mode;
+        btnLista.classList.toggle('active', mode === 'lista');
+        btnKanban.classList.toggle('active', mode === 'kanban');
+        btnCalendario.classList.toggle('active', mode === 'calendario');
         renderizarTarefasDoCache();
       };
 
-      btnKanban.onclick = () => {
-        currentViewMode = 'kanban';
-        if (typeof window !== 'undefined') window.__snoopyTaskViewMode = 'kanban';
-        btnKanban.classList.add('active');
-        btnLista.classList.remove('active');
-        if (tabsContainer) tabsContainer.style.display = 'none';
-        renderizarTarefasDoCache();
-      };
+      btnLista.onclick = () => setViewMode('lista');
+      btnKanban.onclick = () => setViewMode('kanban');
+      btnCalendario.onclick = () => setViewMode('calendario');
 
       return switcher;
     }
@@ -107,10 +109,10 @@ const TarefasView = {
       if (addTaskBtn) addTaskBtn.onclick = abrirModalNovaTarefa;
     }
 
-    // Barra de Filtros / Abas
+    // Barra de Filtros / Abas (Fixa e estável em todos os modos, sem saltos de layout)
     tabsContainer = tasksCard.createEl('div', { 
       cls: 'snoopy-task-tabs snoopy-toolbar', 
-      attr: { style: `overflow-x: auto; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.05); ${currentViewMode === 'kanban' ? 'display: none;' : ''}` } 
+      attr: { style: 'overflow-x: auto; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.05); flex-shrink: 0; min-height: 36px;' } 
     });
 
     const tabsDef = [
@@ -139,13 +141,23 @@ const TarefasView = {
         currentTab = t.id;
         Object.values(tabBtns).forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        if (currentViewMode !== 'lista') {
+          currentViewMode = 'lista';
+          if (typeof window !== 'undefined') window.__snoopyTaskViewMode = 'lista';
+          const switcher = tasksCard.querySelector('.snoopy-view-switcher');
+          if (switcher) {
+            switcher.querySelectorAll('.snoopy-btn-view-mode').forEach(b => {
+              b.classList.toggle('active', b.getAttribute('data-mode') === 'lista');
+            });
+          }
+        }
         renderizarTarefasDoCache();
       };
     });
 
     const todoListContainer = tasksCard.createEl('div', {
       cls: 'snoopy-tasks-list-box',
-      attr: { style: 'min-height: 180px; max-height: 420px; overflow-y: auto; padding-right: 4px;' }
+      attr: { style: 'flex: 1; min-height: 0; overflow-y: auto; padding-right: 4px;' }
     });
 
     // Cache em memória
@@ -185,6 +197,11 @@ const TarefasView = {
 
       if (currentViewMode === 'kanban') {
         renderizarTarefasModoKanban();
+        return;
+      }
+
+      if (currentViewMode === 'calendario') {
+        renderizarTarefasModoCalendario();
         return;
       }
 
@@ -703,6 +720,41 @@ const TarefasView = {
           cls: 'snoopy-micro',
           attr: { style: 'color: #86efac; font-weight: bold; font-size: 11px;' },
           text: 'Concluída'
+        });
+      }
+    }
+
+    async function renderizarTarefasModoCalendario() {
+      todoListContainer.innerHTML = '';
+
+      const calWrap = todoListContainer.createEl('div', {
+        cls: 'snoopy-task-calendar-view-wrap',
+        attr: { style: 'width: 100%; max-width: 440px; margin: 0 auto; padding: 4px;' }
+      });
+
+      const CalView = CalendarioView 
+        || (ctx && ctx.CalendarioView) 
+        || (typeof require !== 'undefined' ? require('./calendario_view.js') : null);
+
+      if (CalView && typeof CalView.montar === 'function') {
+        await CalView.montar({
+          container: calWrap,
+          ctx,
+          dataInicial: dataFiltroAtiva,
+          onSelectData: (dataIso) => {
+            dataFiltroAtiva = dataIso;
+            if (dataIso) {
+              currentViewMode = 'lista';
+              if (typeof window !== 'undefined') window.__snoopyTaskViewMode = 'lista';
+              const switcher = tasksCard.querySelector('.snoopy-view-switcher');
+              if (switcher) {
+                switcher.querySelectorAll('.snoopy-btn-view-mode').forEach(b => {
+                  b.classList.toggle('active', b.getAttribute('data-mode') === 'lista');
+                });
+              }
+              renderizarTarefasDoCache();
+            }
+          }
         });
       }
     }

@@ -76,23 +76,19 @@ describe('Módulo 04 - Daily Tracker Orquestrador (04_snoopy_daily_tracker.js)',
       return el.children.some(c => findText(c, text));
     }
 
-    // Coluna 1: Hábitos e Calendário
+    // Coluna 1: Hábitos e Rituais Diários (sem Calendário competindo por espaço)
     const colLateral = hubGrid.children[0];
     assert.ok(findText(colLateral, 'HÁBITOS') || findText(colLateral, 'Rituais diários'));
-    assert.ok(findText(colLateral, 'CALENDÁRIO'), 'Deve conter aba/botão do Calendário');
+    const habitsWrap = colLateral.querySelector('.snoopy-habits-panel-wrap');
+    assert.ok(habitsWrap, 'Painel de hábitos deve existir na coluna lateral');
 
-    // Testa alternância para a aba de Calendário
-    const btnCal = colLateral.children.find(c => c.classList.contains('snoopy-toolbar'))
-      ?.children.find(b => b.innerText && b.innerText.includes('CALENDÁRIO'));
-    assert.ok(btnCal, 'Botão de alternar para Calendário deve existir');
-    await btnCal.onclick();
-
-    const calWrap = colLateral.querySelector('.snoopy-cal-panel-wrap');
-    assert.ok(calWrap, 'Painel do Calendário deve existir');
-    assert.strictEqual(calWrap.style.display, 'block', 'Painel do Calendário deve ficar visível ao alternar');
-
-    // Coluna 2: Tarefas
+    // Coluna 2: Central de Tarefas com Seletor Unificado de Visualizações (Lista, Kanban e Calendário)
     const colTarefas = hubGrid.children[1];
     assert.ok(findText(colTarefas, 'TAREFAS') || findText(colTarefas, 'O que precisa sair hoje'));
+    const switcher = colTarefas.querySelector('.snoopy-view-switcher');
+    assert.ok(switcher, 'Deve conter o seletor centralizado de visualizações');
+    assert.ok(switcher.querySelector('[data-mode="lista"]'), 'Deve conter modo Lista');
+    assert.ok(switcher.querySelector('[data-mode="kanban"]'), 'Deve conter modo Kanban');
+    assert.ok(switcher.querySelector('[data-mode="calendario"]'), 'Deve conter modo Calendário centralizado em Tarefas');
   });
 });

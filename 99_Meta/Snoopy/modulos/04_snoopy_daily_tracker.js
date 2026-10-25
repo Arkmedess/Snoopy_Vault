@@ -55,63 +55,36 @@ return {
     });
 
     // =========================================================================
-    // BLOCO 1: COLUNA LATERAL - HÁBITOS & CALENDÁRIO INTERATIVO (30%)
+    // BLOCO 1: COLUNA LATERAL - HÁBITOS & RITUAIS DIÁRIOS (30%)
     // =========================================================================
     const sideCard = hubGrid.createEl('div', { 
       cls: 'snoopy-card-box', 
       attr: { style: 'display: flex; flex-direction: column; justify-content: flex-start; gap: 8px; min-height: 380px; max-height: 380px; overflow: hidden;' } 
     });
 
-    const switchToolbar = sideCard.createEl('div', {
-      cls: 'snoopy-toolbar',
-      attr: { style: 'display: flex; gap: 4px; border-bottom: 1px solid var(--snoopy-border); padding-bottom: 6px; margin-bottom: 4px;' }
-    });
-
-    const btnTabHabitos = switchToolbar.createEl('button', {
-      cls: 'snoopy-btn-tab snoopy-btn-sm active',
-      text: 'HÁBITOS'
-    });
-
-    const btnTabCalendario = switchToolbar.createEl('button', {
-      cls: 'snoopy-btn-tab snoopy-btn-sm',
-      text: 'CALENDÁRIO'
-    });
+    if (ctx.UIKit && typeof ctx.UIKit.criarCardHeader === 'function') {
+      ctx.UIKit.criarCardHeader(sideCard, {
+        title: 'HÁBITOS',
+        icon: 'check-circle-2',
+        subtitle: 'Rituais diários'
+      });
+    } else {
+      const sideHeader = sideCard.createEl('div', { cls: 'snoopy-card-header' });
+      sideHeader.innerHTML = `
+        <div class="snoopy-toolbar">
+          <span class="snoopy-section-title">HÁBITOS</span>
+          <span class="snoopy-card-subtitle">Rituais diários</span>
+        </div>
+      `;
+    }
 
     const habitsContainer = sideCard.createEl('div', {
       cls: 'snoopy-habits-panel-wrap',
       attr: { style: 'display: flex; flex-direction: column; justify-content: space-between; gap: 8px; flex: 1; overflow-y: auto;' }
     });
 
-    const calContainer = sideCard.createEl('div', {
-      cls: 'snoopy-cal-panel-wrap',
-      attr: { style: 'display: none; flex-direction: column; justify-content: flex-start; gap: 8px; flex: 1; overflow-y: auto;' }
-    });
-
-    let calInstancia = null;
-
-    btnTabHabitos.onclick = () => {
-      btnTabHabitos.classList.add('active');
-      btnTabCalendario.classList.remove('active');
-      habitsContainer.style.display = 'flex';
-      calContainer.style.display = 'none';
-    };
-
-    btnTabCalendario.onclick = async () => {
-      btnTabCalendario.classList.add('active');
-      btnTabHabitos.classList.remove('active');
-      habitsContainer.style.display = 'none';
-      calContainer.style.display = 'block';
-      if (calInstancia && typeof calInstancia.recarregar === 'function') {
-        calInstancia.recarregar();
-      }
-    };
-
     if (HabitosView && typeof HabitosView.montar === 'function') {
       await HabitosView.montar({ habitsCard: habitsContainer, ctx });
-    }
-
-    if (CalendarioView && typeof CalendarioView.montar === 'function') {
-      calInstancia = await CalendarioView.montar({ container: calContainer, ctx });
     }
 
     // =========================================================================
@@ -179,6 +152,7 @@ return {
       controllerTarefas = await TarefasView.montar({
         tasksCard,
         ctx,
+        CalendarioView,
         abrirModalNovaTarefa,
         abrirModalTemplateTarefa,
         abrirModalMenuTarefa

@@ -99,16 +99,22 @@ describe('TarefasView - Modo de Visualização Kanban', () => {
 
     const btnLista = switcher.querySelector('[data-mode="lista"]');
     const btnKanban = switcher.querySelector('[data-mode="kanban"]');
+    const btnCalendario = switcher.querySelector('[data-mode="calendario"]');
     assert.ok(btnLista, 'Botão de modo Lista deve existir');
     assert.ok(btnKanban, 'Botão de modo Kanban deve existir');
+    assert.ok(btnCalendario, 'Botão de modo Calendário deve existir');
 
-    // 2. Alterna para o modo Kanban
+    // 2. Verifica estabilidade de posição das abas (sempre visíveis e fixas no topo)
+    const tabs = tasksCard.querySelector('.snoopy-task-tabs');
+    assert.ok(tabs, 'Barra de abas HOJE, AMANHÃ deve existir');
+    assert.notStrictEqual(tabs.style.display, 'none', 'Abas não devem ser ocultadas para evitar saltos de layout');
+
+    // 3. Alterna para o modo Kanban
     assert.strictEqual(typeof btnKanban.onclick, 'function');
     btnKanban.onclick();
 
-    // 3. Verifica se as abas foram ocultadas e o quadro Kanban foi montado
-    const tabs = tasksCard.querySelector('.snoopy-task-tabs');
-    assert.strictEqual(tabs.style.display, 'none', 'Abas devem ficar ocultas no modo Kanban');
+    // Abas continuam na mesma posição estável
+    assert.notStrictEqual(tabs.style.display, 'none', 'Abas continuam fixas no topo no modo Kanban');
 
     const kanbanBoard = tasksCard.querySelector('.snoopy-task-kanban-board');
     assert.ok(kanbanBoard, 'Quadro Kanban deve ser renderizado no container de tarefas');
@@ -121,5 +127,12 @@ describe('TarefasView - Modo de Visualização Kanban', () => {
     const cardKanban = kanbanBoard.querySelector('.snoopy-task-kanban-card');
     assert.ok(cardKanban, 'Deve renderizar cards dentro das colunas do Kanban');
     assert.ok(cardKanban.querySelector('.snoopy-btn-task-focus'), 'Card pendente no Kanban deve ter botão Foco');
+
+    // 6. Alterna para o modo Calendário
+    assert.strictEqual(typeof btnCalendario.onclick, 'function');
+    btnCalendario.onclick();
+    assert.notStrictEqual(tabs.style.display, 'none', 'Abas continuam fixas no topo no modo Calendário');
+    const calWrap = tasksCard.querySelector('.snoopy-task-calendar-view-wrap');
+    assert.ok(calWrap, 'Container do Calendário deve ser renderizado no modo Calendário');
   });
 });
