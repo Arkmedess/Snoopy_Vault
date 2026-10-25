@@ -126,6 +126,51 @@ const PomodoroJardim = {
   },
 
   /**
+   * Mapeia as sessões concluídas do dia para espécimes botânicos no "Bosque do Dia".
+   *
+   * @param {number} totalCiclos - Quantidade de ciclos concluídos hoje.
+   * @param {Array<{ titulo?: string, hora?: string, min?: number }>} [sessoesHoje=[]] - Sessões com metadados.
+   * @returns {Array<{ id: number, iconName: string, cor: string, label: string, titulo: string, hora: string, min: number }>}
+   */
+  obterArvoresDoBosque(totalCiclos = 0, sessoesHoje = []) {
+    const total = Number(totalCiclos) || 0;
+    if (total <= 0) return [];
+
+    const especies = [
+      { iconName: 'sprout', cor: '#86efac' },
+      { iconName: 'flower-2', cor: '#93c5fd' },
+      { iconName: 'tree-pine', cor: '#4ade80' },
+      { iconName: 'trees', cor: '#86efac' },
+      { iconName: 'sparkles', cor: '#facc15' }
+    ];
+
+    const arvores = [];
+    for (let i = 0; i < total; i++) {
+      const sessao = sessoesHoje[i] || {};
+      const especie = especies[i % especies.length];
+      const titulo = sessao.titulo || `Ciclo #${i + 1}`;
+      const hora = sessao.hora || '';
+      const min = Number(sessao.min) || 25;
+
+      const label = hora
+        ? `${titulo} (${hora} • ${min}m)`
+        : `${titulo} (${min}m)`;
+
+      arvores.push({
+        id: i + 1,
+        iconName: especie.iconName,
+        cor: especie.cor,
+        label,
+        titulo,
+        hora,
+        min
+      });
+    }
+
+    return arvores;
+  },
+
+  /**
    * Atualiza a renderização visual do jardim botânico no DOM.
    *
    * @param {HTMLElement} root - Elemento raiz contendo o card do jardim.
@@ -133,11 +178,12 @@ const PomodoroJardim = {
    * @param {number} params.completedCyclesToday - Ciclos completados hoje.
    * @param {number} params.dailyGoal - Meta de ciclos diários.
    * @param {number} params.focusMin - Duração em minutos de cada ciclo.
+   * @param {Array<{ titulo?: string, hora?: string, min?: number }>} [params.sessoesHoje] - Sessões de hoje.
    * @param {Function} [params.renderIcon] - Função utilitária para renderizar ícones Lucide.
    */
   atualizarVisualPlanta(root, params = {}) {
     if (!root) return;
-    const { completedCyclesToday = 0, dailyGoal = 4, focusMin = 25, renderIcon } = params;
+    const { completedCyclesToday = 0, dailyGoal = 4, focusMin = 25, sessoesHoje = [], renderIcon } = params;
 
     const pAv = root.querySelector('#snoopy-plant-avatar');
     const pTit = root.querySelector('#snoopy-stage-title');
@@ -162,6 +208,44 @@ const PomodoroJardim = {
     if (pDesc) pDesc.textContent = estagio.descricao;
     if (pBdg) pBdg.textContent = estagio.badge;
     if (pBar) pBar.style.width = `${estagio.pct}%`;
+
+    const dGrove = root.querySelector('#snoopy-daily-grove');
+    if (dGrove) {
+      dGrove.innerHTML = '';
+      const arvores = this.obterArvoresDoBosque(completedCyclesToday, sessoesHoje);
+      if (arvores.length === 0) {
+        if (typeof dGrove.createEl === 'function') {
+          dGrove.createEl('span', {
+            cls: 'snoopy-grove-empty',
+            text: 'Cultive seu primeiro foco para plantar no bosque de hoje'
+          });
+        } else if (typeof document !== 'undefined') {
+          const emptyEl = document.createElement('span');
+          emptyEl.className = 'snoopy-grove-empty';
+          emptyEl.textContent = 'Cultive seu primeiro foco para plantar no bosque de hoje';
+          dGrove.appendChild(emptyEl);
+        }
+      } else {
+        arvores.forEach((arv) => {
+          let item = null;
+          if (typeof dGrove.createEl === 'function') {
+            item = dGrove.createEl('span', {
+              cls: 'snoopy-grove-tree',
+              attr: { title: arv.label, 'aria-label': arv.label }
+            });
+          } else if (typeof document !== 'undefined') {
+            item = document.createElement('span');
+            item.className = 'snoopy-grove-tree';
+            item.title = arv.label;
+            item.setAttribute('aria-label', arv.label);
+            dGrove.appendChild(item);
+          }
+          if (item && renderIcon) {
+            renderIcon(item, arv.iconName, { size: 14, color: arv.cor });
+          }
+        });
+      }
+    }
   },
 
   /**

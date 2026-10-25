@@ -289,6 +289,7 @@ return {
         <div class="snoopy-prog-track" style="height: 6px; width: 100%; margin-top: 6px; border-radius: 3px;">
           <div id="snoopy-plant-bar" class="snoopy-prog-fill" style="width: 0%; background: #4ade80; border-radius: 3px;"></div>
         </div>
+        <div id="snoopy-daily-grove" class="snoopy-daily-grove"></div>
       </div>
     `;
 
@@ -422,10 +423,15 @@ return {
 
     const atualizarTelasJardim = () => {
       if (PomodoroJardim) {
+        const sessoesHoje = (typeof window !== 'undefined' && Array.isArray(window.__snoopyTodaySessions))
+          ? window.__snoopyTodaySessions
+          : [];
+
         PomodoroJardim.atualizarVisualPlanta(historyBox, {
           completedCyclesToday,
           dailyGoal,
           focusMin,
+          sessoesHoje,
           renderIcon: ctx.renderIcon
         });
         PomodoroJardim.renderizarHeatmap(historyBox, {
@@ -529,6 +535,21 @@ return {
     const finalizarFoco = async () => {
       completedCyclesToday++;
       mapaFoco[todayStr] = completedCyclesToday;
+
+      const agora = new Date();
+      const pad = (n) => String(n).padStart(2, '0');
+      const horaStr = `${pad(agora.getHours())}:${pad(agora.getMinutes())}`;
+      const faixaAtual = playlist && playlist.obterFaixaAtual ? playlist.obterFaixaAtual() : null;
+      const tituloSessao = faixaAtual ? faixaAtual.titulo : 'Foco Livre';
+
+      if (typeof window !== 'undefined') {
+        window.__snoopyTodaySessions = window.__snoopyTodaySessions || [];
+        window.__snoopyTodaySessions.push({
+          titulo: tituloSessao,
+          hora: horaStr,
+          min: focusMin
+        });
+      }
 
       if (modalManager) {
         await modalManager.salvarPomodoroNaNotaDiaria(completedCyclesToday);

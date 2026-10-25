@@ -39,5 +39,26 @@ describe('Módulo Pomodoro - PomodoroJardim', () => {
     assert.strictEqual(res.peakPomos, 4);
     assert.strictEqual(res.streak, 3);
   });
+
+  test('obterArvoresDoBosque() mapeia sessões do dia para árvores botânicas', () => {
+    // 0 ciclos: bosque vazio
+    assert.deepStrictEqual(PomodoroJardim.obterArvoresDoBosque(0), []);
+
+    // 3 ciclos: 3 árvores cultivadas com metadados
+    const sessoes = [
+      { titulo: 'Ler 30 páginas', hora: '09:30', min: 25 },
+      { titulo: 'Resolver bug', hora: '10:15', min: 25 },
+      { titulo: 'Estudo de Rust', hora: '11:00', min: 25 }
+    ];
+    const arvores = PomodoroJardim.obterArvoresDoBosque(3, sessoes);
+    assert.strictEqual(arvores.length, 3);
+    assert.strictEqual(arvores[0].id, 1);
+    assert.ok(arvores[0].label.includes('Ler 30 páginas'));
+    assert.ok(arvores[0].label.includes('09:30'));
+    assert.strictEqual(arvores[1].id, 2);
+    assert.ok(arvores[1].label.includes('Resolver bug'));
+    assert.strictEqual(arvores[2].id, 3);
+    assert.ok(arvores[2].label.includes('Estudo de Rust'));
+  });
 });
 
