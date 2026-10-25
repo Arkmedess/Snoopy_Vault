@@ -22,6 +22,16 @@ describe('Módulo Pomodoro - PomodoroJardim', () => {
     assert.strictEqual(floresta.titulo, 'Floresta Mágica');
     assert.strictEqual(floresta.pct, 100);
     assert.strictEqual(floresta.badge, 'MESTRE');
+    assert.strictEqual(floresta.proximoNivel, null);
+
+    assert.deepStrictEqual(PomodoroJardim.calcularEstagioPlanta(0).proximoNivel, {
+      nome: 'Plântula Ativa',
+      ciclosFaltantes: 1
+    });
+    assert.deepStrictEqual(PomodoroJardim.calcularEstagioPlanta(4).proximoNivel, {
+      nome: 'Pinheiro Robusto',
+      ciclosFaltantes: 2
+    });
   });
 
   test('calcularHistorico30Dias() agrega métricas e calcula sequência de dias', () => {

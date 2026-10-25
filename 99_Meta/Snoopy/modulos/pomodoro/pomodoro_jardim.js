@@ -21,7 +21,8 @@ const PomodoroJardim = {
         titulo: 'Floresta Mágica',
         descricao: 'Mestria absoluta! Você construiu um ecossistema produtivo.',
         badge: 'MESTRE',
-        pct: 100
+        pct: 100,
+        proximoNivel: null
       };
     }
     if (c >= 6) {
@@ -30,7 +31,8 @@ const PomodoroJardim = {
         titulo: 'Pinheiro Robusto',
         descricao: 'Foco inabalável. Raízes profundas e resiliência.',
         badge: 'NÍVEL 4',
-        pct: 85
+        pct: 85,
+        proximoNivel: { nome: 'Floresta Mágica', ciclosFaltantes: 8 - c }
       };
     }
     if (c >= 4) {
@@ -39,7 +41,8 @@ const PomodoroJardim = {
         titulo: 'Cerejeira em Flor',
         descricao: 'Meta diária batida com primor! Florescimento mental.',
         badge: 'NÍVEL 3',
-        pct: 65
+        pct: 65,
+        proximoNivel: { nome: 'Pinheiro Robusto', ciclosFaltantes: 6 - c }
       };
     }
     if (c >= 2) {
@@ -48,7 +51,8 @@ const PomodoroJardim = {
         titulo: 'Brotinho Verdejante',
         descricao: 'Constância em desenvolvimento acelerado.',
         badge: 'NÍVEL 2',
-        pct: 40
+        pct: 40,
+        proximoNivel: { nome: 'Cerejeira em Flor', ciclosFaltantes: 4 - c }
       };
     }
     if (c >= 1) {
@@ -57,7 +61,8 @@ const PomodoroJardim = {
         titulo: 'Plântula Ativa',
         descricao: 'Primeiro ciclo do dia consolidado com sucesso.',
         badge: 'NÍVEL 1',
-        pct: 20
+        pct: 20,
+        proximoNivel: { nome: 'Brotinho Verdejante', ciclosFaltantes: 2 - c }
       };
     }
     return {
@@ -65,7 +70,8 @@ const PomodoroJardim = {
       titulo: 'Semente Plantada',
       descricao: 'Inicie seu primeiro foco para germinar a plantinha.',
       badge: 'NÍVEL 1',
-      pct: 0
+      pct: 0,
+      proximoNivel: { nome: 'Plântula Ativa', ciclosFaltantes: 1 }
     };
   },
 
@@ -205,7 +211,14 @@ const PomodoroJardim = {
       renderIcon(pAv, estagio.iconName, { size: 24, color: '#86efac' });
     }
     if (pTit) pTit.textContent = estagio.titulo;
-    if (pDesc) pDesc.textContent = estagio.descricao;
+    if (pDesc) {
+      if (estagio.proximoNivel) {
+        const plural = estagio.proximoNivel.ciclosFaltantes > 1 ? 's' : '';
+        pDesc.textContent = `${estagio.descricao} (Próximo: ${estagio.proximoNivel.nome} em +${estagio.proximoNivel.ciclosFaltantes} foco${plural})`;
+      } else {
+        pDesc.textContent = estagio.descricao;
+      }
+    }
     if (pBdg) pBdg.textContent = estagio.badge;
     if (pBar) pBar.style.width = `${estagio.pct}%`;
 
