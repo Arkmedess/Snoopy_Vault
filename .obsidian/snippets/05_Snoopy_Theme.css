@@ -1695,6 +1695,71 @@ button.snoopy-btn-danger:hover {
 /* =========================================================================
    POMODORO PLAYER DOCK & FOCUS PLAYLIST (SPOTIFY VIBE)
    ========================================================================= */
+.snoopy-time-chip {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  padding: 3px 8px !important;
+  border-radius: var(--snoopy-radius-sm, 6px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  cursor: text !important;
+  transition: all 0.15s ease !important;
+}
+
+.snoopy-time-chip:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+}
+
+.snoopy-time-chip:focus-within {
+  background: rgba(74, 222, 128, 0.06) !important;
+  border-color: #4ade80 !important;
+  box-shadow: 0 0 0 1px rgba(74, 222, 128, 0.3) !important;
+}
+
+.snoopy-time-chip-label {
+  color: #a1a1aa !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
+  user-select: none !important;
+}
+
+.snoopy-time-chip-input {
+  width: 32px !important;
+  background: rgba(255, 255, 255, 0.07) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 12px !important;
+  text-align: center !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 4px !important;
+  outline: none !important;
+  padding: 1px 2px !important;
+  transition: border-color 0.15s ease, background 0.15s ease !important;
+}
+
+.snoopy-time-chip-input:focus {
+  border-color: #4ade80 !important;
+  background: rgba(0, 0, 0, 0.3) !important;
+}
+
+.snoopy-time-chip-unit {
+  color: #71717a !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  user-select: none !important;
+}
+
+.snoopy-circle-box {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: transform 0.2s ease !important;
+}
+
 .snoopy-player-dock {
   display: flex !important;
   align-items: center !important;
@@ -1704,24 +1769,24 @@ button.snoopy-btn-danger:hover {
 }
 
 .snoopy-player-btn-main {
-  width: 36px !important;
-  height: 36px !important;
-  border-radius: 50% !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: var(--snoopy-radius-sm, 6px) !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  background: var(--snoopy-accent, #60a5fa) !important;
-  color: #09090b !important;
-  border: none !important;
+  background: #4ade80 !important;
+  color: #070709 !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
   cursor: pointer !important;
-  box-shadow: 0 0 12px rgba(96, 165, 250, 0.35) !important;
+  box-shadow: 0 0 10px rgba(74, 222, 128, 0.35) !important;
   transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease !important;
 }
 
 .snoopy-player-btn-main:hover {
-  transform: scale(1.08) !important;
-  background: #93c5fd !important;
-  box-shadow: 0 0 16px rgba(96, 165, 250, 0.55) !important;
+  transform: scale(1.05) !important;
+  background: #86efac !important;
+  box-shadow: 0 0 14px rgba(74, 222, 128, 0.55) !important;
 }
 
 .snoopy-player-btn-icon {

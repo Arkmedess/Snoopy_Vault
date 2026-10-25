@@ -68,21 +68,20 @@ return {
         <div class="snoopy-toolbar">
           ${ctx.UIKit && ctx.UIKit.ICONS && ctx.UIKit.ICONS['timer'] ? `<span class="snoopy-icon" style="width: 16px; height: 16px; color: var(--snoopy-muted);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">${ctx.UIKit.ICONS['timer']}</svg></span>` : ''}
           <span class="snoopy-section-title">POMODORO</span>
-          <span id="snoopy-mode-badge" class="snoopy-micro" style="font-weight: bold; padding: 2px 7px; border-radius: 4px; background: rgba(74, 222, 128, 0.15); color: #86efac;">FOCO ATIVO</span>
         </div>
         <span class="snoopy-card-subtitle">Sessão de foco e intervalo</span>
       </div>
-      <div class="snoopy-meta" style="display: flex; align-items: center; gap: 6px; font-size: 12px;">
-        <div style="display: flex; align-items: center; gap: 4px; background: #14141c; padding: 3px 8px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.08);">
-          <span style="color: #a1a1aa;">Foco:</span>
-          <input id="cfg-focus" type="number" value="${focusMin}" min="1" max="90" style="width: 32px; background: transparent; color: #ffffff; font-weight: bold; text-align: center; border: none; outline: none;">
-          <span style="color: #71717a;">m</span>
-        </div>
-        <div style="display: flex; align-items: center; gap: 4px; background: #14141c; padding: 3px 8px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.08);">
-          <span style="color: #a1a1aa;">Pausa:</span>
-          <input id="cfg-break" type="number" value="${breakMin}" min="1" max="30" style="width: 28px; background: transparent; color: #ffffff; font-weight: bold; text-align: center; border: none; outline: none;">
-          <span style="color: #71717a;">m</span>
-        </div>
+      <div class="snoopy-meta" style="display: flex; align-items: center; gap: 8px;">
+        <label class="snoopy-time-chip" title="Tempo de foco em minutos (clique para alterar)">
+          <span class="snoopy-time-chip-label">Foco:</span>
+          <input id="cfg-focus" class="snoopy-time-chip-input" type="number" value="${focusMin}" min="1" max="90" aria-label="Tempo de foco em minutos">
+          <span class="snoopy-time-chip-unit">m</span>
+        </label>
+        <label class="snoopy-time-chip" title="Tempo de pausa em minutos (clique para alterar)">
+          <span class="snoopy-time-chip-label">Pausa:</span>
+          <input id="cfg-break" class="snoopy-time-chip-input" type="number" value="${breakMin}" min="1" max="30" aria-label="Tempo de pausa em minutos">
+          <span class="snoopy-time-chip-unit">m</span>
+        </label>
       </div>
     `;
 
@@ -115,27 +114,32 @@ return {
 
     // Centro do Pomodoro: Anel SVG + Controles do Player + Focus Playlist (Spotify vibe)
     const pomoCenter = pomoBox.createEl('div', {
-      attr: { style: 'display: grid; grid-template-columns: 5fr 7fr; gap: 16px; align-items: center; padding: 12px 0;' }
+      cls: 'snoopy-pomo-center',
+      attr: { style: 'display: grid; grid-template-columns: minmax(200px, 1.15fr) 1.35fr; gap: 14px; align-items: center; padding: 6px 0;' }
     });
 
     const ringWrapper = pomoCenter.createEl('div', { 
-      attr: { style: 'display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;' } 
+      cls: 'snoopy-ring-wrapper',
+      attr: { style: 'display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;' } 
     });
-    const svgBox = ringWrapper.createEl('div', { attr: { style: 'position: relative; width: 160px; height: 160px; display: flex; align-items: center; justify-content: center;' } });
+    const svgBox = ringWrapper.createEl('div', {
+      cls: 'snoopy-circle-box',
+      attr: { style: 'position: relative; width: 200px; height: 200px; display: flex; align-items: center; justify-content: center;' }
+    });
     svgBox.innerHTML = `
-      <svg style="width: 160px; height: 160px;" viewBox="0 0 170 170">
+      <svg style="width: 200px; height: 200px;" viewBox="0 0 170 170">
         <circle class="circle-progress-bg" cx="85" cy="85" r="74" fill="none" stroke-width="7" />
         <circle id="snoopy-circle-bar" class="circle-progress-bar" cx="85" cy="85" r="74" fill="none" stroke-width="7" stroke-dasharray="464.96" stroke-dashoffset="0" />
       </svg>
       <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; pointer-events: none; user-select: none;">
-        <span id="snoopy-timer-display" class="snoopy-meta" style="font-size: 32px; font-weight: 800; color: #ffffff; letter-spacing: 0.06em; line-height: 1;">${String(focusMin).padStart(2, '0')}:00</span>
-        <span id="snoopy-cycle-label" class="snoopy-meta" style="font-size: 12px; font-weight: bold; color: #86efac; margin-top: 4px;">Ciclo 1 de ${dailyGoal}</span>
+        <span id="snoopy-timer-display" class="snoopy-meta" style="font-size: 38px; font-weight: 800; color: #ffffff; letter-spacing: 0.04em; line-height: 1; font-family: var(--font-monospace, monospace);">${String(focusMin).padStart(2, '0')}:00</span>
+        <span id="snoopy-cycle-label" class="snoopy-meta" style="font-size: 12px; font-weight: 700; color: #86efac; margin-top: 6px; letter-spacing: 0.05em; text-transform: uppercase;">Ciclo 1 de ${dailyGoal}</span>
       </div>
     `;
 
     // Painel de Ritmo Diário abaixo do Relógio (Elimina espaço vazio)
     const dailyPomoTracker = ringWrapper.createEl('div', {
-      attr: { style: 'display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; max-width: 150px;' }
+      attr: { style: 'display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; max-width: 176px;' }
     });
     const pctMetaHoje = dailyGoal > 0 ? Math.min(100, Math.round((completedCyclesToday / dailyGoal) * 100)) : 0;
     dailyPomoTracker.innerHTML = `
@@ -169,12 +173,12 @@ return {
     });
     if (renderIconFn) renderIconFn(btnPrev, 'skip-back', { size: 14 });
 
-    // Botão Principal Play/Pause (Circular, 36px, em destaque)
+    // Botão Principal Play/Pause (Padronizado e harmonizado)
     const btnMainPlay = playerDock.createEl('button', {
       cls: 'snoopy-player-btn-main',
       attr: { title: 'Iniciar / Pausar foco' }
     });
-    if (renderIconFn) renderIconFn(btnMainPlay, 'play', { size: 18, color: '#070709' });
+    if (renderIconFn) renderIconFn(btnMainPlay, 'play', { size: 16, color: '#070709' });
 
     // Botão Próximo Ciclo/Faixa
     const btnNext = playerDock.createEl('button', {
@@ -241,13 +245,6 @@ return {
     });
     if (renderIconFn) renderIconFn(btnFlashcard, 'brain', { size: 11 });
     btnFlashcard.createEl('span', { text: '+ Flashcard' });
-
-    // Rodapé Cockpit
-    const pomoFooter = pomoBox.createEl('div', {
-      cls: 'snoopy-micro',
-      attr: { style: 'display: flex; justify-content: space-between; align-items: center; color: #71717a; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08);' }
-    });
-    pomoFooter.innerHTML = `<span style="color: #71717a;">Automação de ciclo e playlist sequencial</span><span style="color: #86efac; font-weight: 600;">Sincronizado</span>`;
 
     // --- LADO DIREITO: HISTÓRICO & JARDIM EXPANDIDO ---
     const historyBox = topGrid.createEl('div', { cls: 'snoopy-card-box' });
@@ -782,7 +779,7 @@ return {
         if (!btnMainPlay) return;
         btnMainPlay.innerHTML = '';
         const iconName = isRunning ? 'pause' : 'play';
-        if (renderIconFn) renderIconFn(btnMainPlay, iconName, { size: 18, color: '#070709' });
+        if (renderIconFn) renderIconFn(btnMainPlay, iconName, { size: 16, color: '#070709' });
       }
     }) : null;
 

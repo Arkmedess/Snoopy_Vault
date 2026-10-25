@@ -83,6 +83,23 @@ describe('Módulo 02 - Cockpit Pomodoro Orquestrador (02_snoopy_cockpit_pomodoro
     assert.ok(findText(colCockpit, 'POMODORO'));
     assert.ok(findText(colCockpit, 'Sessão de foco e intervalo'));
 
+    // Verificações de padronização profissional e eliminação de ruídos
+    assert.strictEqual(colCockpit.querySelector('#snoopy-mode-badge'), null, 'Badge redundante FOCO ATIVO deve ser removida do topo');
+    assert.strictEqual(findText(colCockpit, 'Automação de ciclo e playlist sequencial'), false, 'Rodapé estático deve ser removido');
+    assert.strictEqual(findText(colCockpit, 'Sincronizado'), false, 'Texto Sincronizado deve ser removido');
+
+    // Verificação dos campos padronizados de Foco e Pausa
+    const cfgFocus = colCockpit.querySelector('#cfg-focus');
+    const cfgBreak = colCockpit.querySelector('#cfg-break');
+    assert.ok(cfgFocus, 'Campo de foco deve existir');
+    assert.ok(cfgBreak, 'Campo de pausa deve existir');
+    assert.ok(cfgFocus.classList.contains('snoopy-time-chip-input'), 'Campo de foco deve possuir classe de chip padronizado');
+    assert.ok(cfgBreak.classList.contains('snoopy-time-chip-input'), 'Campo de pausa deve possuir classe de chip padronizado');
+
+    // Verificação do anel ampliado
+    const svgBox = colCockpit.querySelector('.snoopy-circle-box');
+    assert.ok(svgBox, 'Contêiner do círculo SVG ampliado deve existir');
+
     // Coluna 2: Jardim de Constância
     const colJardim = topGrid.children[1];
     assert.ok(findText(colJardim, 'JARDIM DE CONSTÂNCIA'));
