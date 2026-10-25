@@ -118,7 +118,9 @@ return {
       attr: { style: 'display: grid; grid-template-columns: 5fr 7fr; gap: 16px; align-items: center; padding: 12px 0;' }
     });
 
-    const ringWrapper = pomoCenter.createEl('div', { attr: { style: 'display: flex; justify-content: center;' } });
+    const ringWrapper = pomoCenter.createEl('div', { 
+      attr: { style: 'display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;' } 
+    });
     const svgBox = ringWrapper.createEl('div', { attr: { style: 'position: relative; width: 160px; height: 160px; display: flex; align-items: center; justify-content: center;' } });
     svgBox.innerHTML = `
       <svg style="width: 160px; height: 160px;" viewBox="0 0 170 170">
@@ -128,6 +130,21 @@ return {
       <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; pointer-events: none; user-select: none;">
         <span id="snoopy-timer-display" class="snoopy-meta" style="font-size: 32px; font-weight: 800; color: #ffffff; letter-spacing: 0.06em; line-height: 1;">${String(focusMin).padStart(2, '0')}:00</span>
         <span id="snoopy-cycle-label" class="snoopy-meta" style="font-size: 12px; font-weight: bold; color: #86efac; margin-top: 4px;">Ciclo 1 de ${dailyGoal}</span>
+      </div>
+    `;
+
+    // Painel de Ritmo Diário abaixo do Relógio (Elimina espaço vazio)
+    const dailyPomoTracker = ringWrapper.createEl('div', {
+      attr: { style: 'display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; max-width: 150px;' }
+    });
+    const pctMetaHoje = dailyGoal > 0 ? Math.min(100, Math.round((completedCyclesToday / dailyGoal) * 100)) : 0;
+    dailyPomoTracker.innerHTML = `
+      <div style="display: flex; justify-content: space-between; width: 100%; font-size: 11px; color: #a1a1aa;">
+        <span>Meta Diária:</span>
+        <span id="snoopy-pomo-meta-txt" style="font-weight: 700; color: #86efac;">${completedCyclesToday}/${dailyGoal} ciclos</span>
+      </div>
+      <div class="snoopy-prog-track" style="height: 5px; width: 100%;">
+        <div id="snoopy-pomo-meta-fill" class="snoopy-prog-fill" style="width: ${pctMetaHoje}%; background: #4ade80;"></div>
       </div>
     `;
 
@@ -152,7 +169,7 @@ return {
     });
     if (renderIconFn) renderIconFn(btnPrev, 'skip-back', { size: 14 });
 
-    // Botão Principal Play/Pause (Circular, 40px, em destaque)
+    // Botão Principal Play/Pause (Circular, 36px, em destaque)
     const btnMainPlay = playerDock.createEl('button', {
       cls: 'snoopy-player-btn-main',
       attr: { title: 'Iniciar / Pausar foco' }
@@ -181,7 +198,7 @@ return {
       cls: 'snoopy-player-btn-icon',
       attr: { title: 'Modo Foco Imersivo sem distrações' }
     });
-    if (renderIconFn) renderIconFn(btnImersivo, 'search', { size: 14 });
+    if (renderIconFn) renderIconFn(btnImersivo, 'maximize-2', { size: 14 });
 
     // Botão Testar / Concluir Rápido
     const btnTestar = playerDock.createEl('button', {
@@ -199,7 +216,10 @@ return {
         <span class="snoopy-micro" style="font-weight: 700; color: #a1a1aa; letter-spacing: 0.05em;">FILA DE FOCO (PLAYLIST)</span>
         <span id="snoopy-playlist-count" class="snoopy-micro" style="color: #60a5fa; font-weight: bold;">0 faixas</span>
       </div>
-      <button id="snoopy-playlist-clear" class="snoopy-micro" style="background: transparent; border: none; color: #71717a; cursor: pointer;">Limpar</button>
+      <div style="display: flex; align-items: center; gap: 6px;">
+        <button id="snoopy-playlist-btn-add" class="snoopy-playlist-btn-edit" title="Adicionar nova tarefa na fila">+ Fila</button>
+        <button id="snoopy-playlist-clear" class="snoopy-micro" style="background: transparent; border: none; color: #71717a; cursor: pointer; padding: 2px 4px;">Limpar</button>
+      </div>
     `;
 
     const playlistTracksBox = playlistWrap.createEl('div', {
@@ -327,6 +347,62 @@ return {
     const targetNameEl = targetBanner.querySelector('#snoopy-target-name');
     const playlistCountEl = playlistWrap.querySelector('#snoopy-playlist-count');
     const playlistClearBtn = playlistWrap.querySelector('#snoopy-playlist-clear');
+    const playlistAddBtn = playlistWrap.querySelector('#snoopy-playlist-btn-add');
+
+    function abrirModalAdicionarFila() {
+      if (ModalFactory && typeof ModalFactory.abrir === 'function') {
+        ModalFactory.abrir({
+          maxWidth: '440px',
+          htmlContent: `
+            <div class="snoopy-card-header">
+              <span class="snoopy-section-title">Adicionar Tarefa na Fila do Pomodoro</span>
+              <button class="snoopy-modal-close" title="Fechar"></button>
+            </div>
+            <div class="snoopy-modal-label">O que você deseja focar a seguir?</div>
+            <input id="modal-fila-input" class="snoopy-form-input" type="text" placeholder="Ex: Ler capítulo 3, Refatorar módulo..." style="width: 100%; margin-bottom: 12px;">
+            <div class="snoopy-modal-label">Estimativa de Ciclos Pomodoro:</div>
+            <div class="snoopy-toolbar" style="margin-bottom: 16px;">
+              <button class="snoopy-btn-mode active" data-pomos="1">1 ciclo (25m)</button>
+              <button class="snoopy-btn-mode" data-pomos="2">2 ciclos (50m)</button>
+              <button class="snoopy-btn-mode" data-pomos="3">3 ciclos (75m)</button>
+              <button class="snoopy-btn-mode" data-pomos="4">4 ciclos (100m)</button>
+            </div>
+            <div class="snoopy-toolbar" style="justify-content: flex-end;">
+              <button id="modal-fila-confirmar" class="snoopy-btn-primary snoopy-btn-md">Adicionar à Fila</button>
+            </div>
+          `,
+          onMontar: (box, fechar) => {
+            let pomosEscolhidos = 1;
+            const btnsPomos = box.querySelectorAll('.snoopy-btn-mode');
+            btnsPomos.forEach(b => {
+              b.onclick = () => {
+                btnsPomos.forEach(x => x.classList.remove('active'));
+                b.classList.add('active');
+                pomosEscolhidos = Number(b.dataset.pomos) || 1;
+              };
+            });
+
+            const inp = box.querySelector('#modal-fila-input');
+            const btnConf = box.querySelector('#modal-fila-confirmar');
+            if (inp) inp.focus();
+
+            const salvar = () => {
+              const texto = inp ? inp.value.trim() : '';
+              if (texto && playlist) {
+                playlist.adicionarFaixa({ titulo: texto, pomosTotal: pomosEscolhidos });
+                if (playlist.obterTamanho() === 1) definirAlvoFoco(playlist.obterFaixaAtual());
+                renderizarPlaylistVisual();
+                if (typeof Notice !== 'undefined') new Notice(`[Snoopy] Adicionado à fila: "${texto}" (${pomosEscolhidos}p)`);
+                fechar();
+              }
+            };
+
+            if (btnConf) btnConf.onclick = salvar;
+            if (inp) inp.onkeydown = (e) => { if (e.key === 'Enter') salvar(); };
+          }
+        });
+      }
+    }
 
     // Inicialização da Playlist
     const playlist = PomodoroPlaylistClass ? new PomodoroPlaylistClass() : null;
@@ -449,6 +525,9 @@ return {
           playlist.limpar();
           renderizarPlaylistVisual();
         };
+      }
+      if (playlistAddBtn) {
+        playlistAddBtn.onclick = abrirModalAdicionarFila;
       }
     }
 

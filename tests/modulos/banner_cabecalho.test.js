@@ -302,4 +302,65 @@ describe('Módulo 01 - Banner e Cabeçalho (01_snoopy_banner_cabecalho)', () => 
     assert.strictEqual(eventoEmitido.nome, 'pomodoro:comando');
     assert.strictEqual(eventoEmitido.dados.acao, 'start');
   });
+
+  test('Hero Command Bar CLI: executa comando via clique no botão submit e via mousedown no item de preview', async () => {
+    const root = createMockEl('div');
+    let tarefaCriada = null;
+
+    const mockApp = {
+      vault: {
+        adapter: { getResourcePath: () => 'app://local/banner.jpg' },
+        getMarkdownFiles: () => []
+      },
+      workspace: { openLinkText: async () => {} }
+    };
+
+    const mockCtx = {
+      root,
+      app: mockApp,
+      now: new Date(2026, 9, 24),
+      formattedDate: 'sábado, 24 de outubro de 2026',
+      garantirNotaDiaria: async () => ({ path: '01_Inbox/Diário/2026-10-24.md', basename: '2026-10-24' }),
+      criarNotaInstantanea: () => {},
+      VaultStore: {
+        adicionarLinhaNaSecao: async (app, path, secao, linha) => {
+          tarefaCriada = { path, secao, linha };
+        }
+      },
+      events: { emit: () => {} },
+      UIKit
+    };
+
+    await moduloBanner.render(mockCtx);
+
+    const input = root.querySelector('.snoopy-omni-input');
+    const submitBtn = root.querySelector('.snoopy-omni-submit-btn');
+    const previewBox = root.querySelector('.snoopy-omni-preview-box');
+
+    assert.ok(submitBtn, 'Botão de submissão na barra deve existir');
+
+    // 1. Testa execução pelo botão Submit
+    input.value = '> tarefa add Criar documentação da API';
+    input.dispatchEvent('input');
+
+    submitBtn.dispatchEvent('click');
+    await new Promise(r => setImmediate(r));
+
+    assert.ok(tarefaCriada, 'Tarefa deve ter sido criada via submitBtn');
+    assert.ok(tarefaCriada.linha.includes('Criar documentação da API'));
+
+    // 2. Testa execução por mousedown no preview
+    tarefaCriada = null;
+    input.value = '> tarefa add Revisar pull request';
+    input.dispatchEvent('input');
+
+    const previewItem = previewBox.querySelector('.snoopy-omni-item');
+    assert.ok(previewItem, 'Item de preview deve existir');
+
+    previewItem.dispatchEvent('mousedown');
+    await new Promise(r => setImmediate(r));
+
+    assert.ok(tarefaCriada, 'Tarefa deve ter sido criada via mousedown no preview');
+    assert.ok(tarefaCriada.linha.includes('Revisar pull request'));
+  });
 });

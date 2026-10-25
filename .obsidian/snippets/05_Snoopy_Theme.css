@@ -358,12 +358,12 @@
    -------------------------------------------------------------------------- */
 .snoopy-banner-box {
   width: 100%;
-  min-height: 155px;
-  max-height: 180px;
+  min-height: 220px !important;
+  max-height: 250px !important;
   border: 1px solid var(--snoopy-border) !important;
   border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
   border-radius: var(--snoopy-radius-lg, 10px) !important;
-  padding: 16px 20px 18px 20px;
+  padding: 20px 24px 22px 24px !important;
   margin-bottom: 20px;
   display: flex;
   flex-direction: column;
@@ -372,7 +372,7 @@
   position: relative;
   overflow: visible;
   background-size: cover !important;
-  background-position: center 36% !important;
+  background-position: center 20% !important;
   background-repeat: no-repeat !important;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6) !important;
 }
@@ -1556,22 +1556,23 @@ button.snoopy-btn-danger:hover {
 .snoopy-cal-box {
   display: flex !important;
   flex-direction: column !important;
-  gap: 4px !important;
+  gap: 8px !important;
   width: 100% !important;
   height: 100% !important;
+  padding: 4px 0 !important;
 }
 
 .snoopy-cal-header {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  padding-bottom: 4px !important;
+  padding-bottom: 6px !important;
   border-bottom: 1px solid var(--snoopy-border) !important;
 }
 
 .snoopy-cal-title {
   font-family: var(--snoopy-font-heading) !important;
-  font-size: 12px !important;
+  font-size: 13.5px !important;
   font-weight: 700 !important;
   color: #ffffff !important;
   letter-spacing: 0.03em !important;
@@ -1581,7 +1582,7 @@ button.snoopy-btn-danger:hover {
 .snoopy-cal-nav {
   display: flex !important;
   align-items: center !important;
-  gap: 3px !important;
+  gap: 4px !important;
 }
 
 .snoopy-cal-nav-btn {
@@ -1589,14 +1590,14 @@ button.snoopy-btn-danger:hover {
   border: 1px solid var(--snoopy-border) !important;
   color: var(--snoopy-muted) !important;
   border-radius: var(--snoopy-radius-xs, 4px) !important;
-  width: 20px !important;
-  height: 20px !important;
+  width: 24px !important;
+  height: 24px !important;
   padding: 0 !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
   cursor: pointer !important;
-  font-size: 11px !important;
+  font-size: 12px !important;
   line-height: 1 !important;
   transition: color 0.12s ease, border-color 0.12s ease, background 0.12s ease !important;
 }
@@ -1610,23 +1611,23 @@ button.snoopy-btn-danger:hover {
 .snoopy-cal-grid {
   display: grid !important;
   grid-template-columns: repeat(7, 1fr) !important;
-  gap: 2px !important;
+  gap: 4px !important;
   width: 100% !important;
 }
 
 .snoopy-cal-weekday {
   text-align: center !important;
   font-family: var(--snoopy-font-mono) !important;
-  font-size: 9px !important;
+  font-size: 10.5px !important;
   font-weight: 700 !important;
   color: var(--snoopy-muted) !important;
-  padding: 2px 0 !important;
+  padding: 4px 0 !important;
   user-select: none !important;
 }
 
 .snoopy-cal-day {
-  height: 24px !important;
-  min-height: 24px !important;
+  height: 34px !important;
+  min-height: 34px !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
@@ -1635,14 +1636,14 @@ button.snoopy-btn-danger:hover {
   border: 1px solid transparent !important;
   cursor: pointer !important;
   font-family: var(--snoopy-font-mono) !important;
-  font-size: 11px !important;
+  font-size: 13px !important;
   font-weight: 500 !important;
   color: #d4d4d8 !important;
   background: transparent !important;
   position: relative !important;
   transition: all 0.12s ease !important;
   user-select: none !important;
-  padding: 1px 0 !important;
+  padding: 2px 0 !important;
 }
 
 .snoopy-cal-day:hover {
@@ -1811,5 +1812,91 @@ button.snoopy-btn-danger:hover {
 .snoopy-playlist-track-del:hover {
   color: #f87171 !important;
 }
+
+.snoopy-playlist-btn-edit {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 2px 7px !important;
+  border-radius: 4px !important;
+  background: rgba(96, 165, 250, 0.12) !important;
+  border: 1px solid rgba(96, 165, 250, 0.25) !important;
+  color: #93c5fd !important;
+  font-size: 10.5px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.12s ease !important;
+}
+
+.snoopy-playlist-btn-edit:hover {
+  background: rgba(96, 165, 250, 0.22) !important;
+  border-color: #60a5fa !important;
+  color: #ffffff !important;
+}
+
+.snoopy-omni-submit-btn {
+  background: rgba(96, 165, 250, 0.15) !important;
+  border: 1px solid rgba(96, 165, 250, 0.3) !important;
+  border-radius: var(--snoopy-radius-xs, 4px) !important;
+  color: #93c5fd !important;
+  padding: 3px 8px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  margin-right: 6px !important;
+  transition: all 0.12s ease !important;
+}
+
+.snoopy-omni-submit-btn:hover {
+  background: #60a5fa !important;
+  color: #070709 !important;
+}
+
+/* =========================================================================
+   ESTANTE DE LEITURAS EXPANDIDA & LINK PROEMINENTE
+   ========================================================================= */
+.snoopy-bookshelf-open-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 3px 10px !important;
+  border-radius: 9999px !important;
+  background: rgba(96, 165, 250, 0.12) !important;
+  border: 1px solid rgba(96, 165, 250, 0.3) !important;
+  color: #93c5fd !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  transition: all 0.15s ease !important;
+}
+
+.snoopy-bookshelf-open-btn:hover {
+  background: #60a5fa !important;
+  color: #070709 !important;
+  border-color: #60a5fa !important;
+  transform: translateY(-1px) !important;
+}
+
+.snoopy-bookshelf-card-hero {
+  background: var(--background-secondary-alt) !important;
+  border: 1px solid var(--background-modifier-border) !important;
+  border-radius: 8px !important;
+  padding: 12px 14px !important;
+  display: grid !important;
+  grid-template-columns: 70px 1fr !important;
+  gap: 14px !important;
+  align-items: center !important;
+  transition: border-color 0.12s ease, background 0.12s ease !important;
+}
+
+.snoopy-bookshelf-card-hero:hover {
+  border-color: rgba(96, 165, 250, 0.3) !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
 
 

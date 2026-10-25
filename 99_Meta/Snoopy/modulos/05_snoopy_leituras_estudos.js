@@ -192,10 +192,9 @@ return {
     leiturasHeader.innerHTML = `
       <div class="snoopy-card-header-main">
         <div class="snoopy-toolbar">
-          <a id="link-painel-leituras" class="snoopy-section-title-link" title="Abrir pasta de leituras">
-            ${ctx.UIKit && ctx.UIKit.ICONS && ctx.UIKit.ICONS['library'] ? `<span class="snoopy-icon" style="width: 16px; height: 16px; color: var(--snoopy-muted);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">${ctx.UIKit.ICONS['library']}</svg></span>` : ''}
-            ESTANTE
-            ${ctx.UIKit && ctx.UIKit.ICONS && ctx.UIKit.ICONS['arrow-up-right'] ? `<span class="snoopy-icon" style="width: 13px; height: 13px; opacity: 0.6;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13">${ctx.UIKit.ICONS['arrow-up-right']}</svg></span>` : ''}
+          <a id="link-painel-leituras" class="snoopy-bookshelf-open-btn" title="Abrir Subdashboard Completo de Leituras (KOReader Bookshelf)">
+            ${ctx.UIKit && ctx.UIKit.ICONS && ctx.UIKit.ICONS['library'] ? `<span class="snoopy-icon" style="width: 14px; height: 14px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">${ctx.UIKit.ICONS['library']}</svg></span>` : ''}
+            ESTANTE COMPLETA ↗
           </a>
           ${streakLeitura > 0 ? `<span class="snoopy-micro" style="padding: 1px 6px; border-radius: 4px; background: rgba(134, 239, 172, 0.1); color: #86efac; border: 1px solid rgba(134, 239, 172, 0.2); font-weight: 600;" title="${pagsHoje} págs lidas hoje">${streakLeitura}d ofensiva</span>` : ''}
         </div>
@@ -231,40 +230,42 @@ return {
       const pctL = totL > 0 ? Math.round((curL / totL) * 100) : 0;
       const paginasRest = Math.max(0, totL - curL);
 
-      // Mini Hero Box KOReader
+      // Mini Hero Box KOReader com Ações e Aproveitamento Total do Bloco
       const miniHero = leiturasCol.createEl('div', {
-        attr: {
-          style: 'background: var(--background-secondary-alt); border: 1px solid var(--background-modifier-border); border-radius: 8px; padding: 10px 12px; display: grid; grid-template-columns: 56px 1fr; gap: 12px; align-items: center; cursor: pointer;'
-        }
+        cls: 'snoopy-bookshelf-card-hero'
       });
-      miniHero.onclick = () => app.workspace.openLinkText(livroLendo.file.path, "", false);
 
       const coverSrc = livroLendo.cover || "https://images.pexels.com/photos/10254198/pexels-photo-10254198.jpeg";
       miniHero.innerHTML = `
-        <img src="${coverSrc}" style="width: 56px; height: 80px; border-radius: 4px; object-fit: cover; border: 1px solid var(--background-modifier-border); box-shadow: 0 2px 8px rgba(0,0,0,0.35);" onerror="this.src='https://images.pexels.com/photos/10254198/pexels-photo-10254198.jpeg';" />
-        <div style="display: flex; flex-direction: column; gap: 3px; overflow: hidden;">
+        <img src="${coverSrc}" style="width: 70px; height: 100px; border-radius: 6px; object-fit: cover; border: 1px solid var(--background-modifier-border); box-shadow: 0 4px 12px rgba(0,0,0,0.45); cursor: pointer;" onerror="this.src='https://images.pexels.com/photos/10254198/pexels-photo-10254198.jpeg';" />
+        <div style="display: flex; flex-direction: column; gap: 4px; overflow: hidden; flex: 1;">
           <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span class="snoopy-micro" style="color: var(--interactive-accent, #60a5fa); font-weight: 700;">Lendo Agora</span>
-            <span class="prio-badge prio-media" style="font-size: 12px; padding: 1px 6px;">${pctL}%</span>
+            <span class="snoopy-micro" style="color: var(--interactive-accent, #60a5fa); font-weight: 700; text-transform: uppercase;">Lendo Agora</span>
+            <span class="prio-badge prio-media" style="font-size: 11px; padding: 1px 7px;">${pctL}%</span>
           </div>
-          <div style="font-size: 15.5px; font-weight: 700; color: var(--text-normal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+          <div style="font-size: 16px; font-weight: 700; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer;">
             ${livroLendo.title || livroLendo.file.name}
           </div>
-          <div style="font-size: 14px; font-style: italic; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+          <div style="font-size: 13px; font-style: italic; color: #a1a1aa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
             ${livroLendo.author || 'Autor desconhecido'}
           </div>
           <div style="margin-top: 2px;">
-            <div class="snoopy-prog-track" style="height: 4px; width: 100%;">
-              <div class="snoopy-prog-fill" style="width: ${pctL}%; background: var(--text-normal);"></div>
+            <div class="snoopy-prog-track" style="height: 5px; width: 100%;">
+              <div class="snoopy-prog-fill" style="width: ${pctL}%; background: var(--interactive-accent, #60a5fa);"></div>
             </div>
-            <div class="snoopy-meta" style="font-size: 12px; margin-top: 2px;">
-              ${curL}/${totL} págs • restam ${paginasRest} págs
+            <div class="snoopy-meta" style="font-size: 11.5px; margin-top: 3px; display: flex; justify-content: space-between;">
+              <span>${curL}/${totL} págs</span>
+              <span>restam ${paginasRest} págs</span>
             </div>
           </div>
         </div>
       `;
 
-      // Mini Estante das outras capas abaixo
+      miniHero.onclick = (e) => {
+        app.workspace.openLinkText(livroLendo.file.path, "", false);
+      };
+
+      // Mini Estante das outras capas abaixo OU Painel de Constância da Leitura
       const outrosLivros = listaLivros.filter(l => l.file.path !== livroLendo.file.path).slice(0, 4);
       if (outrosLivros.length > 0) {
         const shelf = leiturasCol.createEl('div', { 
@@ -288,6 +289,23 @@ return {
             attr: { style: 'font-size: 12.5px; font-weight: 600; color: var(--text-normal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; margin-top: 3px;' } 
           });
         });
+      } else {
+        // Aproveitamento do espaço inferior com banner indicativo do subdashboard completo
+        const companionCard = leiturasCol.createEl('div', {
+          attr: {
+            style: 'background: rgba(13, 13, 18, 0.6); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;'
+          }
+        });
+        companionCard.innerHTML = `
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <span class="snoopy-micro" style="color: #86efac; font-weight: 700; text-transform: uppercase;">Subdashboard de Leituras</span>
+            <span style="font-size: 12px; color: #d4d4d8;">Desafios anuais, Heatmap 30 dias e Recomendações</span>
+          </div>
+          <span style="font-size: 11.5px; font-weight: 700; color: #60a5fa; display: flex; align-items: center; gap: 3px;">Abrir Painel →</span>
+        `;
+        companionCard.onclick = () => {
+          app.workspace.openLinkText("04_Leituras/Painel de Leituras.md", "", false);
+        };
       }
     }
 
