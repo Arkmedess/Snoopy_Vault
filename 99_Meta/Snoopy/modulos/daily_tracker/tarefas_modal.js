@@ -7,6 +7,7 @@
 
 const REGEX_DATA_TASKS = /\u{1F4C5}\s*(\d{2}-\d{2}-\d{4}|\d{4}-\d{2}-\d{2})/u;
 const REGEX_PRIO_CHARS = /[\u{23EB}\u{1F53C}\u{1F53D}]/gu;
+const NoticeRef = (typeof Notice !== 'undefined') ? Notice : class { constructor() {} };
 
 const TarefasModal = {
   /**
@@ -132,6 +133,13 @@ const TarefasModal = {
           </select>
         </div>
 
+        <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 8px 10px;">
+          <label for="modal-task-kanban" style="font-size: 12px; color: #e4e4e7; cursor: pointer; display: flex; align-items: center; gap: 6px; width: 100%;">
+            <input id="modal-task-kanban" type="checkbox" style="cursor: pointer; accent-color: var(--interactive-accent, #60a5fa);">
+            <span>Exibir esta atividade no Kanban (#kanban)</span>
+          </label>
+        </div>
+
         <div class="snoopy-toolbar" style="justify-content: flex-end; margin-top: 6px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08);">
           <button id="modal-cancel-task" class="snoopy-btn-action snoopy-btn-sm">Cancelar</button>
           <button id="modal-save-task" class="snoopy-btn-primary snoopy-btn-sm" style="font-weight: 700;">Criar Tarefa</button>
@@ -186,13 +194,14 @@ const TarefasModal = {
           const prazo = dateIn.value.trim();
           const prio = box.querySelector('#modal-task-prio').value.trim();
           const pomos = box.querySelector('#modal-task-pomos').value.trim();
-          const destino = box.querySelector('#modal-task-target').value;
+          const destino = box.querySelector('#modal-task-target')?.value || 'daily';
           const metaVal = box.querySelector('#modal-task-meta-val')?.value?.trim();
           const metaUnit = box.querySelector('#modal-task-meta-unit')?.value || 'min';
           const metaDone = box.querySelector('#modal-task-meta-done')?.value?.trim();
+          const exibirNoKanban = box.querySelector('#modal-task-kanban')?.checked;
 
           if (!texto) {
-            new Notice('Informe a descrição da tarefa.');
+            new NoticeRef('Informe a descrição da tarefa.');
             return;
           }
 
@@ -208,16 +217,17 @@ const TarefasModal = {
           if (pomos) taskLine += ` ${pomos}`;
           if (prazo) taskLine += ` 📅 ${DateUtils.formatarDDMMYYYY(prazo)}`;
           if (prio) taskLine += ` ${prio}`;
+          if (exibirNoKanban) taskLine += ' #kanban';
 
           if (destino === 'daily') {
             const dailyFile = await garantirNotaDiaria();
             await VaultStore.adicionarLinhaEmSecao(app, dailyFile, 'Foco Principal de Hoje', taskLine);
-            new Notice('[Snoopy] Tarefa registrada na nota diária!');
+            new NoticeRef('[Snoopy] Tarefa registrada na nota diária!');
           } else {
-            const targetFile = app.vault.getAbstractFileByPath(destino);
+            const targetFile = app?.vault?.getAbstractFileByPath ? app.vault.getAbstractFileByPath(destino) : null;
             if (targetFile) {
               await VaultStore.adicionarLinhaEmSecao(app, targetFile, 'Tarefas', taskLine);
-              new Notice(`[Snoopy] Tarefa vinculada a "${targetFile.basename}"!`);
+              new NoticeRef(`[Snoopy] Tarefa vinculada a "${targetFile.basename}"!`);
             }
           }
 
@@ -237,6 +247,7 @@ const TarefasModal = {
    */
   abrirModalMenuTarefa({ item, t, filePath, app, ctx, todayStr, DateUtils, VaultStore, ModalFactory, onAtualizar }) {
     const isDaily = !filePath || filePath.startsWith('01_Inbox/Diário') || filePath.includes('Diário');
+    const isKanban = Boolean(t?.text && /#kanban\b/i.test(t.text));
     const iniciativas = this._obterIniciativas(ctx?.dv);
     const renderIcon = (c, name, opts) => {
       if (ctx && typeof ctx.renderIcon === 'function') return ctx.renderIcon(c, name, opts);
@@ -333,6 +344,13 @@ const TarefasModal = {
           </select>
         </div>
 
+        <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 8px 10px;">
+          <label for="modal-edit-kanban" style="font-size: 12px; color: #e4e4e7; cursor: pointer; display: flex; align-items: center; gap: 6px; width: 100%;">
+            <input id="modal-edit-kanban" type="checkbox" ${isKanban ? 'checked' : ''} style="cursor: pointer; accent-color: var(--interactive-accent, #60a5fa);">
+            <span>Exibir esta atividade no Kanban (#kanban)</span>
+          </label>
+        </div>
+
         <div class="snoopy-toolbar" style="justify-content: flex-end; margin-top: 6px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08);">
           <button id="modal-cancel-edit" class="snoopy-btn-action snoopy-btn-sm">Cancelar</button>
           <button id="modal-save-edit" class="snoopy-btn-primary snoopy-btn-sm" style="font-weight: 700;">Salvar Alterações</button>
@@ -373,7 +391,7 @@ const TarefasModal = {
             if (typeof window._snoopyDefinirTarefaFoco === 'function') {
               window._snoopyDefinirTarefaFoco({ texto: item.cleanText, path: filePath, line: t.line });
             }
-            new Notice('🎯 Foco direcionado ao Cockpit Pomodoro!');
+            new NoticeRef('🎯 Foco direcionado ao Cockpit Pomodoro!');
           };
         }
 
@@ -382,7 +400,7 @@ const TarefasModal = {
             const proxDia = DateUtils ? DateUtils.somarDias(todayStr, 1) : '';
             if (dateInput && proxDia) {
               dateInput.value = proxDia;
-              new Notice('Prazo ajustado para amanhã. Clique em Salvar para confirmar.');
+              new NoticeRef('Prazo ajustado para amanhã. Clique em Salvar para confirmar.');
             }
           };
         }
@@ -399,7 +417,7 @@ const TarefasModal = {
             const file = app.vault.getAbstractFileByPath(filePath);
             if (file) {
               await VaultStore.removerLinha(app, file, l => l.includes(t.text));
-              new Notice('Tarefa excluída!');
+              new NoticeRef('Tarefa excluída!');
               fechar();
               if (typeof onAtualizar === 'function') await onAtualizar();
             }
@@ -409,7 +427,7 @@ const TarefasModal = {
         if (btnDelNota) {
           btnDelNota.onclick = async () => {
             await VaultStore.excluirArquivo(app, filePath);
-            new Notice('Nota de origem excluída do Vault!');
+            new NoticeRef('Nota de origem excluída do Vault!');
             fechar();
             if (typeof onAtualizar === 'function') await onAtualizar();
           };
@@ -419,7 +437,7 @@ const TarefasModal = {
           btnSalvar.onclick = async () => {
             const novoTexto = box.querySelector('#modal-edit-text')?.value.trim();
             if (!novoTexto) {
-              new Notice('A descrição da tarefa não pode estar vazia.');
+              new NoticeRef('A descrição da tarefa não pode estar vazia.');
               return;
             }
             const novaData = box.querySelector('#modal-edit-date')?.value;
@@ -430,6 +448,7 @@ const TarefasModal = {
             const metaUnit = box.querySelector('#modal-edit-unit')?.value;
             const metaDone = box.querySelector('#modal-edit-done')?.value.trim();
             const novoDestino = box.querySelector('#modal-edit-target')?.value || (isDaily ? 'daily' : filePath);
+            const exibirNoKanban = box.querySelector('#modal-edit-kanban')?.checked;
 
             let progStr = '';
             if (metaVal) {
@@ -440,7 +459,8 @@ const TarefasModal = {
               }
             }
 
-            let novaLinha = `- [ ] ${novoTexto}${progStr}`;
+            const textoLimpoKanban = novoTexto.replace(/#kanban\b/gi, '').trim();
+            let novaLinha = `- [ ] ${textoLimpoKanban}${progStr}`;
             if (novaData) {
               const dataFmt = (DateUtils && typeof DateUtils.formatarDDMMYYYY === 'function') 
                 ? DateUtils.formatarDDMMYYYY(novaData) 
@@ -453,6 +473,7 @@ const TarefasModal = {
 
             if (novoPeriodo) novaLinha += ` ${novoPeriodo}`;
             if (novosPomos) novaLinha += ` 🍅 ${novosPomos}`;
+            if (exibirNoKanban) novaLinha += ' #kanban';
 
             const destinoAtual = isDaily ? 'daily' : filePath;
             if (novoDestino !== destinoAtual) {
@@ -476,12 +497,12 @@ const TarefasModal = {
                   await VaultStore.adicionarLinhaEmSecao(app, targetFile, 'Tarefas', novaLinha);
                 }
               }
-              new Notice('Tarefa movida e atualizada com sucesso!');
+              new NoticeRef('Tarefa movida e atualizada com sucesso!');
             } else {
               const file = app.vault.getAbstractFileByPath(filePath);
               if (file) {
                 await VaultStore.substituirLinha(app, file, l => l.includes(t.text), () => novaLinha);
-                new Notice('Tarefa atualizada com sucesso!');
+                new NoticeRef('Tarefa atualizada com sucesso!');
               }
             }
             fechar();
@@ -502,7 +523,7 @@ const TarefasModal = {
       TaskTemplates = await ctx.ModuleLoader.carregar(app, "99_Meta/Snoopy/core/task_templates.js");
     }
     if (!TaskTemplates) {
-      new Notice('Módulo de templates não encontrado.');
+      new NoticeRef('Módulo de templates não encontrado.');
       return;
     }
 
@@ -732,7 +753,7 @@ const TarefasModal = {
               const chkKanban = box.querySelector('#chk-kanban')?.checked;
 
               if (!nome) {
-                new Notice('Informe o nome do novo template.');
+                new NoticeRef('Informe o nome do novo template.');
                 return;
               }
 
@@ -763,9 +784,9 @@ const TarefasModal = {
                 templateSelecionadoId = novoTemplate.id;
                 renderizarTemplatesCards(cardsBox);
                 formNovo.style.display = 'none';
-                new Notice(`Template "${nome}" criado com sucesso!`);
+                new NoticeRef(`Template "${nome}" criado com sucesso!`);
               } catch(e) {
-                new Notice(`Erro ao criar template: ${e.message}`);
+                new NoticeRef(`Erro ao criar template: ${e.message}`);
               }
             };
           }
@@ -801,13 +822,13 @@ const TarefasModal = {
         const progFeito = metaDoneIn?.value ? parseFloat(metaDoneIn.value) : undefined;
 
         if (!titulo) {
-          new Notice('Informe o título da nota / tarefa.');
+          new NoticeRef('Informe o título da nota / tarefa.');
           return;
         }
 
         const template = templates.find(t => t.id === templateSelecionadoId) || templates[0];
         if (!template) {
-          new Notice('Nenhum template selecionado.');
+          new NoticeRef('Nenhum template selecionado.');
           return;
         }
 
@@ -831,7 +852,7 @@ const TarefasModal = {
             }
 
             fechar();
-            new Notice(`Tarefa criada: "${titulo}" conectada aos módulos!`);
+            new NoticeRef(`Tarefa criada: "${titulo}" conectada aos módulos!`);
             
             // Abre a nota recém-criada
             if (res.notaPath) {
@@ -843,7 +864,7 @@ const TarefasModal = {
             }
           } catch(err) {
             console.error('[Snoopy] Erro ao instanciar template:', err);
-            new Notice(`Erro ao instanciar template: ${err.message}`);
+            new NoticeRef(`Erro ao instanciar template: ${err.message}`);
           }
         }
     }

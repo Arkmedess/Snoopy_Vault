@@ -65,7 +65,7 @@ describe('Submódulo - TarefasModal (daily_tracker/tarefas_modal.js)', () => {
       let tarefasAtualizadas = false;
 
       TarefasModal.abrirModalNovaTarefa({
-        app: {},
+        app: { vault: { getAbstractFileByPath: () => null } },
         ctx: {},
         dv: mockDv,
         todayStr: '2026-10-24',
@@ -86,6 +86,120 @@ describe('Submódulo - TarefasModal (daily_tracker/tarefas_modal.js)', () => {
       assert.ok(inputTexto);
       const inputData = fakeModalBox.querySelector('#modal-task-date');
       assert.ok(inputData);
+      const inputKanban = fakeModalBox.querySelector('#modal-task-kanban');
+      assert.ok(inputKanban, 'Deve incluir opção de exibir no Kanban (#kanban)');
+    });
+
+    test('ao marcar a opção de Kanban, inclui a tag #kanban na linha da tarefa', async () => {
+      let linhaAdicionada = null;
+      let modalAbertoOpts = null;
+      const fakeModalBox = createMockEl('div');
+
+      const mockModalFactory = {
+        abrir: (opts) => {
+          modalAbertoOpts = opts;
+          fakeModalBox.innerHTML = opts.htmlContent;
+          if (opts.onMontar) {
+            opts.onMontar(fakeModalBox, () => {});
+          }
+          return { modalBox: fakeModalBox, fechar: () => {} };
+        }
+      };
+
+      const mockVaultStore = {
+        adicionarLinhaEmSecao: async (app, file, secao, linha) => {
+          linhaAdicionada = linha;
+        }
+      };
+
+      TarefasModal.abrirModalNovaTarefa({
+        app: { vault: { getAbstractFileByPath: () => null } },
+        ctx: {},
+        dv: createMockDataview([]),
+        todayStr: '2026-10-24',
+        DateUtils,
+        VaultStore: mockVaultStore,
+        ModalFactory: mockModalFactory,
+        garantirNotaDiaria: async () => ({ path: '01_Inbox/Diário/2026-10-24.md' }),
+        onAtualizar: () => {}
+      });
+
+      const inputTexto = fakeModalBox.querySelector('#modal-task-text');
+      inputTexto.value = 'Revisar arquitetura do sistema';
+
+      const checkKanban = fakeModalBox.querySelector('#modal-task-kanban');
+      assert.ok(checkKanban, 'Checkbox de kanban deve existir');
+      checkKanban.checked = true;
+
+      const btnSalvar = fakeModalBox.querySelector('#modal-save-task');
+      await btnSalvar.onclick();
+
+      assert.ok(linhaAdicionada, 'Linha da tarefa deve ter sido registrada');
+      assert.ok(linhaAdicionada.includes('#kanban'), 'Linha deve conter a tag #kanban');
+    });
+  });
+
+  describe('abrirModalMenuTarefa()', () => {
+    test('renderiza opção de Kanban e permite ativar/desativar', async () => {
+      let linhaSubstituida = null;
+      const fakeModalBox = createMockEl('div');
+
+      const mockModalFactory = {
+        abrir: (opts) => {
+          fakeModalBox.innerHTML = opts.htmlContent;
+          if (opts.onMontar) {
+            opts.onMontar(fakeModalBox, () => {});
+          }
+          return { modalBox: fakeModalBox, fechar: () => {} };
+        }
+      };
+
+      const mockVaultStore = {
+        substituirLinha: async (app, file, matcher, replacer) => {
+          linhaSubstituida = replacer();
+        }
+      };
+
+      const itemMock = {
+        cleanText: 'Implementar endpoint REST',
+        dueStr: '2026-10-24',
+        prio: 'alta'
+      };
+
+      const taskMock = {
+        text: 'Implementar endpoint REST 📅 2026-10-24 ⏫',
+        path: '02_Projetos/API.md'
+      };
+
+      const mockApp = {
+        vault: {
+          getAbstractFileByPath: () => ({ path: '02_Projetos/API.md' })
+        }
+      };
+
+      TarefasModal.abrirModalMenuTarefa({
+        item: itemMock,
+        t: taskMock,
+        filePath: '02_Projetos/API.md',
+        app: mockApp,
+        ctx: {},
+        todayStr: '2026-10-24',
+        DateUtils,
+        VaultStore: mockVaultStore,
+        ModalFactory: mockModalFactory,
+        onAtualizar: () => {}
+      });
+
+      const checkKanban = fakeModalBox.querySelector('#modal-edit-kanban');
+      assert.ok(checkKanban, 'Checkbox #modal-edit-kanban deve existir');
+      assert.strictEqual(checkKanban.checked, false, 'Inicialmente não marcado');
+
+      checkKanban.checked = true;
+      const btnSalvar = fakeModalBox.querySelector('#modal-save-edit');
+      await btnSalvar.onclick();
+
+      assert.ok(linhaSubstituida, 'Linha deve ser substituída');
+      assert.ok(linhaSubstituida.includes('#kanban'), 'Linha editada deve conter #kanban');
     });
   });
 });

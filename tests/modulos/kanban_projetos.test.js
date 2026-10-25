@@ -110,4 +110,70 @@ describe('Módulo 03 - Kanban de Iniciativas (03_snoopy_kanban_projetos)', () =>
     assert.ok(btnEstudos.classList.contains('active'));
     assert.ok(!btnProjetos.classList.contains('active'));
   });
+
+  test('Renderiza tarefas com #kanban e atividades não registradas no escopo de Atividades', async () => {
+    const root = createMockEl('div');
+
+    const mockPages = [
+      {
+        file: {
+          name: 'Diário 2026-10-24',
+          path: '01_Inbox/Diário/2026-10-24.md',
+          tasks: [
+            { text: 'Comprar suprimentos do laboratório #kanban 📅 2026-10-25 ⏫', completed: false, path: '01_Inbox/Diário/2026-10-24.md' },
+            { text: 'Estudo autônomo não registrado no inbox', completed: false, path: '01_Inbox/Diário/2026-10-24.md' },
+            { text: 'Atividade concluída no kanban #kanban', completed: true, path: '01_Inbox/Diário/2026-10-24.md' }
+          ]
+        }
+      }
+    ];
+
+    const mockDv = createMockDataview(mockPages);
+
+    const mockApp = {
+      vault: {
+        getAbstractFileByPath: () => null,
+        read: async () => '[]'
+      },
+      workspace: {
+        openLinkText: () => {}
+      }
+    };
+
+    const mockCtx = {
+      root,
+      app: mockApp,
+      dv: mockDv,
+      todayStr: '2026-10-24',
+      UIKit,
+      renderIcon: (el, name, opts) => UIKit.renderIcon(el, name, opts)
+    };
+
+    await moduloKanban.render(mockCtx);
+
+    const btnAtividades = root.querySelector('#scope-btn-atividades');
+    assert.ok(btnAtividades, 'Botão de escopo Atividades deve existir');
+
+    btnAtividades.dispatchEvent('click');
+    assert.ok(btnAtividades.classList.contains('active'));
+    await new Promise(r => setTimeout(r, 20));
+
+    const section = root.querySelector('.snoopy-kanban-section');
+    const colsGrid = section.querySelector('.snoopy-kanban-cols');
+    assert.ok(colsGrid);
+
+    function findText(el, text) {
+      if (el.innerText && el.innerText.includes(text)) return true;
+      if (el.innerHTML && el.innerHTML.includes(text)) return true;
+      return el.children.some(c => findText(c, text));
+    }
+
+    // A tarefa de suprimentos deve estar na coluna de Planejamento ou Em Andamento
+    const colPlanejamento = colsGrid.children[1];
+    assert.ok(findText(colPlanejamento, 'Comprar suprimentos do laboratório'));
+
+    // A tarefa concluída deve estar na coluna Concluído
+    const colConcluido = colsGrid.children[2];
+    assert.ok(findText(colConcluido, 'Atividade concluída no kanban'));
+  });
 });

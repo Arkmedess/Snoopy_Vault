@@ -40,8 +40,11 @@ function parseHTMLIntoMockElements(html, parentEl) {
       if (idMatch) attrs.id = idMatch[1];
       const classMatch = rawAttrs.match(/class=["']([^"']+)["']/);
       if (classMatch) attrs.cls = classMatch[1];
+      const valueMatch = rawAttrs.match(/value=["']([^"']*)["']/);
+      if (valueMatch) attrs.value = valueMatch[1];
 
       const currentParent = stack[stack.length - 1];
+      if (/\bchecked\b/.test(rawAttrs)) attrs.checked = true;
       const child = createMockEl(tagName, attrs);
       child.parentElement = currentParent;
       currentParent.children.push(child);
@@ -88,6 +91,7 @@ function createMockEl(tag = 'div', attrs = {}) {
       customInnerText = val || '';
     },
     value: attrs.value || '',
+    checked: Boolean(attrs.checked),
     disabled: false,
     focus: () => {},
     blur: () => {},
