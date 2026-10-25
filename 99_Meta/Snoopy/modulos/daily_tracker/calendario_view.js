@@ -176,7 +176,6 @@ const CalendarioView = {
       }
 
       // Células do mês atual
-      const pad = (n) => String(n).padStart(2, '0');
       for (let dia = 1; dia <= totalDiasMes; dia++) {
         const dataIso = `${anoExibicao}-${pad(mesExibicao + 1)}-${pad(dia)}`;
         const isHoje = dataIso === todayStr;

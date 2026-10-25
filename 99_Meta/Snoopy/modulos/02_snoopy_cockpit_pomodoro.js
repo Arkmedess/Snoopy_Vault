@@ -46,6 +46,7 @@ return {
     const PomodoroTimerClass = await carregarModulo("99_Meta/Snoopy/modulos/pomodoro/pomodoro_timer.js");
     const PomodoroModalClass = await carregarModulo("99_Meta/Snoopy/modulos/pomodoro/pomodoro_modal.js");
     const PomodoroPlaylistClass = await carregarModulo("99_Meta/Snoopy/modulos/pomodoro/pomodoro_playlist.js");
+    const JardimStore = await carregarModulo("99_Meta/Snoopy/core/jardim_store.js");
 
     let completedCyclesToday = ctx.completedCyclesToday || 0;
     let focusMin = (ctx.config && ctx.config.tempo_foco) ? Number(ctx.config.tempo_foco) : 25;
@@ -247,7 +248,7 @@ return {
     if (renderIconFn) renderIconFn(btnFlashcard, 'brain', { size: 11 });
     btnFlashcard.createEl('span', { text: '+ Flashcard' });
 
-    // --- LADO DIREITO: HISTÓRICO & JARDIM EXPANDIDO ---
+    // --- LADO DIREITO: HISTÓRICO & JARDIM EXPANDIDO (PREVIEW HUB) ---
     const historyBox = topGrid.createEl('div', { cls: 'snoopy-card-box' });
 
     let historyHeaderEls = null;
@@ -257,7 +258,13 @@ return {
         icon: 'sprout',
         subtitle: 'Histórico e ciclos acumulados'
       });
-      historyHeaderEls.actionsBox.createEl('span', {
+      const headerActions = historyHeaderEls.actionsBox;
+      headerActions.createEl('div', {
+        cls: 'snoopy-moedas-badge',
+        attr: { id: 'snoopy-jardim-moedas', title: 'Moedas de Seiva acumuladas com ciclos de foco' },
+        text: '0 🪙'
+      });
+      headerActions.createEl('span', {
         cls: 'snoopy-meta',
         attr: { id: 'snoopy-today-stats', style: 'color: #86efac; font-weight: bold;' },
         text: '0 ciclos hoje (0 min)'
@@ -271,33 +278,36 @@ return {
           </div>
           <span class="snoopy-card-subtitle">Histórico e ciclos acumulados</span>
         </div>
-        <span id="snoopy-today-stats" class="snoopy-meta" style="color: #86efac; font-weight: bold;">0 ciclos hoje (0 min)</span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div id="snoopy-jardim-moedas" class="snoopy-moedas-badge" title="Moedas de Seiva acumuladas com ciclos de foco">0 🪙</div>
+          <span id="snoopy-today-stats" class="snoopy-meta" style="color: #86efac; font-weight: bold;">0 ciclos hoje (0 min)</span>
+        </div>
       `;
     }
 
     const plantCard = historyBox.createEl('div', {
-      attr: { style: 'display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: #13131c; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); margin: 4px 0 8px 0;' }
+      cls: 'snoopy-preview-hub-card',
+      attr: { 
+        id: 'snoopy-plant-preview-card',
+        title: 'Clique para abrir o Santuário Botânico, Bosque e Loja de Árvores'
+      }
     });
     plantCard.innerHTML = `
-      <div id="snoopy-plant-avatar" class="snoopy-planter-pot" title="Clique para abrir a Estufa Botânica & Estágios de Foco"></div>
+      <div id="snoopy-plant-avatar" class="snoopy-planter-pot" title="Árvore ativa em cultivo"></div>
       <div style="flex: 1; overflow: hidden;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <span id="snoopy-stage-title" style="font-size: 13.5px; font-weight: 700; color: #ffffff;">Semente Plantada</span>
           <div style="display: flex; align-items: center; gap: 6px;">
-            <button id="snoopy-btn-open-jardim" class="snoopy-micro" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; padding: 2px 7px; color: #86efac; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;" title="Abrir Guia Botânico & Bosque">
+            <button id="snoopy-btn-open-jardim" class="snoopy-btn-santuario" title="Abrir Santuário Botânico & Loja de Espécies">
               <span class="snoopy-estufa-btn-icon"></span>
-              <span>Estufa</span>
+              <span>Bosque & Loja</span>
             </button>
             <span id="snoopy-stage-badge" class="snoopy-micro" style="padding: 2px 7px; border-radius: 4px; background: rgba(74, 222, 128, 0.15); color: #86efac; font-weight: bold;">NÍVEL 1</span>
           </div>
         </div>
         <div id="snoopy-stage-desc" class="snoopy-meta" style="font-size: 11px; color: #a1a1aa; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Inicie seu primeiro foco para germinar a plantinha.</div>
-        <div class="snoopy-prog-track" style="height: 6px; width: 100%; margin-top: 6px; border-radius: 3px;">
+        <div class="snoopy-prog-track" style="height: 6px; width: 100%; margin-top: 7px; border-radius: 3px;">
           <div id="snoopy-plant-bar" class="snoopy-prog-fill" style="width: 0%; background: linear-gradient(90deg, #10b981 0%, #4ade80 100%); border-radius: 3px;"></div>
-        </div>
-        <div class="snoopy-daily-grove-row" style="display: flex; align-items: center; gap: 6px; margin-top: 6px; min-height: 20px;">
-          <span class="snoopy-micro" style="font-size: 10px; color: #71717a; text-transform: uppercase; font-weight: 700; letter-spacing: 0.04em; white-space: nowrap;">Bosque do dia:</span>
-          <div id="snoopy-daily-grove" class="snoopy-daily-grove" style="margin: 0; padding: 0; border: none; display: inline-flex; align-items: center; gap: 5px;"></div>
         </div>
       </div>
     `;
@@ -315,15 +325,29 @@ return {
           dailyGoal,
           focusMin,
           sessoesHoje,
-          renderIcon: ctx.renderIcon
+          renderIcon: ctx.renderIcon,
+          JardimStore,
+          app,
+          onAtualizar: async () => {
+            await atualizarTelasJardim();
+          }
         });
       }
     };
 
     const plantAvatarEl = plantCard.querySelector('#snoopy-plant-avatar');
     const btnOpenJardim = plantCard.querySelector('#snoopy-btn-open-jardim');
+    const moedasBadgeEl = historyBox.querySelector('#snoopy-jardim-moedas');
     if (plantAvatarEl) plantAvatarEl.onclick = abrirEstufa;
     if (btnOpenJardim) btnOpenJardim.onclick = abrirEstufa;
+    if (plantCard) {
+      plantCard.onclick = (e) => {
+        if (e.target !== btnOpenJardim && !btnOpenJardim?.contains(e.target)) {
+          abrirEstufa();
+        }
+      };
+    }
+    if (moedasBadgeEl) moedasBadgeEl.onclick = abrirEstufa;
 
     const historySplit = historyBox.createEl('div', { attr: { style: 'padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.08);' } });
     historySplit.innerHTML = `
@@ -460,18 +484,32 @@ return {
       }
     }) : null;
 
-    const atualizarTelasJardim = () => {
+    const atualizarTelasJardim = async () => {
       if (PomodoroJardim) {
         const sessoesHoje = (typeof window !== 'undefined' && Array.isArray(window.__snoopyTodaySessions))
           ? window.__snoopyTodaySessions
           : [];
+
+        let storeData = null;
+        if (JardimStore && typeof JardimStore.carregar === 'function' && app) {
+          try {
+            storeData = await JardimStore.carregar(app);
+            const moedasValEl = historyBox.querySelector('#snoopy-moedas-val');
+            const moedasBoxEl = historyBox.querySelector('#snoopy-jardim-moedas');
+            if (moedasValEl) moedasValEl.textContent = String(storeData.moedas || 0);
+            else if (moedasBoxEl) moedasBoxEl.textContent = `${storeData.moedas || 0} 🪙`;
+          } catch (e) {
+            console.warn('[Pomodoro Cockpit] Erro ao carregar moedas:', e);
+          }
+        }
 
         PomodoroJardim.atualizarVisualPlanta(historyBox, {
           completedCyclesToday,
           dailyGoal,
           focusMin,
           sessoesHoje,
-          renderIcon: ctx.renderIcon
+          renderIcon: ctx.renderIcon,
+          arvoreAtiva: storeData ? storeData.arvoreAtiva : 'sprout'
         });
         PomodoroJardim.renderizarHeatmap(historyBox, {
           mapaFoco,
@@ -596,7 +634,18 @@ return {
         await modalManager.sincronizarComCicloEstudos(focusMin);
       }
 
-      atualizarTelasJardim();
+      if (JardimStore && typeof JardimStore.creditarFoco === 'function' && app) {
+        try {
+          const resEconomia = await JardimStore.creditarFoco(app, focusMin);
+          if (resEconomia && typeof Notice !== 'undefined') {
+            new Notice(`🪙 +${resEconomia.moedasGanhas} Moedas de Seiva ganhas! (Saldo: ${resEconomia.moedas} 🪙)`);
+          }
+        } catch (e) {
+          console.warn('[Pomodoro Cockpit] Erro ao creditar moedas:', e);
+        }
+      }
+
+      await atualizarTelasJardim();
 
       // Atualiza progresso da faixa na playlist
       if (playlist && playlist.obterFaixaAtual()) {

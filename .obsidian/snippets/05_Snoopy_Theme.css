@@ -1179,6 +1179,10 @@ button.snoopy-btn-danger:hover {
   z-index: 2 !important;
 }
 
+.snoopy-task-tabs.snoopy-hidden {
+  display: none !important;
+}
+
 /* Container de Cards da Central de Tarefas com rolagem interna isolada */
 .snoopy-tasks-list-box {
   display: flex !important;
@@ -2284,6 +2288,73 @@ button.snoopy-btn-danger:hover {
   border-color: rgba(255, 255, 255, 0.18) !important;
   background: #1a1a27 !important;
 }
+
+/* =========================================================================
+   PREVIEW HUB & SANTUÁRIO BOTÂNICO DO JARDIM DE CONSTÂNCIA (FOREST VIBE)
+   ========================================================================= */
+.snoopy-preview-hub-card {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 10px 14px !important;
+  background: radial-gradient(circle at 10% 20%, rgba(30, 58, 47, 0.25) 0%, #13131c 100%) !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  margin: 4px 0 8px 0 !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.snoopy-preview-hub-card:hover {
+  border-color: rgba(74, 222, 128, 0.35) !important;
+  background: radial-gradient(circle at 10% 20%, rgba(30, 58, 47, 0.45) 0%, #151520 100%) !important;
+  box-shadow: 0 4px 16px rgba(74, 222, 128, 0.08) !important;
+}
+
+.snoopy-moedas-badge {
+  background: rgba(250, 204, 21, 0.12) !important;
+  border: 1px solid rgba(250, 204, 21, 0.3) !important;
+  color: #facc15 !important;
+  font-weight: 800 !important;
+  font-size: 11px !important;
+  padding: 2px 8px !important;
+  border-radius: 5px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  user-select: none !important;
+}
+
+.snoopy-moedas-badge:hover {
+  background: rgba(250, 204, 21, 0.22) !important;
+  border-color: rgba(250, 204, 21, 0.55) !important;
+  transform: translateY(-1px) !important;
+}
+
+.snoopy-btn-santuario {
+  background: rgba(74, 222, 128, 0.12) !important;
+  border: 1px solid rgba(74, 222, 128, 0.3) !important;
+  border-radius: 5px !important;
+  padding: 3px 8px !important;
+  color: #86efac !important;
+  cursor: pointer !important;
+  font-weight: 700 !important;
+  font-size: 11px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  transition: all 0.15s ease !important;
+}
+
+.snoopy-btn-santuario:hover {
+  background: rgba(74, 222, 128, 0.25) !important;
+  border-color: #4ade80 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 10px rgba(74, 222, 128, 0.25) !important;
+}
+
 
 
 

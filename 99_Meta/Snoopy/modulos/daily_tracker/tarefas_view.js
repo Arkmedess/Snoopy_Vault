@@ -56,7 +56,16 @@ const TarefasView = {
 
         // No modo calendário, oculta as abas de HOJE/AMANHÃ para aproveitar todo o espaço útil
         if (tabsContainer) {
-          tabsContainer.style.display = (mode === 'calendario') ? 'none' : 'flex';
+          if (mode === 'calendario') {
+            tabsContainer.classList.add('snoopy-hidden');
+            tabsContainer.style.display = 'none';
+            if (typeof tabsContainer.style.setProperty === 'function') {
+              tabsContainer.style.setProperty('display', 'none', 'important');
+            }
+          } else {
+            tabsContainer.classList.remove('snoopy-hidden');
+            tabsContainer.style.display = 'flex';
+          }
         }
 
         renderizarTarefasDoCache();
@@ -118,8 +127,8 @@ const TarefasView = {
 
     // Barra de Filtros / Abas (Fixa na lista/kanban, oculta no calendário para otimizar espaço)
     tabsContainer = tasksCard.createEl('div', { 
-      cls: 'snoopy-task-tabs snoopy-toolbar', 
-      attr: { style: `overflow-x: auto; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.05); flex-shrink: 0; min-height: 38px; ${currentViewMode === 'calendario' ? 'display: none;' : 'display: flex;'}` } 
+      cls: `snoopy-task-tabs snoopy-toolbar ${currentViewMode === 'calendario' ? 'snoopy-hidden' : ''}`, 
+      attr: { style: `overflow-x: auto; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.05); flex-shrink: 0; min-height: 38px; ${currentViewMode === 'calendario' ? 'display: none !important;' : ''}` } 
     });
 
     const tabsDef = [
