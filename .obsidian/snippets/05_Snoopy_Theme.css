@@ -608,19 +608,19 @@ button.snoopy-nav-pill-btn:active,
   display: inline-grid !important;
   grid-template-rows: repeat(3, 1fr) !important;
   grid-auto-flow: column !important;
-  gap: 5px !important;
+  gap: 6px !important;
 }
 
 .snoopy-heat-cell {
-  width: 15px;
-  height: 15px;
-  border-radius: 3.5px;
-  transition: transform 0.1s ease;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  transition: transform 0.12s ease;
   cursor: pointer;
 }
 
 .snoopy-heat-cell:hover {
-  transform: scale(1.35);
+  transform: scale(1.25);
   z-index: 10;
 }
 
@@ -1792,6 +1792,29 @@ button.snoopy-btn-danger:hover {
 
 .snoopy-btn-task-focus .snoopy-icon {
   color: #86efac !important;
+}
+
+/* Botões de Ação da Tarefa (+Fila e Menu) com Área e Ícone Ampliados */
+.snoopy-task-action-btn {
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  border-radius: 5px !important;
+  color: #d4d4d8 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease !important;
+}
+
+.snoopy-task-action-btn:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+  color: #ffffff !important;
 }
 
 .snoopy-circle-box {

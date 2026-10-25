@@ -115,12 +115,12 @@ return {
     // Centro do Pomodoro: Anel SVG + Controles do Player + Focus Playlist (Spotify vibe)
     const pomoCenter = pomoBox.createEl('div', {
       cls: 'snoopy-pomo-center',
-      attr: { style: 'display: grid; grid-template-columns: minmax(200px, 1.15fr) 1.35fr; gap: 14px; align-items: center; padding: 6px 0;' }
+      attr: { style: 'display: grid; grid-template-columns: minmax(200px, 1.15fr) 1.35fr; gap: 14px; align-items: center; padding: 2px 0;' }
     });
 
     const ringWrapper = pomoCenter.createEl('div', { 
       cls: 'snoopy-ring-wrapper',
-      attr: { style: 'display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;' } 
+      attr: { style: 'display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;' } 
     });
     const svgBox = ringWrapper.createEl('div', {
       cls: 'snoopy-circle-box',
@@ -137,18 +137,19 @@ return {
       </div>
     `;
 
-    // Painel de Ritmo Diário abaixo do Relógio (Elimina espaço vazio)
+    // Painel de Ritmo Diário ampliado abaixo do Relógio
     const dailyPomoTracker = ringWrapper.createEl('div', {
-      attr: { style: 'display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; max-width: 176px;' }
+      cls: 'snoopy-daily-tracker-box',
+      attr: { style: 'display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; max-width: 185px; margin-top: 2px;' }
     });
     const pctMetaHoje = dailyGoal > 0 ? Math.min(100, Math.round((completedCyclesToday / dailyGoal) * 100)) : 0;
     dailyPomoTracker.innerHTML = `
-      <div style="display: flex; justify-content: space-between; width: 100%; font-size: 11px; color: #a1a1aa;">
-        <span>Meta Diária:</span>
-        <span id="snoopy-pomo-meta-txt" style="font-weight: 700; color: #86efac;">${completedCyclesToday}/${dailyGoal} ciclos</span>
+      <div style="display: flex; justify-content: space-between; width: 100%; font-size: 12px; color: #a1a1aa;">
+        <span style="font-weight: 600;">Meta Diária:</span>
+        <span id="snoopy-pomo-meta-txt" style="font-weight: 800; color: #86efac; font-size: 13px;">${completedCyclesToday}/${dailyGoal} ciclos</span>
       </div>
-      <div class="snoopy-prog-track" style="height: 5px; width: 100%;">
-        <div id="snoopy-pomo-meta-fill" class="snoopy-prog-fill" style="width: ${pctMetaHoje}%; background: #4ade80;"></div>
+      <div class="snoopy-prog-track" style="height: 8px; width: 100%; border-radius: 4px;">
+        <div id="snoopy-pomo-meta-fill" class="snoopy-prog-fill" style="width: ${pctMetaHoje}%; background: #4ade80; border-radius: 4px;"></div>
       </div>
     `;
 
@@ -275,67 +276,64 @@ return {
     }
 
     const plantCard = historyBox.createEl('div', {
-      attr: { style: 'display: flex; align-items: center; gap: 14px; padding: 12px 14px; background: #13131c; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); margin: 6px 0;' }
+      attr: { style: 'display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: #13131c; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); margin: 4px 0 8px 0;' }
     });
     plantCard.innerHTML = `
-      <div id="snoopy-plant-avatar" style="width: 56px; height: 56px; border-radius: 50%; background: #181824; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; user-select: none;"></div>
+      <div id="snoopy-plant-avatar" style="width: 46px; height: 46px; border-radius: 50%; background: #181824; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; user-select: none;"></div>
       <div style="flex: 1; overflow: hidden;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span id="snoopy-stage-title" style="font-size: 14px; font-weight: 700; color: #ffffff;">Semente Plantada</span>
+          <span id="snoopy-stage-title" style="font-size: 13.5px; font-weight: 700; color: #ffffff;">Semente Plantada</span>
           <span id="snoopy-stage-badge" class="snoopy-micro" style="padding: 2px 7px; border-radius: 4px; background: rgba(74, 222, 128, 0.15); color: #86efac; font-weight: bold;">NÍVEL 1</span>
         </div>
-        <div id="snoopy-stage-desc" class="snoopy-meta" style="font-size: 11.5px; color: #a1a1aa; margin-top: 3px;">Inicie seu primeiro foco para germinar a plantinha.</div>
-        <div class="snoopy-prog-track" style="height: 7px; width: 100%; margin-top: 7px;">
-          <div id="snoopy-plant-bar" class="snoopy-prog-fill" style="width: 0%; background: #4ade80;"></div>
+        <div id="snoopy-stage-desc" class="snoopy-meta" style="font-size: 11px; color: #a1a1aa; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Inicie seu primeiro foco para germinar a plantinha.</div>
+        <div class="snoopy-prog-track" style="height: 6px; width: 100%; margin-top: 6px; border-radius: 3px;">
+          <div id="snoopy-plant-bar" class="snoopy-prog-fill" style="width: 0%; background: #4ade80; border-radius: 3px;"></div>
         </div>
       </div>
     `;
 
-    const historySplit = historyBox.createEl('div', { attr: { style: 'padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08);' } });
+    const historySplit = historyBox.createEl('div', { attr: { style: 'padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.08);' } });
     historySplit.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-        <span class="snoopy-sub-title">CICLOS DE POMODORO (ÚLTIMOS 30 DIAS)</span>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <div style="display: flex; align-items: baseline; gap: 6px;">
+          <span class="snoopy-sub-title" style="font-size: 11px;">HISTÓRICO 30 DIAS</span>
+          <span class="snoopy-micro" style="color: #71717a;">(<strong id="metric-total" style="color: #e4e4e7; font-weight: 700;">0 ciclos</strong> total)</span>
+        </div>
         <div class="snoopy-micro" style="display: flex; align-items: center; gap: 4px; color: #a1a1aa;">
           <span>0</span>
-          <div class="snoopy-heat-cell heat-lvl-0"></div>
-          <div class="snoopy-heat-cell heat-lvl-2"></div>
-          <div class="snoopy-heat-cell heat-lvl-4"></div>
+          <div class="snoopy-heat-cell heat-lvl-0" style="width: 10px; height: 10px; border-radius: 2px;"></div>
+          <div class="snoopy-heat-cell heat-lvl-2" style="width: 10px; height: 10px; border-radius: 2px;"></div>
+          <div class="snoopy-heat-cell heat-lvl-4" style="width: 10px; height: 10px; border-radius: 2px;"></div>
           <span>4+</span>
         </div>
       </div>
     `;
 
     const gridMetricsRow = historySplit.createEl('div', {
-      attr: { style: 'display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: center;' }
+      attr: { style: 'display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: stretch;' }
     });
 
-    const heatScroll = gridMetricsRow.createEl('div', { attr: { style: 'padding: 2px 0;' } });
+    const heatScroll = gridMetricsRow.createEl('div', { attr: { style: 'padding: 0;' } });
     heatScroll.createEl('div', { cls: 'snoopy-heat-grid' });
 
     const metricsSide = gridMetricsRow.createEl('div', {
       cls: 'snoopy-meta',
-      attr: { style: 'background: #14141c; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 9px;' }
+      attr: { style: 'background: #14141c; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 6px 12px; display: flex; flex-direction: column; justify-content: space-between; height: 66px; box-sizing: border-box;' }
     });
     metricsSide.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: baseline;">
-        <span style="color: #a1a1aa; font-size: 11px; text-transform: uppercase;">Na Semana:</span>
-        <span id="metric-week" style="font-weight: 800; color: #ffffff; font-size: 13.5px;">0m</span>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="color: #a1a1aa; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.04em;">Na Semana:</span>
+        <span id="metric-week" style="font-weight: 800; color: #ffffff; font-size: 12.5px;">0m</span>
       </div>
-      <div style="display: flex; justify-content: space-between; align-items: baseline; padding-top: 7px; border-top: 1px solid rgba(255,255,255,0.05);">
-        <span style="color: #a1a1aa; font-size: 11px; text-transform: uppercase;">Maior Foco:</span>
-        <span id="metric-peak" style="font-weight: 800; color: #ffffff; font-size: 13.5px;">0m</span>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 2px; border-top: 1px solid rgba(255,255,255,0.05);">
+        <span style="color: #a1a1aa; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.04em;">Maior Foco:</span>
+        <span id="metric-peak" style="font-weight: 800; color: #ffffff; font-size: 12.5px;">0m</span>
       </div>
-      <div style="display: flex; justify-content: space-between; align-items: baseline; padding-top: 7px; border-top: 1px solid rgba(255,255,255,0.05);">
-        <span style="color: #a1a1aa; font-size: 11px; text-transform: uppercase;">Sequência:</span>
-        <span id="metric-streak" style="font-weight: 800; color: #ffffff; font-size: 13.5px;">0 dias</span>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 2px; border-top: 1px solid rgba(255,255,255,0.05);">
+        <span style="color: #a1a1aa; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.04em;">Sequência:</span>
+        <span id="metric-streak" style="font-weight: 800; color: #86efac; font-size: 12.5px;">0 dias</span>
       </div>
     `;
-
-    const historyFooter = historyBox.createEl('div', {
-      cls: 'snoopy-micro',
-      attr: { style: 'display: flex; justify-content: space-between; color: #71717a; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08); margin-top: 8px;' }
-    });
-    historyFooter.innerHTML = `<span>Total Histórico: <strong id="metric-total" style="color: #e4e4e7;">0 ciclos</strong></span><span style="color: #ffffff; font-weight: 600;">Constância Ativa</span>`;
 
     // --- INSTANCIAÇÃO DOS SUBMÓDULOS E BINDINGS ---
     const circleBar = pomoBox.querySelector('#snoopy-circle-bar');

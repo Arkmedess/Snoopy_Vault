@@ -359,10 +359,10 @@ const TarefasView = {
           };
 
           const btnFila = badgesCol.createEl('button', {
-            cls: 'snoopy-btn-icon snoopy-btn-sm',
+            cls: 'snoopy-task-action-btn',
             attr: { title: 'Adicionar à Playlist / Fila de Foco do Pomodoro' }
           });
-          if (ctx.renderIcon) ctx.renderIcon(btnFila, 'list-plus', { size: 11 });
+          if (ctx.renderIcon) ctx.renderIcon(btnFila, 'list-plus', { size: 15 });
           else btnFila.textContent = '+Fila';
 
           btnFila.onclick = (e) => {
@@ -386,10 +386,10 @@ const TarefasView = {
           };
 
           const btnMenu = badgesCol.createEl('button', {
-            cls: 'snoopy-btn-icon snoopy-btn-sm',
+            cls: 'snoopy-task-action-btn',
             attr: { title: 'Ações da tarefa' }
           });
-          if (ctx.renderIcon) ctx.renderIcon(btnMenu, 'more-vertical', { size: 11 });
+          if (ctx.renderIcon) ctx.renderIcon(btnMenu, 'more-vertical', { size: 15 });
           else btnMenu.textContent = '⋮';
 
           btnMenu.onclick = (e) => { e.stopPropagation(); abrirModalMenuTarefa(item, t, filePath); };

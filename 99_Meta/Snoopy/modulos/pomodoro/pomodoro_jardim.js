@@ -156,7 +156,7 @@ const PomodoroJardim = {
 
     if (renderIcon) {
       pAv.innerHTML = '';
-      renderIcon(pAv, estagio.iconName, { size: 28, color: '#86efac' });
+      renderIcon(pAv, estagio.iconName, { size: 24, color: '#86efac' });
     }
     if (pTit) pTit.textContent = estagio.titulo;
     if (pDesc) pDesc.textContent = estagio.descricao;

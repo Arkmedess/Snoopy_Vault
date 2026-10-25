@@ -96,13 +96,18 @@ describe('Módulo 02 - Cockpit Pomodoro Orquestrador (02_snoopy_cockpit_pomodoro
     assert.ok(cfgFocus.classList.contains('snoopy-time-chip-input'), 'Campo de foco deve possuir classe de chip padronizado');
     assert.ok(cfgBreak.classList.contains('snoopy-time-chip-input'), 'Campo de pausa deve possuir classe de chip padronizado');
 
-    // Verificação do anel ampliado
+    // Verificação do anel ampliado e meta diária
     const svgBox = colCockpit.querySelector('.snoopy-circle-box');
     assert.ok(svgBox, 'Contêiner do círculo SVG ampliado deve existir');
+    const metaTracker = colCockpit.querySelector('.snoopy-daily-tracker-box');
+    assert.ok(metaTracker, 'Painel ampliado de meta diária deve existir');
 
     // Coluna 2: Jardim de Constância
     const colJardim = topGrid.children[1];
     assert.ok(findText(colJardim, 'JARDIM DE CONSTÂNCIA'));
     assert.ok(findText(colJardim, 'Histórico e ciclos acumulados'));
+    assert.strictEqual(findText(colJardim, 'Constância Ativa'), false, 'Rodapé estático Constância Ativa deve ser removido');
+    assert.ok(colJardim.querySelector('.snoopy-heat-grid'), 'Grade de heatmap deve existir');
+    assert.ok(colJardim.querySelector('#metric-total'), 'Métrica total histórico deve existir integrada');
   });
 });
