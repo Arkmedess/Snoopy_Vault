@@ -60,5 +60,26 @@ describe('Módulo Pomodoro - PomodoroJardim', () => {
     assert.strictEqual(arvores[2].id, 3);
     assert.ok(arvores[2].label.includes('Estudo de Rust'));
   });
+
+  test('obterDetalhesDiaHeatmap() calcula inspeção rica do dia selecionado', () => {
+    const mapa = {
+      '2026-10-09': 4,
+      '2026-10-08': 2
+    };
+
+    const diaComFoco = PomodoroJardim.obterDetalhesDiaHeatmap(mapa, '2026-10-09', 25, 4);
+    assert.strictEqual(diaComFoco.dataStr, '2026-10-09');
+    assert.strictEqual(diaComFoco.ciclos, 4);
+    assert.strictEqual(diaComFoco.minutos, 100);
+    assert.strictEqual(diaComFoco.atingiuMeta, true);
+    assert.ok(diaComFoco.label.includes('4 ciclos'));
+    assert.ok(diaComFoco.label.includes('100 min'));
+
+    const diaVazio = PomodoroJardim.obterDetalhesDiaHeatmap(mapa, '2026-10-05', 25, 4);
+    assert.strictEqual(diaVazio.ciclos, 0);
+    assert.strictEqual(diaVazio.minutos, 0);
+    assert.strictEqual(diaVazio.atingiuMeta, false);
+    assert.ok(diaVazio.label.includes('Nenhum foco'));
+  });
 });
 

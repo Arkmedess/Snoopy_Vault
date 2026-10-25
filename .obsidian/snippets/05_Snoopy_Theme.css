@@ -624,6 +624,29 @@ button.snoopy-nav-pill-btn:active,
   z-index: 10;
 }
 
+.snoopy-heat-cell:focus-visible,
+.snoopy-heat-cell.is-selected {
+  outline: 2px solid #86efac !important;
+  outline-offset: 1px !important;
+  transform: scale(1.2) !important;
+  z-index: 10 !important;
+}
+
+.snoopy-heat-inspection {
+  margin-top: 8px !important;
+  padding: 4px 8px !important;
+  border-radius: 4px !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  font-size: 11px !important;
+  color: #a1a1aa !important;
+  font-family: var(--font-monospace) !important;
+  text-align: center !important;
+  letter-spacing: 0.02em !important;
+  user-select: none !important;
+  transition: all 0.15s ease !important;
+}
+
 .heat-lvl-0 { background-color: var(--heat-empty); border: 1px solid rgba(255, 255, 255, 0.04); }
 .heat-lvl-1 { background-color: #164e32; }
 .heat-lvl-2 { background-color: #1e7e48; }

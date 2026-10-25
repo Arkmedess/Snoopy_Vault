@@ -336,6 +336,12 @@ return {
       </div>
     `;
 
+    const heatInspectBox = historySplit.createEl('div', {
+      cls: 'snoopy-heat-inspection',
+      attr: { id: 'snoopy-heat-inspection' }
+    });
+    heatInspectBox.textContent = 'Clique em uma data para inspecionar constância';
+
     // --- INSTANCIAÇÃO DOS SUBMÓDULOS E BINDINGS ---
     const circleBar = pomoBox.querySelector('#snoopy-circle-bar');
     const timerDisplay = pomoBox.querySelector('#snoopy-timer-display');
@@ -438,6 +444,7 @@ return {
           mapaFoco,
           todayStr,
           focusMin,
+          dailyGoal,
           now
         });
       }

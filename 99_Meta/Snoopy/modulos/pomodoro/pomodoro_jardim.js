@@ -256,22 +256,91 @@ const PomodoroJardim = {
    * @param {object} params.mapaFoco - Dicionário histórico { 'YYYY-MM-DD': totalCiclos }.
    * @param {string} params.todayStr - Data atual ISO.
    * @param {number} params.focusMin - Duração do ciclo em minutos.
+   * @param {number} [params.dailyGoal] - Meta diária em ciclos.
    * @param {Date} [params.now] - Instância de data atual.
    */
+  obterDetalhesDiaHeatmap(mapaFoco = {}, dataStr = '', focusMin = 25, dailyGoal = 4) {
+    const ciclos = Number(mapaFoco[dataStr]) || 0;
+    const minutos = ciclos * focusMin;
+    const atingiuMeta = ciclos >= dailyGoal;
+
+    let nivel = 0;
+    if (ciclos >= 4) nivel = 4;
+    else if (ciclos === 3) nivel = 3;
+    else if (ciclos === 2) nivel = 2;
+    else if (ciclos === 1) nivel = 1;
+
+    let dataFormatada = dataStr;
+    if (dataStr && dataStr.includes('-')) {
+      const partes = dataStr.split('-');
+      if (partes.length === 3) {
+        dataFormatada = `${partes[2]}/${partes[1]}/${partes[0]}`;
+      }
+    }
+
+    let label = '';
+    if (ciclos > 0) {
+      const metaTxt = atingiuMeta ? ' - Meta Diária' : '';
+      label = `${dataFormatada} • ${ciclos} ciclos (${minutos} min)${metaTxt}`;
+    } else {
+      label = `${dataFormatada} • Nenhum foco registrado`;
+    }
+
+    return {
+      dataStr,
+      dataFormatada,
+      ciclos,
+      minutos,
+      atingiuMeta,
+      nivel,
+      label
+    };
+  },
+
   renderizarHeatmap(root, params = {}) {
     if (!root) return;
-    const { mapaFoco = {}, todayStr = '', focusMin = 25, now = new Date() } = params;
+    const { mapaFoco = {}, todayStr = '', focusMin = 25, dailyGoal = 4, now = new Date() } = params;
 
     const pomoHeatGrid = root.querySelector('.snoopy-heat-grid');
+    const inspectionEl = root.querySelector('#snoopy-heat-inspection');
     const stats = this.calcularHistorico30Dias(mapaFoco, todayStr, now);
 
     if (pomoHeatGrid) {
       pomoHeatGrid.innerHTML = '';
       stats.dias.forEach((d) => {
-        pomoHeatGrid.createEl('div', {
-          cls: `snoopy-heat-cell heat-lvl-${d.nivel}`,
-          attr: { title: `${d.dataStr}: ${d.valor} ciclo(s) (${d.valor * focusMin} min)` }
-        });
+        let celula = null;
+        if (typeof pomoHeatGrid.createEl === 'function') {
+          celula = pomoHeatGrid.createEl('div', {
+            cls: `snoopy-heat-cell heat-lvl-${d.nivel}`,
+            attr: {
+              title: `${d.dataStr}: ${d.valor} ciclo(s) (${d.valor * focusMin} min)`,
+              'data-date': d.dataStr,
+              role: 'button',
+              tabindex: '0',
+              'aria-label': `${d.dataStr}: ${d.valor} ciclo(s)`
+            }
+          });
+        }
+
+        if (celula && inspectionEl) {
+          const ativarInspecao = () => {
+            const todas = pomoHeatGrid.querySelectorAll('.snoopy-heat-cell');
+            todas.forEach((c) => c.classList.remove('is-selected'));
+            celula.classList.add('is-selected');
+
+            const info = this.obterDetalhesDiaHeatmap(mapaFoco, d.dataStr, focusMin, dailyGoal);
+            const statusCor = info.ciclos > 0 ? '#86efac' : '#71717a';
+            inspectionEl.innerHTML = `<span style="color: ${statusCor}; font-weight: 600;">${info.label}</span>`;
+          };
+
+          celula.onclick = ativarInspecao;
+          celula.onkeydown = (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              ativarInspecao();
+            }
+          };
+        }
       });
     }
 
