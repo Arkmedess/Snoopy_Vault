@@ -60,6 +60,10 @@ describe('Submódulo: TarefasView - Enfileirar na Playlist de Pomodoro (tarefas_
     const card = listBox.querySelector('.snoopy-task-card');
     assert.ok(card, 'Card da tarefa deve existir');
 
+    // Valida padronização do botão de foco compacto
+    const btnFoco = card.querySelector('.snoopy-btn-task-focus');
+    assert.ok(btnFoco, 'Botão Foco deve usar a classe compacta e refinada .snoopy-btn-task-focus');
+
     // Localiza o botão com title de fila ou texto +Fila
     const btnFila = card.querySelector('button[title*="Fila"]') || card.querySelector('button[title*="Playlist"]');
     assert.ok(btnFila, 'Botão de enfileirar na playlist deve existir');

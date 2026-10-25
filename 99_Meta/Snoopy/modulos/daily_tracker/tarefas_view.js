@@ -254,6 +254,7 @@ const TarefasView = {
           } else if (filePath.startsWith('01_Inbox/Diário/')) {
             badgeIconName = 'calendar';
             badgeLabel = 'Diário';
+            originBadgeStyle = 'background: rgba(255, 255, 255, 0.05); color: #a1a1aa; border: 1px solid rgba(255, 255, 255, 0.08);';
           }
         }
 
@@ -345,10 +346,10 @@ const TarefasView = {
           }
 
           const btnFoco = badgesCol.createEl('button', {
-            cls: 'snoopy-btn-primary snoopy-btn-sm',
+            cls: 'snoopy-btn-task-focus snoopy-btn-sm',
             attr: { title: 'Carregar no Cockpit Pomodoro' }
           });
-          if (ctx.renderIcon) ctx.renderIcon(btnFoco, 'play', { size: 10 });
+          if (ctx.renderIcon) ctx.renderIcon(btnFoco, 'play', { size: 10, color: '#86efac' });
           btnFoco.createEl('span', { text: 'Foco' });
 
           btnFoco.onclick = (e) => {

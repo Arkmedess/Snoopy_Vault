@@ -861,9 +861,9 @@ button.snoopy-btn-danger:hover {
   letter-spacing: 0.04em;
 }
 .prio-alta {
-  color: #f87171;
-  background: rgba(248, 113, 113, 0.14);
-  border: 1px solid rgba(248, 113, 113, 0.3);
+  color: #fca5a5 !important;
+  background: rgba(248, 113, 113, 0.12) !important;
+  border: 1px solid rgba(248, 113, 113, 0.28) !important;
 }
 .prio-media {
   color: #60a5fa;
@@ -1332,6 +1332,25 @@ button.snoopy-btn-danger:hover {
   border-color: rgba(255, 255, 255, 0.28);
 }
 
+.snoopy-form-input[type="date"] {
+  padding-right: 8px !important;
+  color-scheme: dark !important;
+}
+
+.snoopy-form-input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer !important;
+  opacity: 0.6 !important;
+  filter: invert(0.8) !important;
+  margin-left: 6px !important;
+  padding: 2px !important;
+  border-radius: 3px !important;
+  transition: opacity 0.12s ease !important;
+}
+
+.snoopy-form-input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1 !important;
+}
+
 .snoopy-modal-label {
   font-size: 14px;
   font-weight: 600;
@@ -1699,23 +1718,17 @@ button.snoopy-btn-danger:hover {
   display: inline-flex !important;
   align-items: center !important;
   gap: 5px !important;
-  background: rgba(255, 255, 255, 0.04) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
   padding: 3px 8px !important;
   border-radius: var(--snoopy-radius-sm, 6px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
   cursor: text !important;
-  transition: all 0.15s ease !important;
+  transition: background 0.15s ease, border-color 0.15s ease !important;
 }
 
 .snoopy-time-chip:hover {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border-color: rgba(255, 255, 255, 0.22) !important;
-}
-
-.snoopy-time-chip:focus-within {
-  background: rgba(74, 222, 128, 0.06) !important;
-  border-color: #4ade80 !important;
-  box-shadow: 0 0 0 1px rgba(74, 222, 128, 0.3) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
 }
 
 .snoopy-time-chip-label {
@@ -1727,22 +1740,23 @@ button.snoopy-btn-danger:hover {
 }
 
 .snoopy-time-chip-input {
-  width: 32px !important;
-  background: rgba(255, 255, 255, 0.07) !important;
+  width: 30px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
   color: #ffffff !important;
   font-weight: 700 !important;
   font-size: 12px !important;
   text-align: center !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-radius: 4px !important;
   outline: none !important;
   padding: 1px 2px !important;
   transition: border-color 0.15s ease, background 0.15s ease !important;
 }
 
+.snoopy-time-chip-input:hover,
 .snoopy-time-chip-input:focus {
-  border-color: #4ade80 !important;
-  background: rgba(0, 0, 0, 0.3) !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+  background: rgba(255, 255, 255, 0.09) !important;
 }
 
 .snoopy-time-chip-unit {
@@ -1750,6 +1764,34 @@ button.snoopy-btn-danger:hover {
   font-size: 11px !important;
   font-weight: 500 !important;
   user-select: none !important;
+}
+
+/* Botão Compacto e Refinado de Foco na Linha da Tarefa */
+.snoopy-btn-task-focus {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #e4e4e7 !important;
+  border-radius: 5px !important;
+  padding: 3px 9px !important;
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  cursor: pointer !important;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease !important;
+  white-space: nowrap !important;
+  line-height: 1.2 !important;
+}
+
+.snoopy-btn-task-focus:hover {
+  background: rgba(255, 255, 255, 0.11) !important;
+  border-color: rgba(255, 255, 255, 0.24) !important;
+  color: #ffffff !important;
+}
+
+.snoopy-btn-task-focus .snoopy-icon {
+  color: #86efac !important;
 }
 
 .snoopy-circle-box {

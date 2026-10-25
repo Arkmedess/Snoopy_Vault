@@ -59,6 +59,7 @@ describe('Módulo 04 - Daily Tracker Orquestrador (04_snoopy_daily_tracker.js)',
       UIKit,
       renderIcon: (el, name, opts) => UIKit.renderIcon(el, name, opts),
       DateUtils: require('../../../99_Meta/Snoopy/core/date_utils.js'),
+      TaskParser: require('../../../99_Meta/Snoopy/core/task_parser.js'),
       VaultStore: require('../../../99_Meta/Snoopy/core/vault_store.js'),
       ModalFactory: require('../../../99_Meta/Snoopy/core/modal_factory.js')
     };

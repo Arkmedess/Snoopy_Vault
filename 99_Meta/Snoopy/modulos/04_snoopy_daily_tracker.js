@@ -45,6 +45,10 @@ return {
     const TarefasModal = await carregarSubmodulo("99_Meta/Snoopy/modulos/daily_tracker/tarefas_modal.js");
     const TarefasView = await carregarSubmodulo("99_Meta/Snoopy/modulos/daily_tracker/tarefas_view.js");
 
+    if (!ctx.TaskParser) {
+      ctx.TaskParser = await carregarSubmodulo("99_Meta/Snoopy/core/task_parser.js");
+    }
+
     const hubGrid = root.createEl('div', { 
       cls: 'snoopy-daily-hub-grid',
       attr: { style: 'display: grid; grid-template-columns: minmax(260px, 30%) 1fr; gap: 16px; margin-bottom: 20px; align-items: stretch;' } 
