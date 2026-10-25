@@ -358,12 +358,12 @@
    -------------------------------------------------------------------------- */
 .snoopy-banner-box {
   width: 100%;
-  min-height: 220px !important;
-  max-height: 250px !important;
+  min-height: 165px !important;
+  max-height: 185px !important;
   border: 1px solid var(--snoopy-border) !important;
   border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
   border-radius: var(--snoopy-radius-lg, 10px) !important;
-  padding: 20px 24px 22px 24px !important;
+  padding: 14px 20px 16px 20px !important;
   margin-bottom: 20px;
   display: flex;
   flex-direction: column;
@@ -372,7 +372,7 @@
   position: relative;
   overflow: visible;
   background-size: cover !important;
-  background-position: center 20% !important;
+  background-position: center 85% !important;
   background-repeat: no-repeat !important;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6) !important;
 }
@@ -1835,13 +1835,13 @@ button.snoopy-btn-danger:hover {
 }
 
 .snoopy-omni-submit-btn {
-  background: rgba(96, 165, 250, 0.15) !important;
-  border: 1px solid rgba(96, 165, 250, 0.3) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
   border-radius: var(--snoopy-radius-xs, 4px) !important;
-  color: #93c5fd !important;
+  color: var(--text-muted) !important;
   padding: 3px 8px !important;
   font-size: 11px !important;
-  font-weight: 700 !important;
+  font-weight: 600 !important;
   cursor: pointer !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -1851,36 +1851,14 @@ button.snoopy-btn-danger:hover {
 }
 
 .snoopy-omni-submit-btn:hover {
-  background: #60a5fa !important;
-  color: #070709 !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  color: var(--text-normal) !important;
 }
 
 /* =========================================================================
    ESTANTE DE LEITURAS EXPANDIDA & LINK PROEMINENTE
    ========================================================================= */
-.snoopy-bookshelf-open-btn {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 6px !important;
-  padding: 3px 10px !important;
-  border-radius: 9999px !important;
-  background: rgba(96, 165, 250, 0.12) !important;
-  border: 1px solid rgba(96, 165, 250, 0.3) !important;
-  color: #93c5fd !important;
-  font-size: 11px !important;
-  font-weight: 700 !important;
-  cursor: pointer !important;
-  text-decoration: none !important;
-  transition: all 0.15s ease !important;
-}
-
-.snoopy-bookshelf-open-btn:hover {
-  background: #60a5fa !important;
-  color: #070709 !important;
-  border-color: #60a5fa !important;
-  transform: translateY(-1px) !important;
-}
-
 .snoopy-bookshelf-card-hero {
   background: var(--background-secondary-alt) !important;
   border: 1px solid var(--background-modifier-border) !important;

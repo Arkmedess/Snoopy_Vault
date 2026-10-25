@@ -101,7 +101,9 @@ class UIKit {
     'chevron-left': '<polyline points="15 18 9 12 15 6"/>',
     'chevron-right': '<polyline points="9 18 15 12 9 6"/>',
     'circle-dot': '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="1"/>',
-    'kanban': '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M8 7v7"/><path d="M12 7v4"/><path d="M16 7v9"/>'
+    'kanban': '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M8 7v7"/><path d="M12 7v4"/><path d="M16 7v9"/>',
+    'tree-pine': '<path d="m17 14 3 3.3a1 1 0 0 1-.7 1.7H4.7a1 1 0 0 1-.7-1.7L7 14h-.3a1 1 0 0 1-.7-1.7L9 9h-.2A1 1 0 0 1 8 7.3L12 2l4 5.3a1 1 0 0 1-.8 1.7H15l3 3.3a1 1 0 0 1-.7 1.7H17Z"/><path d="M12 22v-3"/>',
+    'flower-2': '<path d="M12 5a3 3 0 1 1 3 3m-3-3a3 3 0 1 0-3 3m3-3v1m3 2a3 3 0 1 1-3 3m3-3h-1m-2 3a3 3 0 1 1-3-3m3 3v-1m-3-2a3 3 0 1 1 3-3m-3 3h1"/><circle cx="12" cy="12" r="2"/><path d="M12 14v8"/>'
   };
 
   /**

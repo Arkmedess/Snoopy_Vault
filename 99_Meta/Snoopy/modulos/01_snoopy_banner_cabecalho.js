@@ -34,7 +34,7 @@ return {
     bannerImg.alt = "Snoopy Lendo Panorâmico";
 
     if (bannerSrc) {
-      bannerBox.style.backgroundImage = `linear-gradient(180deg, rgba(7, 7, 9, 0.05) 0%, rgba(7, 7, 9, 0.40) 50%, rgba(7, 7, 9, 0.92) 100%), url("${bannerSrc}")`;
+      bannerBox.style.backgroundImage = `linear-gradient(180deg, rgba(7, 7, 9, 0.0) 0%, rgba(7, 7, 9, 0.20) 50%, rgba(7, 7, 9, 0.75) 100%), url("${bannerSrc}")`;
     }
 
     // Contêiner da Barra de Pesquisa e Comandos
@@ -56,8 +56,8 @@ return {
 
     const submitBtn = inputWrapper.createEl('button', {
       cls: 'snoopy-omni-submit-btn',
-      text: '↵ Executar',
-      attr: { style: 'display: none;', title: 'Executar comando ou abrir nota (Enter)' }
+      text: '↵',
+      attr: { style: 'display: none;', title: 'Confirmar e executar comando (Enter)' }
     });
 
     const clearBtn = inputWrapper.createEl('button', {

@@ -26,7 +26,6 @@ const TarefasView = {
       if (typeof abrirModalTemplateTarefa === 'function') {
         addTplBtn = ctx.UIKit.criarBotao(headerEls.actionsBox, {
           label: '+ TEMPLATE',
-          icon: 'plus',
           variant: 'action',
           size: 'sm',
           onClick: abrirModalTemplateTarefa
@@ -34,7 +33,6 @@ const TarefasView = {
       }
       addTaskBtn = ctx.UIKit.criarBotao(headerEls.actionsBox, {
         label: '+ NOVA TAREFA',
-        icon: 'plus',
         variant: 'primary',
         size: 'sm',
         onClick: abrirModalNovaTarefa

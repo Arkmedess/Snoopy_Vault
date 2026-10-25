@@ -62,7 +62,8 @@ describe('UIKit - Núcleo de Componentes de Interface', () => {
         'check', 'x', 'star', 'target', 'trash-2', 'search',
         'sparkles', 'refresh-cw', 'shield', 'sun', 'sunrise',
         'moon', 'repeat', 'pencil', 'play', 'pause', 'calendar', 'settings',
-        'skip-back', 'skip-forward', 'list-plus', 'maximize-2', 'sliders'
+        'skip-back', 'skip-forward', 'list-plus', 'maximize-2', 'sliders',
+        'tree-pine', 'flower-2', 'list-music', 'library', 'arrow-up-right'
       ];
 
       for (const icone of iconesObrigatorios) {
