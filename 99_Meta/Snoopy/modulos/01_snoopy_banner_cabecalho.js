@@ -17,6 +17,8 @@ return {
    */
   async render(ctx) {
     const { root, app, now, formattedDate, garantirNotaDiaria, criarNotaInstantanea } = ctx;
+    const pad = (n) => String(n).padStart(2, '0');
+    const dataNumericaBR = `${pad(now.getDate())}-${pad(now.getMonth() + 1)}-${now.getFullYear()}`;
 
     // 1. HERO COMMAND & SEARCH BAR (Fundo Tematizado com o Banner Panorâmico)
     const bannerBox = root.createEl('div', { cls: 'snoopy-banner-box' });
@@ -34,7 +36,8 @@ return {
     bannerImg.alt = "Snoopy Lendo Panorâmico";
 
     if (bannerSrc) {
-      bannerBox.style.backgroundImage = `linear-gradient(180deg, rgba(7, 7, 9, 0.0) 0%, rgba(7, 7, 9, 0.20) 50%, rgba(7, 7, 9, 0.75) 100%), url("${bannerSrc}")`;
+      const bannerScrim = `linear-gradient(180deg, rgba(8, 8, 12, 0.00) 0%, rgba(8, 8, 12, 0.04) 28%, rgba(8, 8, 12, 0.18) 46%, rgba(8, 8, 12, 0.45) 62%, rgba(8, 8, 12, 0.76) 78%, rgba(8, 8, 12, 0.92) 90%, rgba(8, 8, 12, 0.98) 100%)`;
+      bannerBox.style.backgroundImage = `${bannerScrim}, url("${bannerSrc}")`;
     }
 
     // Contêiner da Barra de Pesquisa e Comandos
@@ -42,13 +45,13 @@ return {
     const inputWrapper = omniContainer.createEl('div', { cls: 'snoopy-omni-input-wrapper' });
 
     const iconBox = inputWrapper.createEl('span', { cls: 'snoopy-omni-icon' });
-    if (ctx.renderIcon) ctx.renderIcon(iconBox, 'search', { size: 16 });
+    iconBox.innerHTML = '<span class="snoopy-cli-prompt" style="font-family: var(--font-monospace, monospace); font-weight: 700; font-size: 13px; color: rgba(255, 255, 255, 0.45);">❯</span>';
 
     const input = inputWrapper.createEl('input', {
       cls: 'snoopy-omni-input',
       attr: {
         type: 'text',
-        placeholder: "Buscar notas ou digite '>' para comandos CLI (ex: > tarefa add Ler livro --prio alta)...",
+        placeholder: "Buscar notas ou digite '>' para comandos CLI (ex: > tarefa add, > pomodoro, > hoje)...",
         autocomplete: 'off',
         spellcheck: 'false'
       }
@@ -80,40 +83,65 @@ return {
     }
 
     /**
-     * Extrai flags no estilo CLI POSIX de uma string (--flag valor ou --flag).
+     * Extrai flags no estilo CLI POSIX (--flag valor, -f valor, booleanas).
      *
      * @param {string} str - Texto do comando com possíveis flags.
+     * @param {Date} [baseDate=now] - Data de referência para resolução de datas relativas.
      * @returns {{ textoLimpo: string, flags: object }}
      */
-    function extrairFlagsCLI(str) {
+    function extrairFlagsCLI(str, baseDate = now) {
       const flags = {};
       let texto = str;
 
-      const matchPrio = texto.match(/--prio\s+([a-zA-Z]+)/i);
+      // --prio ou -p
+      const matchPrio = texto.match(/(?:--prio|-p)\s+([a-zA-ZáéíóúÁÉÍÓÚ]+)/i);
       if (matchPrio) {
-        flags.prio = matchPrio[1].toLowerCase();
+        const rawPrio = matchPrio[1].toLowerCase();
+        let normPrio = rawPrio;
+        if (['alta', 'high'].includes(rawPrio)) normPrio = 'alta';
+        else if (['media', 'média', 'med', 'medium'].includes(rawPrio)) normPrio = 'media';
+        else if (['baixa', 'low'].includes(rawPrio)) normPrio = 'baixa';
+        else if (['urgente', 'urgent'].includes(rawPrio)) normPrio = 'urgente';
+        flags.prio = normPrio;
         texto = texto.replace(matchPrio[0], '');
       }
 
-      const matchData = texto.match(/--data\s+([0-9\-\/]+)/i);
+      // --data ou -d
+      const matchData = texto.match(/(?:--data|-d)\s+([^\s]+)/i);
       if (matchData) {
-        flags.data = matchData[1];
+        const valData = matchData[1].toLowerCase();
+        const pad = (n) => String(n).padStart(2, '0');
+        const refDate = (baseDate instanceof Date && !isNaN(baseDate)) ? baseDate : new Date();
+        if (['hoje', 'today'].includes(valData)) {
+          flags.data = `${refDate.getFullYear()}-${pad(refDate.getMonth() + 1)}-${pad(refDate.getDate())}`;
+        } else if (['amanha', 'amanhã', 'tomorrow'].includes(valData)) {
+          const amanha = new Date(refDate);
+          amanha.setDate(amanha.getDate() + 1);
+          flags.data = `${amanha.getFullYear()}-${pad(amanha.getMonth() + 1)}-${pad(amanha.getDate())}`;
+        } else {
+          flags.data = matchData[1];
+        }
         texto = texto.replace(matchData[0], '');
       }
 
-      if (/--kanban\b/i.test(texto)) {
+      // --kanban ou -k
+      if (/(?:--kanban|-k)\b/i.test(texto)) {
         flags.kanban = true;
-        texto = texto.replace(/--kanban\b/i, '');
+        texto = texto.replace(/(?:--kanban|-k)\b/i, '');
       }
 
-      const matchPasta = texto.match(/--pasta\s+([^\s]+)/i);
+      // --pasta ou -f
+      const matchPasta = texto.match(/(?:--pasta|-f)\s+([^\s]+)/i);
       if (matchPasta) {
         flags.pasta = matchPasta[1];
         texto = texto.replace(matchPasta[0], '');
       }
 
+      let textoLimpo = texto.replace(/\s+/g, ' ').trim();
+      textoLimpo = textoLimpo.replace(/^["'`]|["'`]$/g, '').trim();
+
       return {
-        textoLimpo: texto.replace(/\s+/g, ' ').trim(),
+        textoLimpo,
         flags
       };
     }
@@ -132,12 +160,12 @@ return {
         const cmdRaw = valor.slice(1).trim();
 
         // 1.1 TAREFAS
-        if (/^(tarefa|tarefas|task|adicionar\s+tarefa|adicionar\s+nota\s+tarefa|add\s+tarefa)\b/i.test(cmdRaw)) {
-          const restoCmd = cmdRaw.replace(/^(tarefa|tarefas|task|adicionar\s+tarefa|adicionar\s+nota\s+tarefa|add\s+tarefa)\s*/i, '').trim();
+        if (/^(tarefa|tarefas|task|tasks|t|adicionar\s+tarefa|adicionar\s+nota\s+tarefa|add\s+tarefa)\b/i.test(cmdRaw)) {
+          const restoCmd = cmdRaw.replace(/^(tarefa|tarefas|task|tasks|t|adicionar\s+tarefa|adicionar\s+nota\s+tarefa|add\s+tarefa)\s*/i, '').trim();
 
-          // Subcomando: done / concluir
-          if (/^(done|concluir)\b/i.test(restoCmd)) {
-            const termoBusca = restoCmd.replace(/^(done|concluir)\s*/i, '').trim();
+          // Subcomando: done / concluir / check
+          if (/^(done|concluir|check)\b/i.test(restoCmd)) {
+            const termoBusca = restoCmd.replace(/^(done|concluir|check)\s*/i, '').trim();
             if (!termoBusca) return;
             try {
               const dailyFile = await garantirNotaDiaria();
@@ -160,9 +188,18 @@ return {
             return;
           }
 
-          // Subcomando: add / adicionar
+          // Subcomando: list / ls / hoje
+          if (/^(list|ls|hoje|diario)\b/i.test(restoCmd)) {
+            const dailyFile = await garantirNotaDiaria();
+            await app.workspace.openLinkText(dailyFile.path, "", false);
+            if (typeof Notice !== 'undefined') new Notice('[Snoopy] Tarefas de hoje abertas');
+            limparEFechar();
+            return;
+          }
+
+          // Subcomando: add / adicionar ou texto direto
           const textoArg = restoCmd.replace(/^add\s+/i, '').trim();
-          const { textoLimpo, flags } = extrairFlagsCLI(textoArg);
+          const { textoLimpo, flags } = extrairFlagsCLI(textoArg, now);
           if (!textoLimpo) return;
 
           try {
@@ -190,10 +227,30 @@ return {
           return;
         }
 
-        // 1.2 NOTA RÁPIDA
-        if (/^(nota|notas|note|adicionar\s+nota|nova\s+nota)\b/i.test(cmdRaw)) {
-          const restoCmd = cmdRaw.replace(/^(nota|notas|note|adicionar\s+nota|nova\s+nota)\s*/i, '').replace(/^add\s+/i, '').trim();
-          const { textoLimpo, flags } = extrairFlagsCLI(restoCmd);
+        // 1.2 DIÁRIO / HOJE
+        if (/^(hoje|daily|diario|dia)\b/i.test(cmdRaw)) {
+          const dailyFile = await garantirNotaDiaria();
+          await app.workspace.openLinkText(dailyFile.path, "", false);
+          if (typeof Notice !== 'undefined') new Notice('[Snoopy] Diário de hoje aberto');
+          limparEFechar();
+          return;
+        }
+
+        // 1.3 LEITURAS / LIVROS
+        if (/^(leitura|leituras|livro|livros|book|books)\b/i.test(cmdRaw)) {
+          const restoCmd = cmdRaw.replace(/^(leitura|leituras|livro|livros|book|books)\s*/i, '').replace(/^add\s+/i, '').trim();
+          const { textoLimpo } = extrairFlagsCLI(restoCmd, now);
+          if (textoLimpo) {
+            await criarNotaInstantanea('04_Leituras/Livros', '99_Meta/Templates/Template - Livro.md', textoLimpo);
+          }
+          limparEFechar();
+          return;
+        }
+
+        // 1.4 NOTA RÁPIDA
+        if (/^(nota|notas|note|n|adicionar\s+nota|nova\s+nota)\b/i.test(cmdRaw)) {
+          const restoCmd = cmdRaw.replace(/^(nota|notas|note|n|adicionar\s+nota|nova\s+nota)\s*/i, '').replace(/^add\s+/i, '').trim();
+          const { textoLimpo, flags } = extrairFlagsCLI(restoCmd, now);
           const pastaDestino = flags.pasta || '01_Inbox';
           if (textoLimpo) {
             await criarNotaInstantanea(pastaDestino, '99_Meta/Templates/Template - Inbox.md', textoLimpo);
@@ -202,41 +259,47 @@ return {
           return;
         }
 
-        // 1.3 PROJETO
-        if (/^(projeto|projetos|project|adicionar\s+projeto|novo\s+projeto)\b/i.test(cmdRaw)) {
-          const nomeProjeto = cmdRaw.replace(/^(projeto|projetos|project|adicionar\s+projeto|novo\s+projeto)\s*/i, '').replace(/^add\s+/i, '').trim();
-          if (nomeProjeto) {
-            await criarNotaInstantanea('02_Projetos', '99_Meta/Templates/Template - Projeto.md', nomeProjeto);
+        // 1.5 PROJETO
+        if (/^(projeto|projetos|project|proj)\b/i.test(cmdRaw)) {
+          const nomeProjeto = cmdRaw.replace(/^(projeto|projetos|project|proj)\s*/i, '').replace(/^add\s+/i, '').trim();
+          const { textoLimpo } = extrairFlagsCLI(nomeProjeto, now);
+          if (textoLimpo) {
+            await criarNotaInstantanea('02_Projetos', '99_Meta/Templates/Template - Projeto.md', textoLimpo);
           }
           limparEFechar();
           return;
         }
 
-        // 1.4 ESTUDO
+        // 1.6 ESTUDO
         if (/^(estudo|estudos|materia|adicionar\s+estudo)\b/i.test(cmdRaw)) {
           const nomeEstudo = cmdRaw.replace(/^(estudo|estudos|materia|adicionar\s+estudo)\s*/i, '').replace(/^add\s+/i, '').trim();
-          if (nomeEstudo) {
-            await criarNotaInstantanea('03_Estudos', '99_Meta/Templates/Template - Estudo.md', nomeEstudo);
+          const { textoLimpo } = extrairFlagsCLI(nomeEstudo, now);
+          if (textoLimpo) {
+            await criarNotaInstantanea('03_Estudos', '99_Meta/Templates/Template - Estudo.md', textoLimpo);
           }
           limparEFechar();
           return;
         }
 
-        // 1.5 POMODORO COMANDOS (start, pause, reset, proximo, skip)
-        if (/^pomodoro\s+(start|play|pause|reset|proximo|skip)\b/i.test(cmdRaw)) {
-          const acao = cmdRaw.match(/^pomodoro\s+([a-zA-Z]+)/i)[1].toLowerCase();
+        // 1.7 POMODORO COMANDOS (start, play, pause, stop, reset, next, proximo, skip)
+        if (/^(?:pomodoro|pomo)\s+(start|play|pause|stop|reset|next|proximo|skip)\b/i.test(cmdRaw)) {
+          let acao = cmdRaw.match(/^(?:pomodoro|pomo)\s+([a-zA-Z]+)/i)[1].toLowerCase();
+          if (['play'].includes(acao)) acao = 'start';
+          if (['stop'].includes(acao)) acao = 'reset';
+          if (['next', 'skip'].includes(acao)) acao = 'proximo';
+
           if (ctx.events) ctx.events.emit('pomodoro:comando', { acao });
           if (typeof Notice !== 'undefined') new Notice(`[Snoopy] Pomodoro: ${acao.toUpperCase()}`);
           limparEFechar();
           return;
         }
 
-        // 1.6 FOCO / FILA
-        const matchFoco = cmdRaw.match(/^(foco|pomodoro\s+foco)\s*(.*)$/i);
-        const matchFila = cmdRaw.match(/^(fila|pomodoro\s+fila)\s*(.*)$/i);
+        // 1.8 FOCO / FILA
+        const matchFoco = cmdRaw.match(/^(?:foco|pomodoro\s+foco|pomo\s+foco)\s*(.*)$/i);
+        const matchFila = cmdRaw.match(/^(?:fila|pomodoro\s+fila|pomo\s+fila)\s*(?:add\s+)?(.*)$/i);
         if (matchFoco || matchFila) {
           const isFila = Boolean(matchFila);
-          const alvo = (isFila ? matchFila[2] : matchFoco[2]).trim();
+          const alvo = (isFila ? matchFila[1] : matchFoco[1]).trim();
           if (alvo) {
             if (isFila) {
               if (ctx.events) ctx.events.emit('pomodoro:enfileirar', { titulo: alvo, pomosTotal: 1 });
@@ -250,13 +313,34 @@ return {
           return;
         }
 
-        // 1.7 KANBAN
-        if (/^kanban\b/i.test(cmdRaw)) {
+        // 1.9 KANBAN
+        if (/^(kanban|k)\b/i.test(cmdRaw)) {
           const kanbanEl = document.querySelector('.snoopy-kanban-hub') || document.querySelector('.snoopy-kanban-board');
           if (kanbanEl) {
             kanbanEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
           }
           if (typeof Notice !== 'undefined') new Notice('[Snoopy] Quadro Kanban visualizado');
+          limparEFechar();
+          return;
+        }
+
+        // 1.10 CONFIGURAÇÕES
+        if (/^(config|configuracoes|configurações|settings)\b/i.test(cmdRaw)) {
+          await app.workspace.openLinkText("99_Meta/⚙️ Configurações.md", "", false);
+          if (typeof Notice !== 'undefined') new Notice('[Snoopy] Configurações abertas');
+          limparEFechar();
+          return;
+        }
+
+        // 1.11 AJUDA / HELP
+        if (/^(help|ajuda|\?)\b/i.test(cmdRaw)) {
+          if (typeof Notice !== 'undefined') new Notice('[Snoopy CLI] Digite > para ver os comandos rápidos do terminal');
+          limparEFechar();
+          return;
+        }
+
+        // 1.12 CLEAR / CLS
+        if (/^(clear|cls)\b/i.test(cmdRaw)) {
           limparEFechar();
           return;
         }
@@ -282,6 +366,7 @@ return {
       input.value = '';
       clearBtn.style.display = 'none';
       submitBtn.style.display = 'none';
+      iconBox.classList.remove('is-cli');
       fecharPreview();
     }
 
@@ -308,14 +393,15 @@ return {
 
       // MODO 1: COMANDOS CLI PREFIXADOS POR '>'
       if (valor.startsWith('>')) {
+        iconBox.classList.add('is-cli');
         const cmdRaw = valor.slice(1).trim();
 
         // 1.1 TAREFAS
-        if (/^(tarefa|tarefas|task|adicionar\s+tarefa|adicionar\s+nota\s+tarefa|add\s+tarefa)\b/i.test(cmdRaw)) {
-          const restoCmd = cmdRaw.replace(/^(tarefa|tarefas|task|adicionar\s+tarefa|adicionar\s+nota\s+tarefa|add\s+tarefa)\s*/i, '').trim();
+        if (/^(tarefa|tarefas|task|tasks|t|adicionar\s+tarefa|adicionar\s+nota\s+tarefa|add\s+tarefa)\b/i.test(cmdRaw)) {
+          const restoCmd = cmdRaw.replace(/^(tarefa|tarefas|task|tasks|t|adicionar\s+tarefa|adicionar\s+nota\s+tarefa|add\s+tarefa)\s*/i, '').trim();
 
-          if (/^(done|concluir)\b/i.test(restoCmd)) {
-            const termoBusca = restoCmd.replace(/^(done|concluir)\s*/i, '').trim();
+          if (/^(done|concluir|check)\b/i.test(restoCmd)) {
+            const termoBusca = restoCmd.replace(/^(done|concluir|check)\s*/i, '').trim();
             comandoAtivo = { executar: () => executarAcao(input.value) };
 
             const itemEl = previewBox.createEl('div', { cls: 'snoopy-omni-item active' });
@@ -332,8 +418,25 @@ return {
             return;
           }
 
+          if (/^(list|ls|hoje|diario)\b/i.test(restoCmd)) {
+            comandoAtivo = { executar: () => executarAcao(input.value) };
+
+            const itemEl = previewBox.createEl('div', { cls: 'snoopy-omni-item active' });
+            itemEl.innerHTML = `
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="snoopy-chip snoopy-chip-green">[Listar Tarefas]</span>
+                <span style="font-size: 13px; color: #ffffff;">Abrir lista de tarefas na nota diária</span>
+              </div>
+              <span class="snoopy-micro" style="color: #86efac; font-weight: 700;">Enter ↵</span>
+            `;
+            itemEl.addEventListener('mousedown', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
+            itemEl.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
+            previewBox.style.display = 'flex';
+            return;
+          }
+
           const textoArg = restoCmd.replace(/^add\s+/i, '').trim();
-          const { textoLimpo, flags } = extrairFlagsCLI(textoArg);
+          const { textoLimpo, flags } = extrairFlagsCLI(textoArg, now);
           comandoAtivo = { executar: () => executarAcao(input.value) };
 
           let flagsPills = '';
@@ -358,10 +461,48 @@ return {
           return;
         }
 
-        // 1.2 NOTAS
-        if (/^(nota|notas|note|adicionar\s+nota|nova\s+nota)\b/i.test(cmdRaw)) {
-          const restoCmd = cmdRaw.replace(/^(nota|notas|note|adicionar\s+nota|nova\s+nota)\s*/i, '').replace(/^add\s+/i, '').trim();
-          const { textoLimpo, flags } = extrairFlagsCLI(restoCmd);
+        // 1.2 HOJE / DIÁRIO
+        if (/^(hoje|daily|diario|dia)\b/i.test(cmdRaw)) {
+          comandoAtivo = { executar: () => executarAcao(input.value) };
+
+          const itemEl = previewBox.createEl('div', { cls: 'snoopy-omni-item active' });
+          itemEl.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="snoopy-chip snoopy-chip-blue">[Nota Diária]</span>
+              <span style="font-size: 13px; color: #ffffff;">Abrir nota diária de hoje (${dataNumericaBR})</span>
+            </div>
+            <span class="snoopy-micro" style="color: #93c5fd; font-weight: 700;">Enter ↵</span>
+          `;
+          itemEl.addEventListener('mousedown', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
+          itemEl.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
+          previewBox.style.display = 'flex';
+          return;
+        }
+
+        // 1.3 LEITURAS / LIVROS
+        if (/^(leitura|leituras|livro|livros|book|books)\b/i.test(cmdRaw)) {
+          const restoCmd = cmdRaw.replace(/^(leitura|leituras|livro|livros|book|books)\s*/i, '').replace(/^add\s+/i, '').trim();
+          const { textoLimpo } = extrairFlagsCLI(restoCmd, now);
+          comandoAtivo = { executar: () => executarAcao(input.value) };
+
+          const itemEl = previewBox.createEl('div', { cls: 'snoopy-omni-item active' });
+          itemEl.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="snoopy-chip snoopy-chip-purple">[Novo Livro]</span>
+              <span style="font-size: 13px; color: #ffffff;">${textoLimpo ? `Registrar leitura: <strong>"${textoLimpo}"</strong> em 04_Leituras/Livros` : 'Digite o título do livro...'}</span>
+            </div>
+            <span class="snoopy-micro" style="color: #d8b4fe; font-weight: 700;">Enter ↵</span>
+          `;
+          itemEl.addEventListener('mousedown', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
+          itemEl.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
+          previewBox.style.display = 'flex';
+          return;
+        }
+
+        // 1.4 NOTAS
+        if (/^(nota|notas|note|n|adicionar\s+nota|nova\s+nota)\b/i.test(cmdRaw)) {
+          const restoCmd = cmdRaw.replace(/^(nota|notas|note|n|adicionar\s+nota|nova\s+nota)\s*/i, '').replace(/^add\s+/i, '').trim();
+          const { textoLimpo, flags } = extrairFlagsCLI(restoCmd, now);
           const pastaDestino = flags.pasta || '01_Inbox';
           comandoAtivo = { executar: () => executarAcao(input.value) };
 
@@ -379,16 +520,17 @@ return {
           return;
         }
 
-        // 1.3 PROJETOS
-        if (/^(projeto|projetos|project|adicionar\s+projeto|novo\s+projeto)\b/i.test(cmdRaw)) {
-          const nomeProjeto = cmdRaw.replace(/^(projeto|projetos|project|adicionar\s+projeto|novo\s+projeto)\s*/i, '').replace(/^add\s+/i, '').trim();
+        // 1.5 PROJETOS
+        if (/^(projeto|projetos|project|proj)\b/i.test(cmdRaw)) {
+          const nomeProjeto = cmdRaw.replace(/^(projeto|projetos|project|proj)\s*/i, '').replace(/^add\s+/i, '').trim();
+          const { textoLimpo } = extrairFlagsCLI(nomeProjeto, now);
           comandoAtivo = { executar: () => executarAcao(input.value) };
 
           const itemEl = previewBox.createEl('div', { cls: 'snoopy-omni-item active' });
           itemEl.innerHTML = `
             <div style="display: flex; align-items: center; gap: 8px;">
               <span class="snoopy-chip snoopy-chip-purple">[Novo Projeto]</span>
-              <span style="font-size: 13px; color: #ffffff;">${nomeProjeto ? `Criar projeto: <strong>"${nomeProjeto}"</strong> em 02_Projetos` : 'Digite o nome do projeto...'}</span>
+              <span style="font-size: 13px; color: #ffffff;">${textoLimpo ? `Criar projeto: <strong>"${textoLimpo}"</strong> em 02_Projetos` : 'Digite o nome do projeto...'}</span>
             </div>
             <span class="snoopy-micro" style="color: #d8b4fe; font-weight: 700;">Enter ↵</span>
           `;
@@ -398,9 +540,10 @@ return {
           return;
         }
 
-        // 1.4 ESTUDOS
+        // 1.6 ESTUDOS
         if (/^(estudo|estudos|materia|adicionar\s+estudo)\b/i.test(cmdRaw)) {
           const nomeEstudo = cmdRaw.replace(/^(estudo|estudos|materia|adicionar\s+estudo)\s*/i, '').replace(/^add\s+/i, '').trim();
+          const { textoLimpo } = extrairFlagsCLI(nomeEstudo, now);
           comandoAtivo = { executar: () => executarAcao(input.value) };
 
           const itemEl = previewBox.createEl('div', { cls: 'snoopy-omni-item active' });
@@ -417,9 +560,12 @@ return {
           return;
         }
 
-        // 1.5 POMODORO COMANDOS
-        if (/^pomodoro\s+(start|play|pause|reset|proximo|skip)\b/i.test(cmdRaw)) {
-          const acao = cmdRaw.match(/^pomodoro\s+([a-zA-Z]+)/i)[1].toLowerCase();
+        // 1.7 POMODORO COMANDOS
+        if (/^(?:pomodoro|pomo)\s+(start|play|pause|stop|reset|next|proximo|skip)\b/i.test(cmdRaw)) {
+          let acao = cmdRaw.match(/^(?:pomodoro|pomo)\s+([a-zA-Z]+)/i)[1].toLowerCase();
+          if (['play'].includes(acao)) acao = 'start';
+          if (['stop'].includes(acao)) acao = 'reset';
+          if (['next', 'skip'].includes(acao)) acao = 'proximo';
           comandoAtivo = { executar: () => executarAcao(input.value) };
 
           const itemEl = previewBox.createEl('div', { cls: 'snoopy-omni-item active' });
@@ -436,12 +582,12 @@ return {
           return;
         }
 
-        // 1.6 FOCO / FILA
-        const matchFoco = cmdRaw.match(/^(foco|pomodoro\s+foco)\s*(.*)$/i);
-        const matchFila = cmdRaw.match(/^(fila|pomodoro\s+fila)\s*(.*)$/i);
+        // 1.8 FOCO / FILA
+        const matchFoco = cmdRaw.match(/^(?:foco|pomodoro\s+foco|pomo\s+foco)\s*(.*)$/i);
+        const matchFila = cmdRaw.match(/^(?:fila|pomodoro\s+fila|pomo\s+fila)\s*(?:add\s+)?(.*)$/i);
         if (matchFoco || matchFila) {
           const isFila = Boolean(matchFila);
-          const alvo = (isFila ? matchFila[2] : matchFoco[2]).trim();
+          const alvo = (isFila ? matchFila[1] : matchFoco[1]).trim();
           comandoAtivo = { executar: () => executarAcao(input.value) };
 
           const itemEl = previewBox.createEl('div', { cls: 'snoopy-omni-item active' });
@@ -458,8 +604,8 @@ return {
           return;
         }
 
-        // 1.7 KANBAN
-        if (/^kanban\b/i.test(cmdRaw)) {
+        // 1.9 KANBAN
+        if (/^(kanban|k)\b/i.test(cmdRaw)) {
           comandoAtivo = { executar: () => executarAcao(input.value) };
 
           const itemEl = previewBox.createEl('div', { cls: 'snoopy-omni-item active' });
@@ -476,37 +622,82 @@ return {
           return;
         }
 
-        // 1.8 MENU DE AJUDA CLI
-        const opcoes = [
-          { cmd: '> tarefa add Ler livro --prio alta --data 2026-10-25', desc: 'Criar tarefa com prioridade e data', badge: 'snoopy-chip-green' },
-          { cmd: '> tarefa done Algoritmos', desc: 'Concluir tarefa pelo nome', badge: 'snoopy-chip-green' },
-          { cmd: '> nota add Minha Ideia --pasta 01_Inbox', desc: 'Criar nova nota em pasta específica', badge: 'snoopy-chip-blue' },
-          { cmd: '> projeto add Dashboard', desc: 'Criar projeto com template estruturado', badge: 'snoopy-chip-purple' },
-          { cmd: '> foco Resolver Issue #42', desc: 'Definir alvo do Pomodoro', badge: 'snoopy-chip-orange' },
-          { cmd: '> fila add Revisar código', desc: 'Adicionar à Playlist do Pomodoro (Spotify vibe)', badge: 'snoopy-chip-orange' },
-          { cmd: '> pomodoro start', desc: 'Iniciar contagem do timer', badge: 'snoopy-chip-orange' },
-          { cmd: '> kanban', desc: 'Rolar até o painel Kanban', badge: 'snoopy-chip-purple' }
-        ];
+        // 1.10 CONFIGURAÇÕES
+        if (/^(config|configuracoes|configurações|settings)\b/i.test(cmdRaw)) {
+          comandoAtivo = { executar: () => executarAcao(input.value) };
 
-        opcoes.forEach(op => {
-          const itemEl = previewBox.createEl('div', { cls: 'snoopy-omni-item' });
+          const itemEl = previewBox.createEl('div', { cls: 'snoopy-omni-item active' });
           itemEl.innerHTML = `
             <div style="display: flex; align-items: center; gap: 8px;">
-              <span class="snoopy-chip ${op.badge}">${op.cmd.split(' ')[1] || op.cmd}</span>
-              <span class="snoopy-meta" style="color: #d4d4d8;">${op.desc}</span>
+              <span class="snoopy-chip snoopy-chip-gray">[Configurações]</span>
+              <span style="font-size: 13px; color: #ffffff;">Abrir configurações do Snoopy Vault</span>
             </div>
-            <span class="snoopy-micro" style="color: var(--snoopy-muted);">${op.cmd}</span>
+            <span class="snoopy-micro" style="color: #d4d4d8; font-weight: 700;">Enter ↵</span>
           `;
-          itemEl.addEventListener('mousedown', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            input.value = op.cmd;
-            input.focus();
-            input.dispatchEvent(new Event('input'));
+          itemEl.addEventListener('mousedown', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
+          itemEl.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
+          previewBox.style.display = 'flex';
+          return;
+        }
+
+        // 1.11 MENU DINÂMICO DE COMANDOS CLI (com filtro em tempo real)
+        const opcoes = [
+          { cmd: '> tarefa add Ler livro -p alta -d hoje -k', label: 'tarefa add', desc: 'Criar tarefa com flags [-p] [-d] [-k]', badge: 'snoopy-chip-green' },
+          { cmd: '> tarefa done Algoritmos', label: 'tarefa done', desc: 'Concluir tarefa pelo nome', badge: 'snoopy-chip-green' },
+          { cmd: '> hoje', label: 'hoje', desc: 'Abrir nota diária de hoje', badge: 'snoopy-chip-blue' },
+          { cmd: '> pomodoro start', label: 'pomodoro start', desc: 'Iniciar contagem do timer', badge: 'snoopy-chip-orange' },
+          { cmd: '> pomodoro pause', label: 'pomodoro pause', desc: 'Pausar o timer pomodoro', badge: 'snoopy-chip-orange' },
+          { cmd: '> pomodoro stop', label: 'pomodoro stop', desc: 'Reiniciar o timer pomodoro', badge: 'snoopy-chip-orange' },
+          { cmd: '> pomodoro next', label: 'pomodoro next', desc: 'Avançar para próximo ciclo', badge: 'snoopy-chip-orange' },
+          { cmd: '> foco Resolver Issue #42', label: 'foco', desc: 'Definir alvo do Pomodoro', badge: 'snoopy-chip-orange' },
+          { cmd: '> fila add Revisar código', label: 'fila add', desc: 'Adicionar à Playlist do Pomodoro', badge: 'snoopy-chip-orange' },
+          { cmd: '> nota add Minha Ideia -f 01_Inbox', label: 'nota add', desc: 'Criar nota no Inbox ou pasta', badge: 'snoopy-chip-blue' },
+          { cmd: '> leitura add Clean Architecture', label: 'leitura add', desc: 'Criar registro de livro em Leituras', badge: 'snoopy-chip-purple' },
+          { cmd: '> projeto add Dashboard', label: 'projeto add', desc: 'Criar projeto com template estruturado', badge: 'snoopy-chip-purple' },
+          { cmd: '> estudo add Algoritmos', label: 'estudo add', desc: 'Criar matéria em Estudos', badge: 'snoopy-chip-blue' },
+          { cmd: '> kanban', label: 'kanban', desc: 'Rolar até o painel Kanban', badge: 'snoopy-chip-purple' },
+          { cmd: '> config', label: 'config', desc: 'Abrir configurações do cofre', badge: 'snoopy-chip-gray' }
+        ];
+
+        const termoBusca = cmdRaw.toLowerCase();
+        const opcoesFiltradas = termoBusca
+          ? opcoes.filter(op => {
+              const cmdSemPrefixo = op.cmd.replace(/^>\s*/, '').toLowerCase();
+              return cmdSemPrefixo.startsWith(termoBusca) || op.label.toLowerCase().startsWith(termoBusca);
+            })
+          : opcoes;
+
+        if (opcoesFiltradas.length > 0) {
+          opcoesFiltradas.forEach(op => {
+            const itemEl = previewBox.createEl('div', { cls: 'snoopy-omni-item' });
+            itemEl.innerHTML = `
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="snoopy-chip ${op.badge}">${op.label}</span>
+                <span class="snoopy-meta" style="color: #d4d4d8;">${op.desc}</span>
+              </div>
+              <span class="snoopy-micro" style="color: var(--snoopy-muted); font-family: var(--font-monospace, monospace);">${op.cmd}</span>
+            `;
+            itemEl.addEventListener('mousedown', (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              input.value = op.cmd;
+              input.focus();
+              input.dispatchEvent(new Event('input'));
+            });
+            itemEl.addEventListener('click', (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              input.value = op.cmd;
+              input.focus();
+              input.dispatchEvent(new Event('input'));
+            });
           });
-        });
-        previewBox.style.display = 'flex';
-        return;
+          previewBox.style.display = 'flex';
+          return;
+        } else {
+          fecharPreview();
+          return;
+        }
       }
 
       // MODO 2: BUSCA DE NOTAS NO COFRE
@@ -562,6 +753,17 @@ return {
         e.preventDefault();
         e.stopPropagation();
         await executarAcaoAtual();
+      } else if (e.key === 'Tab') {
+        const primeiroItem = previewBox.querySelector('.snoopy-omni-item');
+        if (primeiroItem && previewBox.style.display !== 'none') {
+          const microCmd = primeiroItem.querySelector('.snoopy-micro');
+          if (microCmd && microCmd.innerText && microCmd.innerText.startsWith('>')) {
+            e.preventDefault();
+            e.stopPropagation();
+            input.value = microCmd.innerText;
+            input.dispatchEvent(new Event('input'));
+          }
+        }
       } else if (e.key === 'Escape') {
         e.preventDefault();
         e.stopPropagation();
@@ -582,16 +784,14 @@ return {
     // 2. CABEÇALHO COM DATA & PÍLULAS DE AÇÃO RÁPIDA
     const headerRow = root.createEl('div', { cls: 'snoopy-header-row' });
 
-    const dateBox = headerRow.createEl('div');
+    const dateBox = headerRow.createEl('div', { cls: 'snoopy-header-datebox' });
     dateBox.createEl('div', { 
       cls: 'snoopy-date-title', 
       text: formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1) 
     });
-    const pad = (n) => String(n).padStart(2, '0');
-    const dataNumericaBR = `${pad(now.getDate())}-${pad(now.getMonth() + 1)}-${now.getFullYear()}`;
     dateBox.createEl('div', { 
       cls: 'snoopy-meta',
-      text: `${dataNumericaBR} • Espaço Central de Foco • Snoopy Edition`
+      text: 'Espaço Central de Foco • Snoopy Edition'
     });
 
     const navPillsRow = headerRow.createEl('div', { 

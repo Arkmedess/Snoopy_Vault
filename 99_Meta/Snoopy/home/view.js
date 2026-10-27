@@ -329,7 +329,7 @@ let config = {
     "snoopy_daily_tracker",
     "snoopy_cockpit_pomodoro",
     "snoopy_leituras_estudos",
-    "snoopy_kanban_projetos"
+    "snoopy_planner_calendario"
   ]
 };
 
@@ -343,7 +343,10 @@ try {
     if (cfgPage.banner_imagem) config.banner_imagem = String(cfgPage.banner_imagem);
     if (cfgPage.tema_preset) config.tema_preset = String(cfgPage.tema_preset);
     if (Array.isArray(cfgPage.modulos_ativos) && cfgPage.modulos_ativos.length > 0) {
-      config.modulos_ativos = cfgPage.modulos_ativos;
+      config.modulos_ativos = cfgPage.modulos_ativos.map(m => m === 'snoopy_kanban_projetos' ? 'snoopy_planner_calendario' : m);
+      if (!config.modulos_ativos.includes('snoopy_planner_calendario') && cfgPage.modulos_ativos.includes('snoopy_kanban_projetos')) {
+        config.modulos_ativos.push('snoopy_planner_calendario');
+      }
     }
   }
 } catch (e) {}
@@ -358,6 +361,7 @@ const modulosSnoopy = [
   "99_Meta/Snoopy/modulos/04_snoopy_daily_tracker.js",
   "99_Meta/Snoopy/modulos/02_snoopy_cockpit_pomodoro.js",
   "99_Meta/Snoopy/modulos/05_snoopy_leituras_estudos.js",
+  "99_Meta/Snoopy/modulos/03_snoopy_planner_calendario.js",
   "99_Meta/Snoopy/modulos/03_snoopy_kanban_projetos.js"
 ];
 

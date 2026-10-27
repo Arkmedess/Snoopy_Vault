@@ -62,22 +62,6 @@ return {
       attr: { style: 'display: flex; flex-direction: column; justify-content: space-between; gap: 8px; min-height: 390px; max-height: 390px; overflow: hidden;' } 
     });
 
-    if (ctx.UIKit && typeof ctx.UIKit.criarCardHeader === 'function') {
-      ctx.UIKit.criarCardHeader(sideCard, {
-        title: 'HÁBITOS',
-        icon: 'check-circle-2',
-        subtitle: 'Rituais diários'
-      });
-    } else {
-      const sideHeader = sideCard.createEl('div', { cls: 'snoopy-card-header' });
-      sideHeader.innerHTML = `
-        <div class="snoopy-toolbar">
-          <span class="snoopy-section-title">HÁBITOS</span>
-          <span class="snoopy-card-subtitle">Rituais diários</span>
-        </div>
-      `;
-    }
-
     const habitsContainer = sideCard.createEl('div', {
       cls: 'snoopy-habits-panel-wrap',
       attr: { style: 'display: flex; flex-direction: column; justify-content: space-between; gap: 8px; flex: 1; overflow-y: auto;' }

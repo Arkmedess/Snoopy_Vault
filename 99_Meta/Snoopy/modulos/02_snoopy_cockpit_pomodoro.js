@@ -133,7 +133,7 @@ return {
         <circle id="snoopy-circle-bar" class="circle-progress-bar" cx="85" cy="85" r="74" fill="none" stroke-width="7" stroke-dasharray="464.96" stroke-dashoffset="0" />
       </svg>
       <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; pointer-events: none; user-select: none;">
-        <span id="snoopy-timer-display" class="snoopy-meta" style="font-size: 38px; font-weight: 800; color: #ffffff; letter-spacing: 0.04em; line-height: 1; font-family: var(--font-monospace, monospace);">${String(focusMin).padStart(2, '0')}:00</span>
+        <span id="snoopy-timer-display" class="snoopy-timer-num" style="font-size: 42px; font-weight: 800; color: #ffffff; letter-spacing: 0.04em; line-height: 1; font-family: var(--font-monospace, monospace);">${String(focusMin).padStart(2, '0')}:00</span>
         <span id="snoopy-cycle-label" class="snoopy-meta" style="font-size: 12px; font-weight: 700; color: #86efac; margin-top: 6px; letter-spacing: 0.05em; text-transform: uppercase;">Ciclo 1 de ${dailyGoal}</span>
       </div>
     `;
@@ -259,10 +259,25 @@ return {
         subtitle: 'Histórico e ciclos acumulados'
       });
       const headerActions = historyHeaderEls.actionsBox;
-      headerActions.createEl('div', {
+      const moedasBadge = headerActions.createEl('div', {
         cls: 'snoopy-moedas-badge',
-        attr: { id: 'snoopy-jardim-moedas', title: 'Ganhe 1 moeda de seiva a cada 5m de foco' },
-        text: '🪙 0 (+1/5m)'
+        attr: { id: 'snoopy-jardim-moedas', title: 'Ganhe 1 moeda de seiva a cada 5m de foco' }
+      });
+      if (renderIconFn) {
+        renderIconFn(moedasBadge, 'coins', { size: 12, color: '#facc15' });
+      } else {
+        moedasBadge.createEl('span', {
+          cls: 'snoopy-icon',
+          attr: { style: 'width: 12px; height: 12px; display: inline-flex; align-items: center;' }
+        }).innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></svg>';
+      }
+      moedasBadge.createEl('span', {
+        attr: { id: 'snoopy-moedas-val', style: 'font-weight: 700;' },
+        text: '0'
+      });
+      moedasBadge.createEl('span', {
+        attr: { style: 'font-size: 9.5px; opacity: 0.8; font-weight: 500;' },
+        text: '(+1/5m)'
       });
       headerActions.createEl('span', {
         cls: 'snoopy-meta',
@@ -282,7 +297,11 @@ return {
           <span class="snoopy-card-subtitle">Histórico e ciclos acumulados</span>
         </div>
         <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
-          <div id="snoopy-jardim-moedas" class="snoopy-moedas-badge" title="Ganhe 1 moeda de seiva a cada 5m de foco">🪙 <span id="snoopy-moedas-val">0</span> <span style="font-size: 9.5px; opacity: 0.75; font-weight: 500; margin-left: 2px;">(+1/5m)</span></div>
+          <div id="snoopy-jardim-moedas" class="snoopy-moedas-badge" title="Ganhe 1 moeda de seiva a cada 5m de foco">
+            <span class="snoopy-icon" style="width: 12px; height: 12px; display: inline-flex; align-items: center;"><svg viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></svg></span>
+            <span id="snoopy-moedas-val" style="font-weight: 700;">0</span>
+            <span style="font-size: 9.5px; opacity: 0.8; font-weight: 500;">(+1/5m)</span>
+          </div>
           <span id="snoopy-today-stats" class="snoopy-meta" style="color: #86efac; font-weight: 800; font-size: 12px; white-space: nowrap;">0 ciclos hoje (0 min)</span>
         </div>
       `;
@@ -297,31 +316,37 @@ return {
     });
     plantCard.innerHTML = `
       <div id="snoopy-plant-avatar" class="snoopy-planter-pot" title="Árvore ativa em cultivo"></div>
-      <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 6px;">
+      <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 5px;">
         <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
           <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
-            <span id="snoopy-stage-title" style="font-size: 15px; font-weight: 800; color: #ffffff; white-space: nowrap; letter-spacing: -0.01em;">Brotinho Verdejante</span>
-            <span id="snoopy-stage-badge" class="snoopy-micro" style="padding: 2px 7px; border-radius: 4px; background: rgba(74, 222, 128, 0.15); color: #86efac; font-weight: 800; font-size: 10.5px;">NÍVEL 1</span>
+            <span id="snoopy-stage-title" style="font-size: 14px; font-weight: 800; color: #ffffff; white-space: nowrap; letter-spacing: -0.01em;">Semente Plantada</span>
+            <span id="snoopy-stage-badge" class="snoopy-micro" style="padding: 2px 7px; border-radius: 4px; background: rgba(74, 222, 128, 0.15); color: #86efac; font-weight: 800; font-size: 10px;">NÍVEL 1</span>
           </div>
           <div id="snoopy-stage-next-chip" class="snoopy-micro" style="color: #a1a1aa; font-size: 11px; white-space: nowrap;">
-            Próximo: <strong style="color: #86efac;">Plântula</strong> (+1 foco)
+            Próximo: <strong style="color: #86efac;">Plântula Ativa</strong> (+1 foco)
           </div>
         </div>
-        <div class="snoopy-prog-track" style="height: 5px; width: 100%; border-radius: 3px; margin: 1px 0;">
-          <div id="snoopy-plant-bar" class="snoopy-prog-fill" style="width: 0%; background: linear-gradient(90deg, #10b981 0%, #4ade80 100%); border-radius: 3px;"></div>
+        <div class="snoopy-prog-track" style="height: 4px; width: 100%; border-radius: 2px; margin: 1px 0; background: rgba(255, 255, 255, 0.08); overflow: hidden;">
+          <div id="snoopy-plant-bar" class="snoopy-prog-fill" style="width: 0%; height: 100%; background: #4ade80; border-radius: 2px; transition: width 0.3s ease;"></div>
         </div>
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 11px; color: #a1a1aa;">
           <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
-            <span style="color: #facc15; font-weight: 700; display: inline-flex; align-items: center; gap: 3px;">🪙 +1 a cada 5m</span>
-            <span id="snoopy-combo-chip" style="display: none; color: #fb923c; font-weight: 700; font-size: 10.5px; background: rgba(251, 146, 60, 0.12); padding: 1px 6px; border-radius: 4px; border: 1px solid rgba(251, 146, 60, 0.25);">🔥 Combo 3x (+1🪙)</span>
+            <span style="color: #facc15; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+              <span class="snoopy-icon-coins-subcard"></span>
+              <span>+1 seiva a cada 5m</span>
+            </span>
+            <span id="snoopy-combo-chip" style="display: none; color: #fb923c; font-weight: 700; font-size: 10.5px; background: rgba(251, 146, 60, 0.12); padding: 1px 6px; border-radius: 4px; border: 1px solid rgba(251, 146, 60, 0.25); align-items: center; gap: 4px;"></span>
           </div>
-          <button id="snoopy-btn-open-jardim" class="snoopy-btn-santuario" title="Abrir Santuário Botânico & Loja de Espécies">
+          <button id="snoopy-btn-open-jardim" class="snoopy-btn-action snoopy-btn-sm" title="Abrir Santuário Botânico & Loja de Espécies" style="font-size: 11px; padding: 2px 8px; display: inline-flex; align-items: center; gap: 5px;">
             <span class="snoopy-estufa-btn-icon"></span>
             <span>Bosque & Loja</span>
           </button>
         </div>
       </div>
     `;
+
+    const iconCoinsSubcard = plantCard.querySelector('.snoopy-icon-coins-subcard');
+    if (iconCoinsSubcard && renderIconFn) renderIconFn(iconCoinsSubcard, 'coins', { size: 12, color: '#facc15' });
 
     const estufaBtnIcon = plantCard.querySelector('.snoopy-estufa-btn-icon');
     if (estufaBtnIcon && renderIconFn) renderIconFn(estufaBtnIcon, 'trees', { size: 12, color: '#86efac' });
@@ -386,28 +411,46 @@ return {
 
     const metricsSide = gridMetricsRow.createEl('div', {
       cls: 'snoopy-meta',
-      attr: { style: 'background: #14141c; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 6px 12px; display: flex; flex-direction: column; justify-content: space-between; height: 66px; box-sizing: border-box;' }
+      attr: { style: 'background: rgba(255, 255, 255, 0.025); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 7px 12px; display: flex; flex-direction: column; justify-content: space-between; height: 66px; box-sizing: border-box;' }
     });
     metricsSide.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span style="color: #a1a1aa; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.04em;">Na Semana:</span>
-        <span id="metric-week" style="font-weight: 800; color: #ffffff; font-size: 12.5px;">0m</span>
+        <span style="color: #a1a1aa; font-size: 11px; display: inline-flex; align-items: center; gap: 5px; font-weight: 500;">
+          <span class="snoopy-icon-metric-week"></span>
+          <span>Na semana</span>
+        </span>
+        <span id="metric-week" style="font-weight: 700; color: #ffffff; font-size: 12px;">0m</span>
       </div>
       <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 2px; border-top: 1px solid rgba(255,255,255,0.05);">
-        <span style="color: #a1a1aa; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.04em;">Maior Foco:</span>
-        <span id="metric-peak" style="font-weight: 800; color: #ffffff; font-size: 12.5px;">0m</span>
+        <span style="color: #a1a1aa; font-size: 11px; display: inline-flex; align-items: center; gap: 5px; font-weight: 500;">
+          <span class="snoopy-icon-metric-peak"></span>
+          <span>Maior foco</span>
+        </span>
+        <span id="metric-peak" style="font-weight: 700; color: #ffffff; font-size: 12px;">0m</span>
       </div>
       <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 2px; border-top: 1px solid rgba(255,255,255,0.05);">
-        <span style="color: #a1a1aa; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.04em;">Sequência:</span>
-        <span id="metric-streak" style="font-weight: 800; color: #86efac; font-size: 12.5px;">0 dias</span>
+        <span style="color: #a1a1aa; font-size: 11px; display: inline-flex; align-items: center; gap: 5px; font-weight: 500;">
+          <span class="snoopy-icon-metric-streak"></span>
+          <span>Sequência</span>
+        </span>
+        <span id="metric-streak" style="font-weight: 700; color: #86efac; font-size: 12px;">0 dias</span>
       </div>
     `;
+
+    const iconWeek = metricsSide.querySelector('.snoopy-icon-metric-week');
+    const iconPeak = metricsSide.querySelector('.snoopy-icon-metric-peak');
+    const iconStreak = metricsSide.querySelector('.snoopy-icon-metric-streak');
+    if (renderIconFn) {
+      if (iconWeek) renderIconFn(iconWeek, 'clock', { size: 11, color: '#a1a1aa' });
+      if (iconPeak) renderIconFn(iconPeak, 'target', { size: 11, color: '#a1a1aa' });
+      if (iconStreak) renderIconFn(iconStreak, 'zap', { size: 11, color: '#fb923c' });
+    }
 
     const heatInspectBox = historySplit.createEl('div', {
       cls: 'snoopy-heat-inspection',
       attr: { id: 'snoopy-heat-inspection' }
     });
-    heatInspectBox.textContent = 'Clique em uma data para inspecionar constância';
+    heatInspectBox.textContent = 'Carregando histórico...';
 
     // --- INSTANCIAÇÃO DOS SUBMÓDULOS E BINDINGS ---
     const circleBar = pomoBox.querySelector('#snoopy-circle-bar');
@@ -507,8 +550,11 @@ return {
             storeData = await JardimStore.carregar(app);
             const moedasValEl = historyBox.querySelector('#snoopy-moedas-val');
             const moedasBoxEl = historyBox.querySelector('#snoopy-jardim-moedas');
-            if (moedasValEl) moedasValEl.textContent = String(storeData.moedas || 0);
-            else if (moedasBoxEl) moedasBoxEl.textContent = `${storeData.moedas || 0} 🪙`;
+            if (moedasValEl) {
+              moedasValEl.textContent = String(storeData.moedas || 0);
+            } else if (moedasBoxEl) {
+              moedasBoxEl.innerHTML = `<span class="snoopy-icon" style="width: 12px; height: 12px; display: inline-flex; align-items: center;"><svg viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></svg></span> <span>${storeData.moedas || 0}</span>`;
+            }
           } catch (e) {
             console.warn('[Pomodoro Cockpit] Erro ao carregar moedas:', e);
           }
@@ -529,7 +575,7 @@ return {
           if (comboAtual >= 3) {
             const bonus = comboAtual >= 10 ? 3 : (comboAtual >= 5 ? 2 : 1);
             comboChipEl.style.display = 'inline-flex';
-            comboChipEl.textContent = `🔥 Combo x${comboAtual} (+${bonus}🪙)`;
+            comboChipEl.innerHTML = `<span class="snoopy-icon" style="width: 11px; height: 11px; display: inline-flex; align-items: center;"><svg viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="11" height="11"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Combo x${comboAtual} (+${bonus} seiva)`;
           } else {
             comboChipEl.style.display = 'none';
           }
@@ -673,9 +719,9 @@ return {
               moedasBoxEl.classList.add('snoopy-coin-pulse');
             }
 
-            const txtBonus = resEconomia.bonusCombo > 0 ? ` (+${resEconomia.bonusCombo} bônus Combo x${resEconomia.combo} 🔥)` : '';
+            const txtBonus = resEconomia.bonusCombo > 0 ? ` (+${resEconomia.bonusCombo} bônus Combo x${resEconomia.combo})` : '';
             if (typeof Notice !== 'undefined') {
-              new Notice(`🪙 +${resEconomia.moedasGanhas} Moedas!${txtBonus} (Saldo: ${resEconomia.saldoAtual} 🪙)`);
+              new Notice(`+${resEconomia.moedasGanhas} Moedas de Seiva!${txtBonus} (Saldo: ${resEconomia.saldoAtual})`);
             }
           }
         } catch (e) {

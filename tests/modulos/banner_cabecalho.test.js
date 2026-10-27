@@ -74,29 +74,32 @@ describe('Módulo 01 - Banner e Cabeçalho (01_snoopy_banner_cabecalho)', () => 
 
     const metaSub = root.querySelector('.snoopy-meta');
     assert.ok(metaSub);
-    assert.ok(metaSub.innerText.includes('24-10-2026'));
+    assert.ok(metaSub.innerText.includes('Espaço Central de Foco'));
+    assert.ok(!metaSub.innerText.includes('24-10-2026'), 'Data menor redundante deve ser removida');
 
     // 3. Validação das Ações de Navegação
     const navPills = root.querySelector('.snoopy-nav-pills');
     assert.ok(navPills);
-    assert.strictEqual(navPills.children.length, 6);
+    const botoes = navPills.querySelectorAll('button');
+    assert.strictEqual(botoes.length, 7);
 
     // Disparar clique em HOJE
-    const btnHoje = navPills.children[0];
+    const btnHoje = botoes[0];
     btnHoje.dispatchEvent('click');
     await new Promise(r => setImmediate(r));
     assert.strictEqual(linksAbertos.length, 1);
     assert.strictEqual(linksAbertos[0], '01_Inbox/Diário/2026-10-24.md');
 
     // Disparar clique em ESTUDOS
-    const btnEstudos = navPills.children[1];
+    const btnEstudos = botoes[1];
     btnEstudos.dispatchEvent('click');
     await new Promise(r => setImmediate(r));
     assert.strictEqual(linksAbertos.length, 2);
     assert.strictEqual(linksAbertos[1], '03_Estudos/Painel de Estudos.md');
 
     // Disparar clique em + PROJETO
-    const btnProjeto = navPills.children[3];
+    const btnProjeto = botoes.find(b => b.innerText.includes('PROJETO'));
+    assert.ok(btnProjeto);
     btnProjeto.dispatchEvent('click');
     await new Promise(r => setImmediate(r));
     assert.strictEqual(notasCriadas.length, 1);
@@ -104,7 +107,7 @@ describe('Módulo 01 - Banner e Cabeçalho (01_snoopy_banner_cabecalho)', () => 
     assert.strictEqual(notasCriadas[0].prefix, 'Novo Projeto');
 
     // Disparar clique em CONFIG
-    const btnConfig = navPills.children[5];
+    const btnConfig = botoes[2];
     btnConfig.dispatchEvent('click');
     await new Promise(r => setImmediate(r));
     assert.strictEqual(linksAbertos.length, 3);
@@ -362,5 +365,192 @@ describe('Módulo 01 - Banner e Cabeçalho (01_snoopy_banner_cabecalho)', () => 
 
     assert.ok(tarefaCriada, 'Tarefa deve ter sido criada via mousedown no preview');
     assert.ok(tarefaCriada.linha.includes('Revisar pull request'));
+  });
+
+  test('Hero Command Bar CLI: suporta flags curtas (-p, -d, -k) e data relativa em "> tarefa add"', async () => {
+    const root = createMockEl('div');
+    let tarefaGravada = null;
+
+    const mockApp = {
+      vault: {
+        adapter: { getResourcePath: () => 'app://local/banner.jpg' },
+        getMarkdownFiles: () => []
+      },
+      workspace: { openLinkText: async () => {} }
+    };
+
+    const mockCtx = {
+      root,
+      app: mockApp,
+      now: new Date(2026, 9, 24),
+      formattedDate: 'sábado, 24 de outubro de 2026',
+      garantirNotaDiaria: async () => ({ path: '01_Inbox/Diário/2026-10-24.md', basename: '2026-10-24' }),
+      criarNotaInstantanea: () => {},
+      VaultStore: {
+        adicionarLinhaNaSecao: async (app, path, secao, linha) => {
+          tarefaGravada = { path, secao, linha };
+        }
+      },
+      events: { emit: () => {} },
+      UIKit
+    };
+
+    await moduloBanner.render(mockCtx);
+
+    const input = root.querySelector('.snoopy-omni-input');
+    input.value = '> tarefa add "Refatorar módulo" -p alta -d hoje -k';
+    input.dispatchEvent('input');
+
+    input.dispatchEvent('keydown', { key: 'Enter' });
+    await new Promise(r => setImmediate(r));
+
+    assert.ok(tarefaGravada, 'Tarefa deve ter sido gravada');
+    assert.strictEqual(tarefaGravada.secao, 'Tarefas');
+    assert.ok(tarefaGravada.linha.includes('Refatorar módulo'), 'Deve remover aspas extras');
+    assert.ok(!tarefaGravada.linha.includes('"'), 'Não deve conter aspas no texto da tarefa');
+    assert.ok(tarefaGravada.linha.includes('#prio/alta'));
+    assert.ok(tarefaGravada.linha.includes('📅 2026-10-24'));
+    assert.ok(tarefaGravada.linha.includes('#kanban'));
+  });
+
+  test('Hero Command Bar CLI: suporta comandos "> hoje" e "> leitura add"', async () => {
+    const root = createMockEl('div');
+    const linksAbertos = [];
+    const notasCriadas = [];
+
+    const mockApp = {
+      vault: {
+        adapter: { getResourcePath: () => 'app://local/banner.jpg' },
+        getMarkdownFiles: () => []
+      },
+      workspace: {
+        openLinkText: async (p) => { linksAbertos.push(p); }
+      }
+    };
+
+    const mockCtx = {
+      root,
+      app: mockApp,
+      now: new Date(2026, 9, 24),
+      formattedDate: 'sábado, 24 de outubro de 2026',
+      garantirNotaDiaria: async () => ({ path: '01_Inbox/Diário/2026-10-24.md', basename: '2026-10-24' }),
+      criarNotaInstantanea: (folder, tpl, prefix) => {
+        notasCriadas.push({ folder, tpl, prefix });
+      },
+      events: { emit: () => {} },
+      UIKit
+    };
+
+    await moduloBanner.render(mockCtx);
+
+    const input = root.querySelector('.snoopy-omni-input');
+
+    // 1. Comando > hoje
+    input.value = '> hoje';
+    input.dispatchEvent('input');
+    input.dispatchEvent('keydown', { key: 'Enter' });
+    await new Promise(r => setImmediate(r));
+
+    assert.strictEqual(linksAbertos.length, 1);
+    assert.strictEqual(linksAbertos[0], '01_Inbox/Diário/2026-10-24.md');
+
+    // 2. Comando > leitura add O Programador Pragmático
+    input.value = '> leitura add O Programador Pragmático';
+    input.dispatchEvent('input');
+    input.dispatchEvent('keydown', { key: 'Enter' });
+    await new Promise(r => setImmediate(r));
+
+    assert.strictEqual(notasCriadas.length, 1);
+    assert.strictEqual(notasCriadas[0].folder, '04_Leituras/Livros');
+    assert.strictEqual(notasCriadas[0].prefix, 'O Programador Pragmático');
+  });
+
+  test('Hero Command Bar CLI: suporta comandos estendidos de pomodoro (stop, next) e aliases (pomo)', async () => {
+    const root = createMockEl('div');
+    const eventos = [];
+
+    const mockApp = {
+      vault: {
+        adapter: { getResourcePath: () => 'app://local/banner.jpg' },
+        getMarkdownFiles: () => []
+      },
+      workspace: { openLinkText: async () => {} }
+    };
+
+    const mockCtx = {
+      root,
+      app: mockApp,
+      now: new Date(2026, 9, 24),
+      formattedDate: 'sábado, 24 de outubro de 2026',
+      garantirNotaDiaria: async () => ({}),
+      criarNotaInstantanea: () => {},
+      events: {
+        emit: (nome, dados) => {
+          eventos.push({ nome, dados });
+        }
+      },
+      UIKit
+    };
+
+    await moduloBanner.render(mockCtx);
+
+    const input = root.querySelector('.snoopy-omni-input');
+
+    // 1. > pomo stop
+    input.value = '> pomo stop';
+    input.dispatchEvent('input');
+    input.dispatchEvent('keydown', { key: 'Enter' });
+    await new Promise(r => setImmediate(r));
+
+    assert.strictEqual(eventos.length, 1);
+    assert.strictEqual(eventos[0].nome, 'pomodoro:comando');
+    assert.strictEqual(eventos[0].dados.acao, 'reset');
+
+    // 2. > pomodoro next
+    input.value = '> pomodoro next';
+    input.dispatchEvent('input');
+    input.dispatchEvent('keydown', { key: 'Enter' });
+    await new Promise(r => setImmediate(r));
+
+    assert.strictEqual(eventos.length, 2);
+    assert.strictEqual(eventos[1].nome, 'pomodoro:comando');
+    assert.strictEqual(eventos[1].dados.acao, 'proximo');
+  });
+
+  test('Hero Command Bar CLI: filtra lista de comandos dinamicamente na digitação', async () => {
+    const root = createMockEl('div');
+
+    const mockApp = {
+      vault: {
+        adapter: { getResourcePath: () => 'app://local/banner.jpg' },
+        getMarkdownFiles: () => []
+      },
+      workspace: { openLinkText: async () => {} }
+    };
+
+    const mockCtx = {
+      root,
+      app: mockApp,
+      now: new Date(2026, 9, 24),
+      formattedDate: 'sábado, 24 de outubro de 2026',
+      garantirNotaDiaria: async () => ({}),
+      criarNotaInstantanea: () => {},
+      events: { emit: () => {} },
+      UIKit
+    };
+
+    await moduloBanner.render(mockCtx);
+
+    const input = root.querySelector('.snoopy-omni-input');
+    const previewBox = root.querySelector('.snoopy-omni-preview-box');
+
+    // Digita prefixo > t
+    input.value = '> t';
+    input.dispatchEvent('input');
+
+    assert.strictEqual(previewBox.style.display, 'flex');
+    assert.match(previewBox.innerHTML, /tarefa/i);
+    // Não deve exibir pomodoro nas opções filtradas de tarefa
+    assert.doesNotMatch(previewBox.innerHTML, /pomodoro start/i);
   });
 });

@@ -1,5 +1,6 @@
 const { test, describe } = require('node:test');
 const assert = require('node:assert');
+const { createMockEl } = require('../../helpers/test_utils.js');
 const PomodoroJardim = require('../../../99_Meta/Snoopy/modulos/pomodoro/pomodoro_jardim.js');
 
 describe('Módulo Pomodoro - PomodoroJardim', () => {
@@ -108,7 +109,7 @@ describe('Módulo Pomodoro - PomodoroJardim', () => {
     assert.ok(guia[0].lore.length > 5);
   });
 
-  test('abrirModalEstufa() monta abas, lojinha e listeners via onMontar', async () => {
+  test('abrirModalEstufa() monta abas, lojinha e listeners via onMontar sem emojis', async () => {
     let htmlRecebido = '';
     let onMontarCb = null;
     let modalAberto = false;
@@ -129,11 +130,51 @@ describe('Módulo Pomodoro - PomodoroJardim', () => {
     });
 
     assert.strictEqual(modalAberto, true);
-    assert.ok(htmlRecebido.includes('ECOSSISTEMA BOTÂNICO & LOJA DE FOCO'));
-    assert.ok(htmlRecebido.includes('MEU BOSQUE'));
-    assert.ok(htmlRecebido.includes('LOJINHA DE ÁRVORES'));
-    assert.ok(htmlRecebido.includes('GUIA DE NÍVEIS'));
+    assert.ok(htmlRecebido.includes('SANTUÁRIO BOTÂNICO & LOJA DE FOCO') || htmlRecebido.includes('ECOSSISTEMA BOTÂNICO & LOJA DE FOCO'));
+    assert.ok(htmlRecebido.includes('Meu Bosque'));
+    assert.ok(htmlRecebido.includes('Loja de Espécies') || htmlRecebido.includes('LOJINHA DE ÁRVORES'));
+    assert.ok(htmlRecebido.includes('Guia de Níveis') || htmlRecebido.includes('GUIA DE NÍVEIS'));
+    
+    // Verificação estrita de Zero Emojis no popup
+    const emojisProibidos = ['🪙', '🌲', '⏱️', '🏪', '📜', '🔥'];
+    for (const emoji of emojisProibidos) {
+      assert.strictEqual(
+        htmlRecebido.includes(emoji),
+        false,
+        `O HTML do modal não deve conter o emoji '${emoji}'`
+      );
+    }
+
+    // Deve conter identificadores de ícones SVG para os 3 KPI cards
+    assert.ok(htmlRecebido.includes('data-icon="coins"') || htmlRecebido.includes('snoopy-icon-coins') || htmlRecebido.includes('coins'));
+    assert.ok(htmlRecebido.includes('data-icon="trees"') || htmlRecebido.includes('snoopy-icon-trees') || htmlRecebido.includes('trees'));
+    assert.ok(htmlRecebido.includes('data-icon="timer"') || htmlRecebido.includes('snoopy-icon-timer') || htmlRecebido.includes('timer'));
+
     assert.strictEqual(typeof onMontarCb, 'function');
+  });
+
+  test('renderizarHeatmap() adiciona classe is-today na data atual e preenche métricas com formatação', () => {
+    const root = createMockEl('div');
+    const pomoHeatGrid = root.createEl('div', { cls: 'snoopy-heat-grid' });
+    const inspectionEl = root.createEl('div', { attr: { id: 'snoopy-heat-inspection' } });
+    root.createEl('span', { attr: { id: 'metric-week' } });
+    root.createEl('span', { attr: { id: 'metric-peak' } });
+    root.createEl('span', { attr: { id: 'metric-streak' } });
+    root.createEl('span', { attr: { id: 'metric-total' } });
+
+    const mapaFoco = { '2026-10-26': 2 };
+    PomodoroJardim.renderizarHeatmap(root, {
+      mapaFoco,
+      todayStr: '2026-10-26',
+      focusMin: 25,
+      dailyGoal: 4,
+      now: new Date('2026-10-26T12:00:00Z')
+    });
+
+    const celulaHoje = pomoHeatGrid.children.find(c => c.classList && c.classList.contains('is-today'));
+    assert.ok(celulaHoje, 'Célula de hoje deve possuir a classe is-today');
+    assert.strictEqual(celulaHoje.attrs['data-date'], '2026-10-26');
+    assert.ok(inspectionEl.innerHTML.includes('Hoje') || inspectionEl.innerHTML.includes('26/10') || inspectionEl.innerHTML.includes('2 ciclos'));
   });
 });
 

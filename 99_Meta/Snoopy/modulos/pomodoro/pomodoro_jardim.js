@@ -295,7 +295,7 @@ const PomodoroJardim = {
 
     if (renderIcon) {
       pAv.innerHTML = '';
-      renderIcon(pAv, iconName, { size: 30, color: iconColor });
+      renderIcon(pAv, iconName, { size: 22, color: iconColor });
     }
     if (pTit) pTit.textContent = estagio.titulo;
     if (pBdg) pBdg.textContent = estagio.badge;
@@ -312,7 +312,7 @@ const PomodoroJardim = {
 
     if (pTaxa) {
       const ganhoCiclo = Math.max(1, Math.floor(focusMin / 5));
-      pTaxa.textContent = `Ciclo ${focusMin}m = ${ganhoCiclo} 🪙`;
+      pTaxa.textContent = `Ciclo ${focusMin}m = +${ganhoCiclo} seiva`;
     }
   },
 
@@ -377,15 +377,19 @@ const PomodoroJardim = {
       pomoHeatGrid.innerHTML = '';
       stats.dias.forEach((d) => {
         let celula = null;
+        const ehHoje = d.dataStr === todayStr;
+        const classes = ['snoopy-heat-cell', `heat-lvl-${d.nivel}`];
+        if (ehHoje) classes.push('is-today', 'is-selected');
+
         if (typeof pomoHeatGrid.createEl === 'function') {
           celula = pomoHeatGrid.createEl('div', {
-            cls: `snoopy-heat-cell heat-lvl-${d.nivel}`,
+            cls: classes.join(' '),
             attr: {
-              title: `${d.dataStr}: ${d.valor} ciclo(s) (${d.valor * focusMin} min)`,
+              title: `${d.dataStr}: ${d.valor} ciclo(s) (${d.valor * focusMin} min)${ehHoje ? ' (Hoje)' : ''}`,
               'data-date': d.dataStr,
               role: 'button',
               tabindex: '0',
-              'aria-label': `${d.dataStr}: ${d.valor} ciclo(s)`
+              'aria-label': `${d.dataStr}: ${d.valor} ciclo(s)${ehHoje ? ' (Hoje)' : ''}`
             }
           });
         }
@@ -398,10 +402,19 @@ const PomodoroJardim = {
 
             const info = this.obterDetalhesDiaHeatmap(mapaFoco, d.dataStr, focusMin, dailyGoal);
             const statusCor = info.ciclos > 0 ? '#86efac' : '#71717a';
-            inspectionEl.innerHTML = `<span style="color: ${statusCor}; font-weight: 600;">${info.label}</span>`;
+            const prefixo = d.dataStr === todayStr ? `Hoje (${info.dataFormatada})` : info.dataFormatada;
+            const metaTxt = info.atingiuMeta ? ' • Meta Diária' : '';
+            inspectionEl.innerHTML = `<span style="color: ${statusCor}; font-weight: 600;">${prefixo} • ${info.ciclos} ciclos (${info.minutos} min)${metaTxt}</span>`;
           };
 
           celula.onclick = ativarInspecao;
+          celula.onmouseenter = () => {
+            const info = this.obterDetalhesDiaHeatmap(mapaFoco, d.dataStr, focusMin, dailyGoal);
+            const statusCor = info.ciclos > 0 ? '#86efac' : '#71717a';
+            const prefixo = d.dataStr === todayStr ? `Hoje (${info.dataFormatada})` : info.dataFormatada;
+            const metaTxt = info.atingiuMeta ? ' • Meta Diária' : '';
+            inspectionEl.innerHTML = `<span style="color: ${statusCor}; font-weight: 600;">${prefixo} • ${info.ciclos} ciclos (${info.minutos} min)${metaTxt}</span>`;
+          };
           celula.onkeydown = (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
@@ -410,6 +423,24 @@ const PomodoroJardim = {
           };
         }
       });
+
+      pomoHeatGrid.onmouseleave = () => {
+        if (!inspectionEl) return;
+        const sel = pomoHeatGrid.querySelector('.snoopy-heat-cell.is-selected');
+        const dataAlvo = (sel && typeof sel.getAttribute === 'function' ? sel.getAttribute('data-date') : null) || todayStr;
+        const info = this.obterDetalhesDiaHeatmap(mapaFoco, dataAlvo, focusMin, dailyGoal);
+        const statusCor = info.ciclos > 0 ? '#86efac' : '#71717a';
+        const prefixo = dataAlvo === todayStr ? `Hoje (${info.dataFormatada})` : info.dataFormatada;
+        const metaTxt = info.atingiuMeta ? ' • Meta Diária' : '';
+        inspectionEl.innerHTML = `<span style="color: ${statusCor}; font-weight: 600;">${prefixo} • ${info.ciclos} ciclos (${info.minutos} min)${metaTxt}</span>`;
+      };
+    }
+
+    if (inspectionEl) {
+      const infoHoje = this.obterDetalhesDiaHeatmap(mapaFoco, todayStr, focusMin, dailyGoal);
+      const statusCor = infoHoje.ciclos > 0 ? '#86efac' : '#71717a';
+      const metaTxt = infoHoje.atingiuMeta ? ' • Meta Diária' : '';
+      inspectionEl.innerHTML = `<span style="color: ${statusCor}; font-weight: 600;">Hoje (${infoHoje.dataFormatada}) • ${infoHoje.ciclos} ciclos (${infoHoje.minutos} min)${metaTxt}</span>`;
     }
 
     const mWeek = root.querySelector('#metric-week');
@@ -475,15 +506,15 @@ const PomodoroJardim = {
               </div>
             </div>
             <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.05);">
-              <span style="font-weight: 800; font-size: 12px; color: ${desbloqueada ? '#86efac' : '#facc15'};">
-                ${desbloqueada ? 'Desbloqueada' : `${item.preco} 🪙`}
+              <span style="font-weight: 800; font-size: 12px; color: ${desbloqueada ? '#86efac' : '#facc15'}; display: inline-flex; align-items: center; gap: 4px;">
+                ${desbloqueada ? 'Desbloqueada' : `<span class="snoopy-loja-coin-icon" data-icon="coins" data-color="#facc15"></span> <span>${item.preco} seiva</span>`}
               </span>
               <div>
                 ${ativa
-                  ? `<span class="snoopy-micro" style="padding: 3px 8px; border-radius: 4px; background: rgba(74, 222, 128, 0.15); color: #86efac; font-weight: 700; font-size: 10.5px;">✓ Em Cultivo</span>`
+                  ? `<span class="snoopy-micro" style="padding: 3px 8px; border-radius: 4px; background: rgba(74, 222, 128, 0.15); color: #86efac; font-weight: 700; font-size: 10.5px; display: inline-flex; align-items: center; gap: 4px;"><span class="snoopy-loja-check-icon" data-icon="check"></span> Em Cultivo</span>`
                   : desbloqueada
                     ? `<button class="snoopy-btn-action snoopy-btn-sm btn-equipar-arvore" data-id="${item.id}" style="font-size: 11px; padding: 3px 10px; cursor: pointer;">Plantar Esta</button>`
-                    : `<button class="snoopy-btn-primary snoopy-btn-sm btn-comprar-arvore" data-id="${item.id}" style="font-size: 11px; padding: 3px 10px; cursor: pointer;">Desbloquear (${item.preco} 🪙)</button>`
+                    : `<button class="snoopy-btn-primary snoopy-btn-sm btn-comprar-arvore" data-id="${item.id}" style="font-size: 11px; padding: 3px 10px; cursor: pointer;">Desbloquear (${item.preco} seiva)</button>`
                 }
               </div>
             </div>
@@ -495,12 +526,12 @@ const PomodoroJardim = {
     const modalObj = ModalFactory.abrir({
       maxWidth: '680px',
       htmlContent: `
-        <div class="snoopy-card-header" style="margin-bottom: 12px;">
+        <div class="snoopy-card-header" style="margin-bottom: 14px;">
           <div style="display: flex; align-items: center; gap: 8px;">
             <span id="snoopy-modal-estufa-header-icon"></span>
             <div>
-              <span class="snoopy-section-title">ECOSSISTEMA BOTÂNICO & LOJA DE FOCO</span>
-              <div class="snoopy-card-subtitle">Cultive árvores a cada pomodoro, ganhe moedas e desbloqueie novas espécies</div>
+              <span class="snoopy-section-title">SANTUÁRIO BOTÂNICO & LOJA DE FOCO</span>
+              <div class="snoopy-card-subtitle">Cultive árvores a cada pomodoro, ganhe moedas de seiva e desbloqueie novas espécies</div>
             </div>
           </div>
           <button class="snoopy-modal-close" title="Fechar"></button>
@@ -509,38 +540,66 @@ const PomodoroJardim = {
         <!-- Barra de Economia & Status -->
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px;">
           <div style="background: #13131c; border: 1px solid rgba(250, 204, 21, 0.25); border-radius: 8px; padding: 10px 14px; text-align: center;">
-            <div style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; color: #facc15; font-weight: 800;">Moedas de Seiva</div>
-            <div id="snoopy-store-balance" style="font-size: 18px; font-weight: 800; color: #ffffff; margin-top: 2px;">${storeData.moedas} 🪙</div>
-            <div class="snoopy-micro" style="color: #a1a1aa; font-size: 10px;">+1 moeda a cada 5m de foco</div>
+            <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: #facc15; font-weight: 800;">Moedas de Seiva</div>
+            <div id="snoopy-store-balance" style="font-size: 18px; font-weight: 800; color: #ffffff; margin-top: 3px; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+              <span class="snoopy-modal-kpi-icon" data-icon="coins" data-color="#facc15"></span>
+              <span id="snoopy-store-balance-num">${storeData.moedas}</span>
+            </div>
+            <div class="snoopy-micro" style="color: #a1a1aa; font-size: 10px; margin-top: 2px;">+1 seiva a cada 5m de foco</div>
           </div>
           <div style="background: #13131c; border: 1px solid rgba(74, 222, 128, 0.2); border-radius: 8px; padding: 10px 14px; text-align: center;">
-            <div style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; color: #86efac; font-weight: 800;">Árvores Hoje</div>
-            <div style="font-size: 18px; font-weight: 800; color: #ffffff; margin-top: 2px;">${arvores.length} 🌲</div>
-            <div class="snoopy-micro" style="color: #a1a1aa; font-size: 10px;">${completedCyclesToday} ciclos consolidados</div>
+            <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: #86efac; font-weight: 800;">Árvores Hoje</div>
+            <div style="font-size: 18px; font-weight: 800; color: #ffffff; margin-top: 3px; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+              <span class="snoopy-modal-kpi-icon" data-icon="trees" data-color="#86efac"></span>
+              <span>${arvores.length}</span>
+            </div>
+            <div class="snoopy-micro" style="color: #a1a1aa; font-size: 10px; margin-top: 2px;">${completedCyclesToday} ciclos consolidados</div>
           </div>
           <div style="background: #13131c; border: 1px solid rgba(96, 165, 250, 0.2); border-radius: 8px; padding: 10px 14px; text-align: center;">
-            <div style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; color: #93c5fd; font-weight: 800;">Tempo de Foco</div>
-            <div style="font-size: 18px; font-weight: 800; color: #ffffff; margin-top: 2px;">${completedCyclesToday * focusMin}m ⏱️</div>
-            <div class="snoopy-micro" style="color: #a1a1aa; font-size: 10px;">acumulado hoje</div>
+            <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: #93c5fd; font-weight: 800;">Tempo de Foco</div>
+            <div style="font-size: 18px; font-weight: 800; color: #ffffff; margin-top: 3px; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+              <span class="snoopy-modal-kpi-icon" data-icon="timer" data-color="#60a5fa"></span>
+              <span>${completedCyclesToday * focusMin}m</span>
+            </div>
+            <div class="snoopy-micro" style="color: #a1a1aa; font-size: 10px; margin-top: 2px;">acumulado hoje</div>
           </div>
         </div>
 
         <!-- Abas de Navegação -->
-        <div class="snoopy-toolbar" style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 6px; margin-bottom: 12px; gap: 6px;">
-          <button id="snoopy-tab-btn-bosque" class="snoopy-btn-tab snoopy-btn-sm active">🌲 MEU BOSQUE</button>
-          <button id="snoopy-tab-btn-loja" class="snoopy-btn-tab snoopy-btn-sm">🏪 LOJINHA DE ÁRVORES</button>
-          <button id="snoopy-tab-btn-guia" class="snoopy-btn-tab snoopy-btn-sm">📜 GUIA DE NÍVEIS</button>
+        <div class="snoopy-toolbar" style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 6px; margin-bottom: 14px; gap: 6px;">
+          <button id="snoopy-tab-btn-bosque" class="snoopy-btn-tab snoopy-btn-sm active" style="display: inline-flex; align-items: center; gap: 6px;">
+            <span class="snoopy-tab-icon" data-icon="trees"></span>
+            <span>Meu Bosque</span>
+          </button>
+          <button id="snoopy-tab-btn-loja" class="snoopy-btn-tab snoopy-btn-sm" style="display: inline-flex; align-items: center; gap: 6px;">
+            <span class="snoopy-tab-icon" data-icon="shopping-bag"></span>
+            <span>Loja de Espécies</span>
+          </button>
+          <button id="snoopy-tab-btn-guia" class="snoopy-btn-tab snoopy-btn-sm" style="display: inline-flex; align-items: center; gap: 6px;">
+            <span class="snoopy-tab-icon" data-icon="book-open"></span>
+            <span>Guia de Níveis</span>
+          </button>
         </div>
 
         <!-- Painel 1: Meu Bosque -->
         <div id="snoopy-panel-bosque" style="display: block;">
-          <div style="background: #13131c; border: 1px solid rgba(74, 222, 128, 0.2); border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;">
-            <div>
-              <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #86efac; font-weight: 800;">Estágio Atual de Hoje</div>
-              <div style="font-size: 15px; font-weight: 800; color: #ffffff; margin-top: 2px;">${estagioAtual.titulo} (${completedCyclesToday} ciclos • ${completedCyclesToday * focusMin}m)</div>
-              <div class="snoopy-meta" style="font-size: 11px; color: #a1a1aa; margin-top: 2px;">${estagioAtual.fraseInspiradora || estagioAtual.descricao}</div>
+          <div style="background: #13131c; border: 1px solid rgba(74, 222, 128, 0.2); border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+              <div>
+                <div style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; color: #86efac; font-weight: 800;">Estágio Atual de Hoje</div>
+                <div style="font-size: 15px; font-weight: 800; color: #ffffff; margin-top: 1px;">${estagioAtual.titulo} (${completedCyclesToday} ciclos • ${completedCyclesToday * focusMin}m)</div>
+              </div>
+              <span class="snoopy-micro" style="padding: 3px 8px; border-radius: 4px; background: rgba(74, 222, 128, 0.15); color: #86efac; font-weight: 700; font-size: 11px;">${estagioAtual.badge}</span>
             </div>
-            <span class="snoopy-micro" style="padding: 3px 8px; border-radius: 4px; background: rgba(74, 222, 128, 0.15); color: #86efac; font-weight: 700; font-size: 11px;">${estagioAtual.badge}</span>
+            <div class="snoopy-prog-track" style="height: 4px; width: 100%; border-radius: 2px; background: rgba(255, 255, 255, 0.08); overflow: hidden;">
+              <div style="width: ${estagioAtual.pct}%; height: 100%; background: #4ade80; border-radius: 2px; transition: width 0.3s ease;"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #a1a1aa;">
+              <span>${estagioAtual.fraseInspiradora || estagioAtual.descricao}</span>
+              <span style="font-weight: 700; color: #86efac; white-space: nowrap; margin-left: 8px;">
+                ${estagioAtual.proximoNivel ? `Próximo: ${estagioAtual.proximoNivel.nome} (+${estagioAtual.proximoNivel.ciclosFaltantes} foco)` : 'Nível Mestre Atingido'}
+              </span>
+            </div>
           </div>
 
           <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #a1a1aa; font-weight: 700; margin-bottom: 8px;">Árvores Plantadas Hoje (${arvores.length})</div>
@@ -557,7 +616,11 @@ const PomodoroJardim = {
                     </div>
                   `).join('')}
                 </div>`
-              : `<div class="snoopy-meta" style="font-size: 11.5px; color: #71717a; font-style: italic; padding: 16px 0; text-align: center;">Nenhuma árvore colhida hoje ainda. Inicie seu foco para plantar seu bosque!</div>`
+              : `<div style="text-align: center; padding: 22px 16px; background: rgba(255, 255, 255, 0.02); border: 1px dashed rgba(255, 255, 255, 0.08); border-radius: 8px;">
+                  <div class="snoopy-modal-empty-icon" data-icon="sprout" style="width: 24px; height: 24px; margin: 0 auto 6px auto; opacity: 0.4;"></div>
+                  <div style="font-size: 12px; font-weight: 700; color: #d4d4d8;">Nenhuma árvore colhida hoje ainda</div>
+                  <div style="font-size: 11px; color: #71717a; margin-top: 2px;">Inicie um ciclo de foco no Cockpit Pomodoro para cultivar sua primeira espécie.</div>
+                </div>`
             }
           </div>
         </div>
@@ -607,6 +670,22 @@ const PomodoroJardim = {
           const hIcon = modalBox.querySelector('#snoopy-modal-estufa-header-icon');
           if (hIcon) renderIcon(hIcon, 'trees', { size: 18, color: '#86efac' });
 
+          modalBox.querySelectorAll('.snoopy-modal-kpi-icon').forEach((el) => {
+            const ic = el.getAttribute('data-icon');
+            const cor = el.getAttribute('data-color') || '#ffffff';
+            if (ic) renderIcon(el, ic, { size: 16, color: cor });
+          });
+
+          modalBox.querySelectorAll('.snoopy-tab-icon').forEach((el) => {
+            const ic = el.getAttribute('data-icon');
+            if (ic) renderIcon(el, ic, { size: 13, color: 'currentColor' });
+          });
+
+          modalBox.querySelectorAll('.snoopy-modal-empty-icon').forEach((el) => {
+            const ic = el.getAttribute('data-icon');
+            if (ic) renderIcon(el, ic, { size: 24, color: '#86efac' });
+          });
+
           modalBox.querySelectorAll('.snoopy-estufa-icon').forEach((el) => {
             const ic = el.getAttribute('data-icon');
             if (ic) renderIcon(el, ic, { size: 16, color: '#86efac' });
@@ -622,6 +701,17 @@ const PomodoroJardim = {
             const ic = el.getAttribute('data-icon');
             const cor = el.getAttribute('data-color') || '#86efac';
             if (ic) renderIcon(el, ic, { size: 18, color: cor });
+          });
+
+          modalBox.querySelectorAll('.snoopy-loja-coin-icon').forEach((el) => {
+            const ic = el.getAttribute('data-icon') || 'coins';
+            const cor = el.getAttribute('data-color') || '#facc15';
+            renderIcon(el, ic, { size: 12, color: cor });
+          });
+
+          modalBox.querySelectorAll('.snoopy-loja-check-icon').forEach((el) => {
+            const ic = el.getAttribute('data-icon') || 'check';
+            renderIcon(el, ic, { size: 11, color: '#86efac' });
           });
         };
         renderIconsNoModal();
@@ -660,8 +750,8 @@ const PomodoroJardim = {
               if (typeof Notice !== 'undefined') new Notice(res.mensagem);
               if (res.sucesso) {
                 storeData = res.estado;
-                const saldoEl = modalBox.querySelector('#snoopy-store-balance');
-                if (saldoEl) saldoEl.textContent = `${storeData.moedas} 🪙`;
+                const saldoNumEl = modalBox.querySelector('#snoopy-store-balance-num');
+                if (saldoNumEl) saldoNumEl.textContent = String(storeData.moedas);
                 const lojaGrid = modalBox.querySelector('#snoopy-loja-grid');
                 if (lojaGrid) {
                   lojaGrid.innerHTML = renderCatalogoCards(storeData);
@@ -678,7 +768,7 @@ const PomodoroJardim = {
               const id = btn.getAttribute('data-id');
               if (!id || !JardimStore || !app) return;
               const res = await JardimStore.selecionarArvore(app, id);
-              if (typeof Notice !== 'undefined') new Notice(`🌱 Árvore selecionada com sucesso!`);
+              if (typeof Notice !== 'undefined') new Notice('Árvore selecionada com sucesso!');
               if (res.sucesso) {
                 storeData = res.estado;
                 const lojaGrid = modalBox.querySelector('#snoopy-loja-grid');
