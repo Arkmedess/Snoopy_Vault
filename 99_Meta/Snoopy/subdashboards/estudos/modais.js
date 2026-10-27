@@ -67,20 +67,23 @@ class ModaisEstudos {
 
   /**
    * Abre o modal para cadastro de uma nova matéria.
+   *
+   * @param {string} [areaPadrao='Programação'] - Área inicial pré-selecionada.
    */
-  abrirModalNovaMateria() {
+  abrirModalNovaMateria(areaPadrao = 'Programação') {
+    const areaInicial = (areaPadrao && areaPadrao !== 'Todas') ? areaPadrao : 'Programação';
     const modalBg = document.createElement('div');
     modalBg.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.82); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;';
 
     const modalBox = document.createElement('div');
-    modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 480px; width: 100%; padding: 24px; box-shadow: 0 12px 45px rgba(0,0,0,0.85); display: flex; flex-direction: column; gap: 14px; font-family: var(--snoopy-font-sans);';
+    modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 480px; width: 100%; padding: 24px; display: flex; flex-direction: column; gap: 14px; font-family: var(--snoopy-font-sans);';
 
     const areasSugeridas = ['Programação', 'ENEM', 'Concurso', 'Vestibular', 'Economia', 'Faculdade', 'Geral'];
 
     modalBox.innerHTML = `
       <div class="snoopy-card-header">
         <div>
-          <div class="snoopy-section-title">+ Nova Matéria de Estudo</div>
+          <div class="snoopy-section-title">Nova Matéria de Estudo</div>
           <div class="snoopy-meta">Cadastre uma matéria para cronometrar, agendar e revisar</div>
         </div>
         <button id="modal-close-mat" class="snoopy-modal-close" title="Fechar"></button>
@@ -100,7 +103,7 @@ class ModaisEstudos {
             </button>
           `).join('')}
         </div>
-        <input id="modal-mat-area" type="text" value="Programação" placeholder="Ou digite outra área personalizada..." style="width: 100%; background: #181824; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 8px; color: #ffffff; font-size: 11.5px; outline: none;">
+        <input id="modal-mat-area" type="text" value="${areaInicial}" placeholder="Ou digite outra área personalizada..." style="width: 100%; background: #181824; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 8px; color: #ffffff; font-size: 11.5px; outline: none;">
       </div>
 
       <div>
@@ -165,6 +168,7 @@ class ModaisEstudos {
 title: "${cleanNome}"
 area: "${area}"
 categoria: "${area}"
+disciplina: "${area}"
 status: "Ativo"
 minutos_foco: 0
 questoes_feitas: 0
@@ -236,7 +240,7 @@ Conceito::Definição
     modalBg.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.82); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;';
 
     const modalBox = document.createElement('div');
-    modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 460px; width: 100%; padding: 24px; box-shadow: 0 12px 45px rgba(0,0,0,0.85); display: flex; flex-direction: column; gap: 14px; font-family: var(--snoopy-font-sans);';
+    modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 460px; width: 100%; padding: 24px; display: flex; flex-direction: column; gap: 14px; font-family: var(--snoopy-font-sans);';
 
     const provasStr = (disc.provas || []).join(', ');
     const estado = this.getEstado();
@@ -332,6 +336,9 @@ Conceito::Definição
         if (/categoria:\s*["'][^"']*["']/.test(updated)) updated = updated.replace(/categoria:\s*["'][^"']*["']/, `categoria: "${nArea}"`);
         else if (/categoria:\s*[^\n]+/.test(updated)) updated = updated.replace(/categoria:\s*[^\n]+/, `categoria: "${nArea}"`);
 
+        if (/disciplina:\s*["'][^"']*["']/.test(updated)) updated = updated.replace(/disciplina:\s*["'][^"']*["']/, `disciplina: "${nArea}"`);
+        else if (updated.startsWith('---')) updated = updated.replace(/^---\n/, `---\ndisciplina: "${nArea}"\n`);
+
         if (/minutos_foco:\s*\d+/.test(updated)) updated = updated.replace(/minutos_foco:\s*\d+/, `minutos_foco: ${nMin}`);
         else if (updated.startsWith('---')) updated = updated.replace(/^---\n/, `---\nminutos_foco: ${nMin}\n`);
 
@@ -369,16 +376,24 @@ Conceito::Definição
    *
    * @param {Array<object>} todasDisciplinas - Lista de todas as disciplinas cadastradas.
    */
-  abrirModalOrganizarCiclo(todasDisciplinas) {
+  abrirModalOrganizarCiclo(rawDisciplinas) {
+    const todasDisciplinas = [];
+    if (rawDisciplinas && typeof rawDisciplinas.forEach === 'function') {
+      rawDisciplinas.forEach(d => todasDisciplinas.push(d));
+    }
+
     const modalBg = document.createElement('div');
     modalBg.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;';
 
     const modalBox = document.createElement('div');
-    modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 520px; width: 100%; padding: 24px; box-shadow: 0 12px 45px rgba(0,0,0,0.85); display: flex; flex-direction: column; gap: 14px; font-family: var(--snoopy-font-sans);';
+    modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 520px; width: 100%; padding: 24px; display: flex; flex-direction: column; gap: 14px; font-family: var(--snoopy-font-sans);';
 
     const estado = this.getEstado();
     let filaTemp = Array.isArray(estado.cicloOrdem) && estado.cicloOrdem.length > 0
-      ? [...estado.cicloOrdem]
+      ? estado.cicloOrdem.map(chave => {
+          const found = todasDisciplinas.find(d => d.nome === chave || d.path === chave || (d.file && d.file.name === chave));
+          return found ? found.nome : chave;
+        })
       : todasDisciplinas.map(d => d.nome);
 
     filaTemp = Array.from(new Set(filaTemp)).filter(nome => todasDisciplinas.some(d => d.nome === nome));
@@ -527,12 +542,16 @@ Conceito::Definição
    * @param {object} [materiaPreSelecionada=null] - Disciplina opcionalmente pré-selecionada.
    */
   abrirModalSessao(materiaPreSelecionada = null) {
-    const disciplinas = this.obterDisciplinas();
+    const rawDiscs = this.obterDisciplinas();
+    const disciplinas = [];
+    if (rawDiscs && typeof rawDiscs.forEach === 'function') {
+      rawDiscs.forEach(d => disciplinas.push(d));
+    }
     const modalBg = document.createElement('div');
     modalBg.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;';
 
     const modalBox = document.createElement('div');
-    modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 440px; width: 100%; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 12px; font-family: var(--snoopy-font-sans);';
+    modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 440px; width: 100%; padding: 20px; display: flex; flex-direction: column; gap: 12px; font-family: var(--snoopy-font-sans);';
 
     modalBox.innerHTML = `
       <div class="snoopy-card-header">
@@ -570,12 +589,16 @@ Conceito::Definição
 
       <div style="display: flex; gap: 8px;">
         <div style="flex: 1;">
-          <div class="snoopy-modal-label">Questões Resolvidas:</div>
+          <div class="snoopy-modal-label">Questões Feitas:</div>
           <input id="modal-sess-feitas" type="number" min="0" value="10" style="width: 100%; background: #181824; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 6px; color: #ffffff; font-size: 11.5px; outline: none;">
         </div>
         <div style="flex: 1;">
           <div class="snoopy-modal-label">Acertos:</div>
-          <input id="modal-sess-acertos" type="number" min="0" value="8" style="width: 100%; background: #181824; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 6px; color: #ffffff; font-size: 11.5px; outline: none;">
+          <input id="modal-sess-acertos" type="number" min="0" value="8" style="width: 100%; background: #181824; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 6px; color: #86efac; font-weight: bold; font-size: 11.5px; outline: none;">
+        </div>
+        <div style="flex: 1;">
+          <div class="snoopy-modal-label">Erros:</div>
+          <input id="modal-sess-erros" type="number" min="0" value="2" style="width: 100%; background: #181824; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 6px; color: #fca5a5; font-weight: bold; font-size: 11.5px; outline: none;">
         </div>
       </div>
 
@@ -583,6 +606,13 @@ Conceito::Definição
         <input id="modal-sess-rev" type="checkbox" checked style="accent-color: var(--text-normal); cursor: pointer;">
         <label for="modal-sess-rev" style="font-size: 11.5px; color: #a1a1aa; cursor: pointer;">
           Programar Revisão Espaçada inicial (1 dia)
+        </label>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+        <input id="modal-sess-sync-home" type="checkbox" checked style="accent-color: var(--text-normal); cursor: pointer;">
+        <label for="modal-sess-sync-home" style="font-size: 11.5px; color: #e0e7ff; cursor: pointer;">
+          Registrar sessão concluída na Nota Diária da Home
         </label>
       </div>
 
@@ -600,6 +630,18 @@ Conceito::Definição
     modalBox.querySelector('#modal-close-sess').onclick = fechar;
     modalBox.querySelector('#modal-cancel-sess').onclick = fechar;
 
+    const inpFeitasMod = modalBox.querySelector('#modal-sess-feitas');
+    const inpAcertosMod = modalBox.querySelector('#modal-sess-acertos');
+    const inpErrosMod = modalBox.querySelector('#modal-sess-erros');
+    const syncErrosMod = () => {
+      if (!inpFeitasMod || !inpAcertosMod || !inpErrosMod) return;
+      const f = parseInt(inpFeitasMod.value, 10) || 0;
+      const a = parseInt(inpAcertosMod.value, 10) || 0;
+      inpErrosMod.value = String(Math.max(0, f - a));
+    };
+    if (inpFeitasMod) inpFeitasMod.oninput = syncErrosMod;
+    if (inpAcertosMod) inpAcertosMod.oninput = syncErrosMod;
+
     modalBox.querySelector('#modal-save-sess').onclick = async () => {
       const matPath = modalBox.querySelector('#modal-sess-mat').value;
       const minutos = parseInt(modalBox.querySelector('#modal-sess-min').value, 10) || 0;
@@ -607,6 +649,8 @@ Conceito::Definição
       const feitas = parseInt(modalBox.querySelector('#modal-sess-feitas').value, 10) || 0;
       const acertos = parseInt(modalBox.querySelector('#modal-sess-acertos').value, 10) || 0;
       const agendarRev = modalBox.querySelector('#modal-sess-rev').checked;
+      const syncHomeEl = modalBox.querySelector('#modal-sess-sync-home');
+      const syncHome = syncHomeEl ? syncHomeEl.checked : true;
 
       const file = this.app.vault.getAbstractFileByPath(matPath);
       const nomeMateria = file ? file.basename : "Estudos";
@@ -666,6 +710,26 @@ Conceito::Definição
         await this.app.vault.modify(file, updated);
       }
 
+      if (syncHome && this.app && this.app.vault) {
+        try {
+          const dailyPath = `01_Inbox/Diário/${todayStr}.md`;
+          const resumoQuestoes = feitas > 0 ? ` • ${acertos}/${feitas} questões` : '';
+          const linhaSessao = `- [x] Sessão de estudo: [[03_Estudos/${nomeMateria}.md|${nomeMateria}]] (${minutos}m${resumoQuestoes}) 📅 ${todayStr} ✅ ${todayStr} #estudo`;
+          const dailyFile = this.app.vault.getAbstractFileByPath(dailyPath);
+          if (dailyFile) {
+            let content = await this.app.vault.read(dailyFile);
+            if (/##\s+Tarefas/i.test(content)) {
+              content = content.replace(/(##\s+Tarefas[^\n]*\n)/i, `$1${linhaSessao}\n`);
+            } else {
+              content = `${content.trimEnd()}\n\n## Tarefas\n${linhaSessao}\n`;
+            }
+            await this.app.vault.modify(dailyFile, content);
+          }
+        } catch (err) {
+          console.error('[Snoopy Estudos] Erro ao sincronizar sessão com Nota Diária:', err);
+        }
+      }
+
       this._notify(`Sessão registrada: ${minutos}m em ${nomeMateria}!`);
       fechar();
       this.onReload();
@@ -682,7 +746,7 @@ Conceito::Definição
     modalBg.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;';
 
     const modalBox = document.createElement('div');
-    modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 420px; width: 100%; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 12px; font-family: var(--snoopy-font-sans);';
+    modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 420px; width: 100%; padding: 20px; display: flex; flex-direction: column; gap: 12px; font-family: var(--snoopy-font-sans);';
 
     modalBox.innerHTML = `
       <div class="snoopy-card-header">
@@ -731,6 +795,152 @@ Conceito::Definição
         fechar();
         this.onReload();
       }
+    };
+  }
+
+  /**
+   * Abre o modal para criar uma tarefa vinculada à matéria na nota diária.
+   * A tarefa é persistida com metadados padrão do cofre (data, pomodoros e tag #estudo)
+   * integrando-se nativamente com a tabela principal de tarefas da Home.
+   *
+   * @param {object} disc - Objeto da matéria selecionada.
+   */
+  abrirModalCriarTarefaMateria(disc = {}) {
+    if (!disc || !disc.nome) return;
+
+    const modalBg = document.createElement('div');
+    modalBg.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.82); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;';
+
+    const modalBox = document.createElement('div');
+    modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 440px; width: 100%; padding: 22px; display: flex; flex-direction: column; gap: 14px; font-family: var(--snoopy-font-sans);';
+
+    const todayStr = this._getTodayStr();
+    const cleanNome = disc.nome;
+
+    modalBox.innerHTML = `
+      <div class="snoopy-card-header">
+        <div>
+          <div class="snoopy-section-title">Agendar Tarefa de Estudo</div>
+          <div class="snoopy-meta">Vincular ${cleanNome} à lista principal de tarefas</div>
+        </div>
+        <button id="modal-close-task" class="snoopy-modal-close" title="Fechar"></button>
+      </div>
+
+      <div>
+        <div class="snoopy-modal-label">Descrição da Tarefa:</div>
+        <input id="modal-task-desc" type="text" value="Estudar [[03_Estudos/${cleanNome}.md|${cleanNome}]]" style="width: 100%; background: #181824; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 8px; color: #ffffff; font-size: 12px; outline: none;">
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <div style="flex: 1;">
+          <div class="snoopy-modal-label">Data Agendada:</div>
+          <input id="modal-task-date" type="date" value="${todayStr}" style="width: 100%; background: #181824; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 7px; color: #ffffff; font-size: 11.5px; outline: none;">
+        </div>
+        <div style="flex: 1;">
+          <div class="snoopy-modal-label">Período:</div>
+          <select id="modal-task-period" style="width: 100%; background: #181824; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 7px; color: #ffffff; font-size: 11.5px; outline: none;">
+            <option value="">Geral</option>
+            <option value="🌅 Manhã">Manhã</option>
+            <option value="☀️ Tarde">Tarde</option>
+            <option value="🌙 Noite">Noite</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <div style="flex: 1;">
+          <div class="snoopy-modal-label">Prioridade:</div>
+          <select id="modal-task-prio" style="width: 100%; background: #181824; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 7px; color: #ffffff; font-size: 11.5px; outline: none;">
+            <option value="">Normal</option>
+            <option value="⏫">Alta (⏫)</option>
+            <option value="🔼">Média (🔼)</option>
+            <option value="🔽">Baixa (🔽)</option>
+          </select>
+        </div>
+        <div style="flex: 1;">
+          <div class="snoopy-modal-label">Pomodoros (Estimativa):</div>
+          <input id="modal-task-pomos" type="number" min="1" max="12" value="2" style="width: 100%; background: #181824; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 7px; color: #ffffff; font-size: 11.5px; outline: none;">
+        </div>
+      </div>
+
+      <div class="snoopy-toolbar" style="justify-content: flex-end; margin-top: 6px;">
+        <button id="modal-cancel-task" class="snoopy-btn-action snoopy-btn-sm">Cancelar</button>
+        <button id="modal-save-task" class="snoopy-btn-primary snoopy-btn-sm">Agendar Tarefa</button>
+      </div>
+    `;
+
+    modalBg.appendChild(modalBox);
+    document.body.appendChild(modalBg);
+
+    const fechar = () => { if (modalBg.parentNode) document.body.removeChild(modalBg); };
+    modalBg.addEventListener('click', (e) => { if (e.target === modalBg) fechar(); });
+
+    modalBox.querySelector('#modal-close-task').onclick = fechar;
+    modalBox.querySelector('#modal-cancel-task').onclick = fechar;
+
+    modalBox.querySelector('#modal-save-task').onclick = async () => {
+      const desc = modalBox.querySelector('#modal-task-desc').value.trim();
+      const dateVal = modalBox.querySelector('#modal-task-date').value || todayStr;
+      const periodVal = modalBox.querySelector('#modal-task-period').value;
+      const prioVal = modalBox.querySelector('#modal-task-prio').value;
+      const pomosVal = parseInt(modalBox.querySelector('#modal-task-pomos').value, 10) || 2;
+
+      if (!desc) {
+        this._notify("A descrição da tarefa não pode estar vazia.");
+        return;
+      }
+
+      let taskLine = `- [ ] ${desc} 📅 ${dateVal}`;
+      if (prioVal) taskLine += ` ${prioVal}`;
+      if (periodVal) taskLine += ` ${periodVal}`;
+      taskLine += ` 🍅 ${pomosVal} #estudo`;
+
+      const dailyFolder = "01_Inbox/Diário";
+      const dailyPath = `${dailyFolder}/${dateVal}.md`;
+
+      if (!this.app.vault.getAbstractFileByPath(dailyFolder)) {
+        await this.app.vault.createFolder(dailyFolder).catch(() => {});
+      }
+
+      let dailyFile = this.app.vault.getAbstractFileByPath(dailyPath);
+      if (!dailyFile) {
+        const defaultDailyContent = `# Diário - ${dateVal}\n\n## Tarefas\n${taskLine}\n\n## Notas do Dia\n`;
+        await this.app.vault.create(dailyPath, defaultDailyContent);
+      } else {
+        const raw = await this.app.vault.read(dailyFile);
+        let updated = raw;
+        const regexTarefas = /(^##\s+.*Tarefas.*$)/m;
+        const match = updated.match(regexTarefas);
+        if (match) {
+          updated = updated.replace(match[0], `${match[0]}\n${taskLine}`);
+        } else {
+          updated += `\n\n## Tarefas\n${taskLine}\n`;
+        }
+        await this.app.vault.modify(dailyFile, updated);
+      }
+
+      // Vinculação total: Adiciona também ao Planner do ciclo de estudos
+      const estadoAtual = typeof this.getEstado === 'function' ? this.getEstado() : null;
+      if (estadoAtual) {
+        if (!estadoAtual.planner) estadoAtual.planner = {};
+        if (!Array.isArray(estadoAtual.planner[dateVal])) estadoAtual.planner[dateVal] = [];
+        const jaPlanejado = estadoAtual.planner[dateVal].some(b => b.materia === cleanNome);
+        if (!jaPlanejado) {
+          estadoAtual.planner[dateVal].push({
+            materia: cleanNome,
+            tipo: 'TEORIA',
+            duracaoMin: pomosVal * 25,
+            concluido: false
+          });
+          if (typeof this.salvarEstado === 'function') {
+            await this.salvarEstado();
+          }
+        }
+      }
+
+      this._notify(`Tarefa de ${cleanNome} agendada para ${dateVal}!`);
+      fechar();
+      this.onReload();
     };
   }
 }

@@ -2,6 +2,7 @@
 title: "Arquitetura de Software"
 area: "Programação"
 categoria: "Programação"
+disciplina: "Programação"
 data: 2026-10-03
 status: "Ativo"
 minutos_foco: 0

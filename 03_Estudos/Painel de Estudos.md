@@ -6,6 +6,7 @@ tags:
 cssclasses:
   - home-dashboard
   - snoopy-home
+  - snoopy-estudos
 ---
 
 ```dataviewjs

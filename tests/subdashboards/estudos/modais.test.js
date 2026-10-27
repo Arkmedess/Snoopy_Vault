@@ -22,6 +22,7 @@ describe('Subdashboard Estudos - ModaisEstudos', () => {
     assert.strictEqual(typeof modais.abrirModalOrganizarCiclo, 'function');
     assert.strictEqual(typeof modais.abrirModalSessao, 'function');
     assert.strictEqual(typeof modais.abrirModalVincularPdf, 'function');
+    assert.strictEqual(typeof modais.abrirModalCriarTarefaMateria, 'function');
 
     // Métodos utilitários internos
     assert.strictEqual(modais._padTime(5), '05');

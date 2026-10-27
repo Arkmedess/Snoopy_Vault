@@ -183,5 +183,50 @@ describe('Subdashboard Estudos - EstudosEstado', () => {
       assert.strictEqual(resultado[1].pct, 100);
       assert.deepEqual(resultado[1].provas, ['Gramatica.pdf']);
     });
+
+    test('converte DataArray do DataviewJS em Array nativo do JavaScript com suporte a .reduce e .findIndex', () => {
+      function createDataArray(items) {
+        const arr = [...items];
+        const methods = {
+          where: (pred) => createDataArray(arr.filter(pred)),
+          filter: (pred) => createDataArray(arr.filter(pred)),
+          map: (fn) => createDataArray(arr.map(fn)),
+          forEach: (fn) => arr.forEach(fn),
+          array: () => [...arr]
+        };
+        return new Proxy(arr, {
+          get(target, prop) {
+            if (prop === 'length') return target.length;
+            if (prop === 'values') return target;
+            if (typeof prop === 'symbol') return target[prop] ? target[prop].bind(target) : undefined;
+            if (/^\d+$/.test(String(prop))) return target[Number(prop)];
+            if (Object.prototype.hasOwnProperty.call(methods, prop)) return methods[prop];
+            return createDataArray(target.map(x => (x ? x[prop] : undefined)));
+          }
+        });
+      }
+
+      const mockDv = {
+        pages: () => createDataArray([
+          {
+            file: { name: 'Exemplo - Arquitetura de Software', path: '03_Estudos/Exemplo - Arquitetura de Software.md' },
+            title: 'Arquitetura de Software',
+            area: 'Programação',
+            minutos_foco: 0,
+            questoes_feitas: 10,
+            questoes_acertos: 8,
+            provas: createDataArray([{ path: 'provas/Simulado.pdf' }])
+          }
+        ])
+      };
+
+      const resultado = EstudosEstado.obterDisciplinasProcessadas(mockDv);
+      assert.ok(Array.isArray(resultado), 'obterDisciplinasProcessadas deve retornar um Array nativo do JS');
+      assert.strictEqual(typeof resultado.reduce, 'function');
+      assert.strictEqual(typeof resultado.findIndex, 'function');
+      assert.strictEqual(resultado.length, 1);
+      assert.strictEqual(resultado[0].nome, 'Arquitetura de Software');
+      assert.deepEqual(resultado[0].provas, ['provas/Simulado.pdf']);
+    });
   });
 });

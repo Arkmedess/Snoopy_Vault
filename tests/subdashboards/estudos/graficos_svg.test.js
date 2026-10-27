@@ -83,6 +83,25 @@ describe('Subdashboard Estudos - GraficosSVG', () => {
       assert.ok(legendaBox.children[1].innerHTML.includes('Matemática'));
       assert.ok(legendaBox.children[1].innerHTML.includes('1h0m (33%)'));
     });
+
+    test('renderiza fatia ativa e métricas de questões quando minutos for zero mas houver questões feitas', () => {
+      const container = createMockEl('div');
+      const disciplinas = [
+        { nome: 'Arquitetura de Software', minutos: 0, feitas: 10, acertos: 8, pct: 80 }
+      ];
+
+      const card = GraficosSVG.montarDonutCard(container, {
+        disciplinasFiltradas: disciplinas,
+        totalMinutosGlobal: 0,
+        totalHorasTxt: '0h0m'
+      });
+
+      const svgWrapper = card.children[0].children[0];
+      assert.ok(svgWrapper.innerHTML.includes(`stroke="${GraficosSVG.CORES_PALETA[0]}"`), 'Deve ativar fatia colorida pelas questões quando minutos=0');
+      const legendaBox = card.children[0].children[1];
+      assert.ok(legendaBox.children[0].innerHTML.includes('8/10'), 'Legenda deve exibir placar de questões da matéria');
+      assert.ok(legendaBox.children[0].innerHTML.includes('80%'), 'Legenda deve exibir assertividade da matéria');
+    });
   });
 
   describe('montarLineChartCard()', () => {
@@ -129,4 +148,62 @@ describe('Subdashboard Estudos - GraficosSVG', () => {
       assert.ok(svgHtml.includes('2h30m')); // 150 min
     });
   });
+
+  describe('montarBarraAtividadeCard()', () => {
+    test('renderiza barras de constância semanal indicando frequência e dias ativos', () => {
+      const container = createMockEl('div');
+      const ultimos7Dias = [
+        { diaSemana: 'Dom', minutos: 0, questoes: 0, isHoje: false, materias: [] },
+        { diaSemana: 'Seg', minutos: 90, questoes: 15, isHoje: false, materias: ['Arquitetura de Software'] },
+        { diaSemana: 'Ter', minutos: 60, questoes: 10, isHoje: false, materias: ['Banco de Dados'] },
+        { diaSemana: 'Qua', minutos: 120, questoes: 20, isHoje: false, materias: ['Redes'] },
+        { diaSemana: 'Qui', minutos: 0, questoes: 0, isHoje: false, materias: [] },
+        { diaSemana: 'Sex', minutos: 80, questoes: 12, isHoje: false, materias: ['Português'] },
+        { diaSemana: 'Sáb', minutos: 110, questoes: 18, isHoje: true, materias: ['Direito Constitucional'] }
+      ];
+
+      const card = GraficosSVG.montarBarraAtividadeCard(container, {
+        ultimos7Dias,
+        diasAtivosSemana: 5,
+        totalMinutosSemana: 460
+      });
+
+      function collectAllHtml(el) {
+        let out = (el.innerHTML || '') + ' ' + (el.innerText || '');
+        for (const c of el.children) out += ' ' + collectAllHtml(c);
+        return out;
+      }
+
+      const fullHtml = collectAllHtml(card);
+      assert.strictEqual(card.className, 'snoopy-card-box');
+      assert.ok(card.innerHTML.includes('FREQUÊNCIA & CONSTÂNCIA SEMANAL') || card.innerHTML.includes('ATIVIDADE'));
+      assert.ok(card.innerHTML.includes('5/7 dias ativos') || card.innerHTML.includes('5 dias'));
+
+      // Valida que o hover/tooltip expõe horário e matérias estudadas
+      assert.ok(fullHtml.includes('Arquitetura de Software'), 'Tooltip de hover deve conter o nome da matéria estudada');
+      assert.ok(fullHtml.includes('Banco de Dados'), 'Tooltip de hover deve conter matérias estudadas no dia');
+    });
+  });
+
+  describe('montarAssertividadeProvasCard()', () => {
+    test('renderiza análise de assertividade em simulados e provas', () => {
+      const container = createMockEl('div');
+      const simulados = [
+        { titulo: 'Simulado Geral 01', acertos: 40, questoes: 50, tempoMin: 60 },
+        { titulo: 'Prova FCC 2024', acertos: 18, questoes: 20, tempoMin: 30 }
+      ];
+
+      const card = GraficosSVG.montarAssertividadeProvasCard(container, {
+        simulados,
+        pctGeral: 83,
+        totalAcertos: 58,
+        totalQuestoes: 70
+      });
+
+      assert.strictEqual(card.className, 'snoopy-card-box');
+      assert.ok(card.innerHTML.includes('ASSERTIVIDADE EM PROVAS') || card.innerHTML.includes('SIMULADOS'));
+      assert.ok(card.innerHTML.includes('83%') || card.innerHTML.includes('58/70'));
+    });
+  });
 });
+
