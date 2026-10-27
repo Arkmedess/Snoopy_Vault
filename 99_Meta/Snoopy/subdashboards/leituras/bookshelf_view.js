@@ -464,8 +464,7 @@ const BookshelfView = {
       };
 
       const coverWrapper = bookItem.createEl('div', {
-        cls: 'snoopy-shelf-cover-box',
-        attr: { style: 'position: relative; width: 100%; aspect-ratio: 2 / 3; min-height: 180px; border-radius: var(--snoopy-radius-sm, 6px); overflow: hidden; background: #161622; border: 1px solid var(--background-modifier-border); box-shadow: 0 4px 12px rgba(0,0,0,0.35); transition: border-color 0.15s ease, box-shadow 0.15s ease;' }
+        cls: 'snoopy-shelf-cover-box'
       });
 
       if (b.cover && b.cover.startsWith('http')) {
@@ -538,7 +537,7 @@ const BookshelfView = {
 
         const popover = typeof document !== 'undefined' ? document.createElement('div') : coverWrapper.createEl('div');
         popover.className = 'snoopy-shelf-popover';
-        popover.style.cssText = 'position: absolute; top: 32px; left: 6px; background: #0d0d12; border: 1px solid rgba(255,255,255,0.18); border-radius: 6px; padding: 6px; display: flex; flex-direction: column; gap: 4px; z-index: 99; box-shadow: 0 8px 24px rgba(0,0,0,0.85); min-width: 140px;';
+        popover.style.cssText = 'position: absolute; top: 32px; left: 6px; background: #0d0d12; border: 1px solid rgba(255,255,255,0.18); border-radius: 6px; padding: 6px; display: flex; flex-direction: column; gap: 4px; z-index: 99; min-width: 140px;';
 
         popover.innerHTML = `
           <button id="pop-prog" class="snoopy-btn-action snoopy-btn-sm" style="text-align: left; width: 100%;">Atualizar Páginas</button>
@@ -675,69 +674,69 @@ const BookshelfView = {
     const companionCard = container.createEl('div', {
       cls: 'snoopy-card-box',
       attr: {
-        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 14px;'
+        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: var(--snoopy-radius-md, 8px); padding: 20px; display: flex; flex-direction: column; gap: 16px;'
       }
     });
 
     // 1. Cabeçalho com Capa e Metadados Principais
     const headerRow = companionCard.createEl('div', {
-      attr: { style: 'display: grid; grid-template-columns: 96px 1fr; gap: 14px; align-items: start;' }
+      attr: { style: 'display: grid; grid-template-columns: 100px 1fr; gap: 16px; align-items: start;' }
     });
 
     const coverBox = headerRow.createEl('div');
     const cImg = coverBox.createEl('img', {
       attr: {
         loading: 'lazy',
-        style: 'width: 96px; height: 142px; border-radius: 6px; object-fit: cover; box-shadow: 0 4px 14px rgba(0,0,0,0.5); border: 1px solid var(--snoopy-border);'
+        style: 'width: 100px; height: 148px; border-radius: 6px; object-fit: cover; border: 1px solid var(--snoopy-border);'
       }
     });
     cImg.src = livroDestaque.cover || "https://images.pexels.com/photos/10254198/pexels-photo-10254198.jpeg";
     cImg.onerror = () => { cImg.src = "https://images.pexels.com/photos/10254198/pexels-photo-10254198.jpeg"; };
 
     const infoBox = headerRow.createEl('div', {
-      attr: { style: 'display: flex; flex-direction: column; gap: 5px; overflow: hidden;' }
+      attr: { style: 'display: flex; flex-direction: column; gap: 6px; overflow: hidden;' }
     });
 
     infoBox.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
         <div style="overflow: hidden;">
-          <div class="snoopy-section-title" style="font-size: 14px; font-weight: 800; color: #ffffff; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+          <div class="snoopy-section-title" style="font-size: 15px; font-weight: 700; color: #ffffff; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
             ${livroDestaque.title || (livroDestaque.file ? livroDestaque.file.name : 'Livro')}
           </div>
-          <div style="font-size: 11.5px; font-style: italic; color: #a1a1aa; margin-top: 2px;">
+          <div style="font-size: 12px; font-style: italic; color: #a1a1aa; margin-top: 2px;">
             ${livroDestaque.author || 'Autor desconhecido'}
           </div>
         </div>
-        <span class="snoopy-micro" style="padding: 2px 6px; border-radius: 4px; background: rgba(96, 165, 250, 0.15); color: #60a5fa; font-weight: 700; flex-shrink: 0;">
+        <span class="snoopy-micro" style="padding: 2px 7px; border-radius: 4px; background: rgba(255, 255, 255, 0.05); color: #e4e4e7; border: 1px solid rgba(255, 255, 255, 0.08); font-size: 10px; font-weight: 600; flex-shrink: 0; letter-spacing: 0.03em;">
           ${livroDestaque.status || 'Quero ler'}
         </span>
       </div>
 
       <!-- Tags de Gêneros Interativas -->
-      <div id="companion-genres-row" style="display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin-top: 2px;">
+      <div id="companion-genres-row" style="display: flex; flex-wrap: wrap; gap: 5px; align-items: center; margin-top: 2px;">
         ${(Array.isArray(livroDestaque.categories) && livroDestaque.categories.length > 0 ? livroDestaque.categories : [livroDestaque.category || 'Geral']).map(g => `
-          <span class="snoopy-chip snoopy-chip-muted">
+          <span class="snoopy-chip snoopy-chip-muted" style="font-size: 11px; padding: 2px 7px;">
             <span>${g}</span>
             <button class="btn-del-genre snoopy-chip-del" data-genre="${String(g).replace(/"/g, '&quot;')}" title="Remover tema ${g}">✕</button>
           </span>
         `).join('')}
-        <button id="btn-add-genre-chip" class="snoopy-btn-action snoopy-btn-sm" style="font-size: 9px; padding: 1px 5px;" title="Adicionar tema a este livro">+ Tema</button>
+        <button id="btn-add-genre-chip" class="snoopy-btn-action snoopy-btn-sm" style="font-size: 9.5px; padding: 1px 6px;" title="Adicionar tema a este livro">+ Tema</button>
       </div>
 
-      <!-- Rating por Estrelas Interativo -->
+      <!-- Rating por Estrelas Interativo (Design Sóbrio Monocromático) -->
       <div id="companion-star-rating" style="display: flex; gap: 3px; align-items: center; margin-top: 2px; cursor: pointer;">
         <span class="snoopy-micro" style="color: #a1a1aa; margin-right: 2px;">Avaliação:</span>
         ${[1, 2, 3, 4, 5].map(star => `
-          <span class="star-btn" data-star="${star}" style="font-size: 15px; color: ${star <= ratingAtual ? '#facc15' : 'rgba(255,255,255,0.18)'}; transition: color 0.12s ease;">★</span>
+          <span class="star-btn" data-star="${star}" style="font-size: 14px; color: ${star <= ratingAtual ? '#e4e4e7' : 'rgba(255,255,255,0.15)'}; transition: color 0.12s ease;">★</span>
         `).join('')}
       </div>
 
-      <!-- Toolbar de Ações do Livro (Primárias e Secundárias) -->
-      <div class="snoopy-toolbar" style="margin-top: 6px; gap: 6px;">
-        <button id="btn-step-open-file" class="snoopy-btn-primary snoopy-btn-sm" title="Abrir nota do livro no Obsidian">Abrir Nota ↗</button>
+      <!-- Toolbar de Ações do Livro (Clean, sem contraste excessivo) -->
+      <div class="snoopy-toolbar" style="margin-top: 8px; gap: 8px; display: flex; flex-wrap: wrap; align-items: center;">
+        <button id="btn-step-open-file" class="snoopy-btn-action snoopy-btn-sm" title="Abrir nota do livro no Obsidian">Abrir Nota</button>
         <button id="btn-foco-pomodoro" class="snoopy-btn-action snoopy-btn-sm" title="Direcionar Pomodoro da Home para este livro">Foco na Home</button>
         <button id="btn-edit-metadados" class="snoopy-btn-action snoopy-btn-sm" title="Editar dados da obra">Editar</button>
-        <button id="btn-trash-book" class="snoopy-btn-danger snoopy-btn-sm" title="Excluir livro da estante"></button>
+        <button id="btn-trash-book" class="snoopy-btn-action snoopy-btn-sm" title="Excluir livro da estante"></button>
       </div>
     `;
 
@@ -814,6 +813,11 @@ const BookshelfView = {
 
     const btnOpenFile = infoBox.querySelector('#btn-step-open-file');
     if (btnOpenFile) {
+      if (ctx.renderIcon && typeof ctx.renderIcon === 'function') {
+        btnOpenFile.innerHTML = '';
+        ctx.renderIcon(btnOpenFile, 'external-link', { size: 12, cls: 'btn-icon-pad' });
+        btnOpenFile.createEl('span', { text: ' Abrir Nota' });
+      }
       btnOpenFile.onclick = () => {
         if (app && app.workspace && livroDestaque.file) {
           app.workspace.openLinkText(livroDestaque.file.path, "", false);
@@ -824,7 +828,7 @@ const BookshelfView = {
     const btnTrashBook = infoBox.querySelector('#btn-trash-book');
     if (btnTrashBook) {
       if (ctx.renderIcon) {
-        ctx.renderIcon(btnTrashBook, 'trash-2', { size: 12, color: '#f87171' });
+        ctx.renderIcon(btnTrashBook, 'trash-2', { size: 12, color: 'var(--text-muted, #a1a1aa)' });
       } else {
         btnTrashBook.textContent = 'Excluir';
       }
@@ -1163,37 +1167,16 @@ const BookshelfView = {
     const leituraAtiva = dados.leituraAtiva || null;
     const padraoSemanal = dados.padraoSemanal || { dias: [], diaPico: { diaSemana: 'Nenhum', paginas: 0, pct: 0 } };
 
-    // Coordenadas dos ponteiros do relógio analógico SVG
-    const anguloHora = ((relogio.hora % 12) + relogio.minuto / 60) * 30;
-    const anguloMinuto = relogio.minuto * 6;
-    const radH = (anguloHora - 90) * Math.PI / 180;
-    const xH = (40 + 20 * Math.cos(radH)).toFixed(1);
-    const yH = (40 + 20 * Math.sin(radH)).toFixed(1);
-    const radM = (anguloMinuto - 90) * Math.PI / 180;
-    const xM = (40 + 27 * Math.cos(radM)).toFixed(1);
-    const yM = (40 + 27 * Math.sin(radM)).toFixed(1);
-
-    const relogioSvg = `
-      <svg width="72" height="72" viewBox="0 0 80 80" style="flex-shrink: 0; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));">
-        <circle cx="40" cy="40" r="36" fill="#12121c" stroke="rgba(255,255,255,0.18)" stroke-width="2" />
-        <line x1="40" y1="8" x2="40" y2="13" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
-        <line x1="72" y1="40" x2="67" y2="40" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
-        <line x1="40" y1="72" x2="40" y2="67" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
-        <line x1="8" y1="40" x2="13" y2="40" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
-        <line x1="40" y1="40" x2="${xH}" y2="${yH}" stroke="var(--text-normal)" stroke-width="3" stroke-linecap="round" />
-        <line x1="40" y1="40" x2="${xM}" y2="${yM}" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" />
-        <circle cx="40" cy="40" r="3" fill="#ffffff" />
-      </svg>
-    `;
-
     const dashContainer = container.createEl('div', {
-      attr: { style: 'display: flex; flex-direction: column; gap: 14px;' }
+      attr: { style: 'display: flex; flex-direction: column; gap: 16px;' }
     });
 
-    // 1. FAIXA DE KPIS SUPERIOR (Padrão Framework de Estudos)
+    // =========================================================================
+    // 1. FAIXA EXECUTIVA DE PULSO (Storytelling: Ritmo de Leitura no Momento)
+    // =========================================================================
     const kpisRow = dashContainer.createEl('div', {
       attr: {
-        style: 'display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;'
+        style: 'display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap: 10px;'
       }
     });
 
@@ -1209,33 +1192,33 @@ const BookshelfView = {
       const card = kpisRow.createEl('div', {
         cls: 'snoopy-card-box',
         attr: {
-          style: 'padding: 10px 14px; display: flex; flex-direction: column; gap: 4px; background: #0e0e14; border: 1px solid var(--snoopy-border); border-radius: var(--snoopy-radius-md, 8px);'
+          style: 'padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: var(--snoopy-radius-md, 8px);'
         }
       });
       card.innerHTML = `
-        <span class="snoopy-meta" style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em;">${it.label}</span>
-        <span style="font-size: 17px; font-weight: 800; color: #ffffff;">${it.val}</span>
-        <span class="snoopy-micro" style="color: #71717a;">${it.sub}</span>
+        <span class="snoopy-micro" style="color: #a1a1aa; text-transform: uppercase; letter-spacing: 0.05em;">${it.label}</span>
+        <span style="font-size: 18px; font-weight: 800; color: #ffffff; letter-spacing: -0.02em;">${it.val}</span>
+        <span class="snoopy-meta" style="font-size: 10.5px; color: #71717a;">${it.sub}</span>
       `;
     });
 
-    // 2. BANNER DE LEITURA EM ANDAMENTO (Bate e Pronto com Capa)
+    // =========================================================================
+    // 2. HERO DA LEITURA ATIVA (Foco Imediato e Próximo Passo)
+    // =========================================================================
     if (leituraAtiva) {
       const bannerAtivo = dashContainer.createEl('div', {
         cls: 'snoopy-card-box',
         attr: {
-          style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-left: 3px solid #60a5fa; border-radius: var(--snoopy-radius-lg, 10px); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px;'
+          style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-left: 3px solid #86efac; border-radius: var(--snoopy-radius-lg, 10px); padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;'
         }
       });
 
-      // Lado Esquerdo: Capa + Detalhes
       const esqInfo = bannerAtivo.createEl('div', {
-        attr: { style: 'display: flex; align-items: center; gap: 14px; overflow: hidden; flex: 1;' }
+        attr: { style: 'display: flex; align-items: center; gap: 16px; overflow: hidden; flex: 1; min-width: 260px;' }
       });
 
-      // Capa da Obra (com fallback tipográfico e proporção áurea)
       const coverWrapper = esqInfo.createEl('div', {
-        attr: { style: 'width: 52px; height: 78px; aspect-ratio: 2 / 3; border-radius: var(--snoopy-radius-sm, 6px); overflow: hidden; flex-shrink: 0; background: #161622; border: 1px solid rgba(255,255,255,0.12); box-shadow: 0 4px 12px rgba(0,0,0,0.5); position: relative;' }
+        attr: { style: 'width: 58px; height: 87px; aspect-ratio: 2 / 3; border-radius: var(--snoopy-radius-sm, 6px); overflow: hidden; flex-shrink: 0; background: #161622; border: 1px solid rgba(255,255,255,0.12); position: relative;' }
       });
 
       const livroObj = leituraAtiva.livro || {};
@@ -1256,38 +1239,41 @@ const BookshelfView = {
         coverWrapper.appendChild(BookshelfView.criarCapaTipografica(livroObj));
       }
 
-      // Detalhes da Leitura & Progresso em Páginas
       const detalhesBox = esqInfo.createEl('div', {
-        attr: { style: 'display: flex; flex-direction: column; gap: 3px; overflow: hidden; flex: 1;' }
+        attr: { style: 'display: flex; flex-direction: column; gap: 4px; overflow: hidden; flex: 1;' }
       });
 
       const faltamPags = Math.max(0, leituraAtiva.paginasTotais - leituraAtiva.paginasAtuais);
 
       detalhesBox.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 6px;">
-          <span class="snoopy-micro" style="color: #60a5fa; font-weight: 700; text-transform: uppercase;">Leitura em Andamento</span>
-          <span class="snoopy-chip snoopy-chip-blue">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="snoopy-micro" style="color: #86efac; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;">Leitura em Andamento</span>
+          <span class="snoopy-chip snoopy-chip-muted" style="font-size: 10px; padding: 1px 6px;">
             ~${leituraAtiva.diasEstimados} dias estimados
           </span>
         </div>
-        <span style="font-size: 14px; font-weight: 800; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.25;">${leituraAtiva.titulo}</span>
-        <span class="snoopy-meta" style="font-size: 11px;">${leituraAtiva.autor}</span>
+        <span style="font-size: 16px; font-weight: 800; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.25;">${leituraAtiva.titulo}</span>
+        <span class="snoopy-meta" style="font-size: 11.5px; color: #a1a1aa;">${leituraAtiva.autor}</span>
         
-        <div style="margin-top: 4px; display: flex; flex-direction: column; gap: 3px;">
-          <div style="display: flex; justify-content: space-between; font-size: 10.5px;">
+        <div style="margin-top: 6px; display: flex; flex-direction: column; gap: 4px;">
+          <div style="display: flex; justify-content: space-between; font-size: 11px;">
             <span style="font-weight: 700; color: #ffffff;">Página ${leituraAtiva.paginasAtuais} de ${leituraAtiva.paginasTotais} págs</span>
-            <span class="snoopy-meta" style="color: #60a5fa; font-size: 10px;">${leituraAtiva.pct}% • faltam ${faltamPags} págs</span>
+            <span class="snoopy-meta" style="color: #86efac; font-size: 10.5px; font-weight: 600;">${leituraAtiva.pct}% • faltam ${faltamPags} págs</span>
           </div>
-          <div class="snoopy-prog-track" style="height: 4px; width: 100%; border-radius: 99px;">
-            <div class="snoopy-prog-fill" style="width: ${leituraAtiva.pct}%; background: #60a5fa; border-radius: 99px;"></div>
+          <div class="snoopy-prog-track" style="height: 5px; width: 100%; border-radius: 99px;">
+            <div class="snoopy-prog-fill" style="width: ${leituraAtiva.pct}%; background: #86efac; border-radius: 99px;"></div>
           </div>
         </div>
       `;
 
-      // Botão de Ação Direta
-      const btnFocarAtivo = bannerAtivo.createEl('button', {
+      // Ações do Hero
+      const heroActions = bannerAtivo.createEl('div', {
+        attr: { style: 'display: flex; align-items: center; gap: 8px; flex-shrink: 0;' }
+      });
+
+      const btnFocarAtivo = heroActions.createEl('button', {
         cls: 'snoopy-btn-action snoopy-btn-sm',
-        attr: { id: 'btn-dash-focar-ativo', style: 'flex-shrink: 0; font-size: 13px; padding: 4px 10px;' },
+        attr: { id: 'btn-dash-focar-ativo', style: 'font-size: 11.5px; padding: 6px 12px;' },
         text: 'Focar Leitura ↗'
       });
 
@@ -1296,58 +1282,320 @@ const BookshelfView = {
       }
     }
 
-    // 3. GRID PRINCIPAL (2 COLUNAS COESAS)
+    // =========================================================================
+    // 3. GRID ANALÍTICO PRINCIPAL (2 COLUNAS DE ALTO IMPACTO)
+    // =========================================================================
     const mainGrid = dashContainer.createEl('div', {
+      cls: 'snoopy-dash-main-grid',
       attr: {
-        style: 'display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;'
+        style: 'display: grid; grid-template-columns: 1.1fr 1fr; gap: 16px; align-items: start;'
       }
     });
 
-    // =========================================================================
-    // COLUNA 1: RITMO, HÁBITO & PADRÃO SEMANAL
-    // =========================================================================
+    // -------------------------------------------------------------------------
+    // COLUNA 1: CONSTÂNCIA TEMPORAL & VOLUME (Gráficos Semanais)
+    // -------------------------------------------------------------------------
     const colEsq = mainGrid.createEl('div', {
       attr: { style: 'display: flex; flex-direction: column; gap: 16px;' }
     });
 
-    // Card 1: Relógio e Foco de Leitura
-    const cardTempo = colEsq.createEl('div', {
+    // Card 1: Gráfico SVG de Barras de Páginas por Dia (Histórico 7 Dias)
+    const cardGraficoSemanal = colEsq.createEl('div', {
       cls: 'snoopy-card-box',
       attr: {
-        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: var(--snoopy-radius-lg, 10px); padding: 16px; display: flex; flex-direction: column; gap: 12px;'
+        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: var(--snoopy-radius-lg, 10px); padding: 18px; display: flex; flex-direction: column; gap: 14px;'
       }
     });
 
-    cardTempo.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span class="snoopy-section-title" style="font-size: 14px; letter-spacing: 0.04em;">TEMPO & SESSÕES DE LEITURA</span>
-        <span class="snoopy-meta" style="font-size: 13px; color: #86efac;">Acumulado: ${tempo.horasFormatadas}</span>
+    const historico7D = ofensiva.historico7Dias || [];
+    const maxPags7D = Math.max(metas.diaria.meta || 25, ...(historico7D.map(d => d.paginas || 0)));
+    const alturaPlotH = 80;
+    const larguraPlotW = 330;
+    const paddingLeft = 24;
+    const basePlotY = 95;
+    const metaY = basePlotY - Math.round(((metas.diaria.meta || 25) / maxPags7D) * alturaPlotH);
+
+    // Gerador de barras SVG dos 7 dias
+    const barrasSvgHtml = historico7D.map((d, idx) => {
+      const slotW = (larguraPlotW - paddingLeft) / 7;
+      const xBar = paddingLeft + (idx * slotW) + (slotW / 2) - 12;
+      const xCentro = xBar + 12;
+      const pags = Number(d.paginas) || 0;
+      const barH = pags > 0 ? Math.max(4, Math.round((pags / maxPags7D) * alturaPlotH)) : 3;
+      const yBar = basePlotY - barH;
+      const isBatida = pags >= (metas.diaria.meta || 25);
+      const corBarra = isBatida ? '#86efac' : (pags > 0 ? '#60a5fa' : 'rgba(255,255,255,0.08)');
+
+      return `
+        <rect x="${xBar.toFixed(1)}" y="${yBar.toFixed(1)}" width="24" height="${barH.toFixed(1)}" rx="3" fill="${corBarra}" opacity="0.9" />
+        ${pags > 0 ? `<text x="${xCentro.toFixed(1)}" y="${(yBar - 4).toFixed(1)}" text-anchor="middle" font-size="8.5" font-weight="700" fill="#ffffff" font-family="var(--snoopy-font-mono)">${pags}p</text>` : ''}
+        <text x="${xCentro.toFixed(1)}" y="${basePlotY + 14}" text-anchor="middle" font-size="9" font-weight="600" fill="${d.leu ? '#ffffff' : '#71717a'}" font-family="var(--snoopy-font-mono)">${d.diaSemana}</text>
+      `;
+    }).join('');
+
+    cardGraficoSemanal.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: baseline;">
+        <span class="snoopy-section-title" style="font-size: 13.5px; letter-spacing: 0.04em;">CONSTÂNCIA & PÁGINAS (ÚLTIMOS 7 DIAS)</span>
+        <span class="snoopy-meta" style="font-size: 11px; color: #86efac;">Total: ${tempo.horasFormatadas}</span>
       </div>
 
-      <div style="display: flex; gap: 14px; align-items: center;">
-        ${relogioSvg}
-        <div style="display: flex; flex-direction: column; gap: 3px; flex: 1;">
-          <span style="font-size: 17.5px; font-weight: 800; color: #ffffff; line-height: 1.25;">${relogio.dataFormatada}</span>
-          <span class="snoopy-micro" style="color: #60a5fa; font-weight: 600;">Velocidade de Leitura: ~${tempo.velocidadePagsHora} págs/hora</span>
-          <div style="margin-top: 4px;">
-            <div style="display: flex; justify-content: space-between; font-size: 12.5px; color: #a1a1aa; margin-bottom: 2px;">
-              <span>Meta Semanal: ${metas.semanal.horasLidas}h / ${metas.semanal.metaHoras}h</span>
-              <span>${metas.semanal.pct}%</span>
-            </div>
-            <div class="snoopy-prog-track" style="height: 5px; width: 100%; border-radius: 99px;">
-              <div class="snoopy-prog-fill" style="width: ${metas.semanal.pct}%; background: #60a5fa; border-radius: 99px;"></div>
-            </div>
-          </div>
+      <div style="width: 100%; position: relative;">
+        <svg width="100%" height="120" viewBox="0 0 330 120" style="overflow: visible;">
+          <!-- Linha de Base -->
+          <line x1="${paddingLeft}" y1="${basePlotY}" x2="320" y2="${basePlotY}" stroke="rgba(255,255,255,0.1)" stroke-width="1" />
+          
+          <!-- Linha de Meta Diária -->
+          <line x1="${paddingLeft}" y1="${metaY}" x2="280" y2="${metaY}" stroke="rgba(134,239,172,0.4)" stroke-dasharray="3,3" stroke-width="1.2" />
+          <text x="320" y="${metaY + 3}" text-anchor="end" font-size="8.5" fill="#86efac" font-weight="700" font-family="var(--snoopy-font-mono)">Meta: ${metas.diaria.meta}p</text>
+
+          <!-- Barras Semanais -->
+          ${barrasSvgHtml}
+        </svg>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--snoopy-border); padding-top: 8px; margin-top: 2px;">
+        <span class="snoopy-meta" style="font-size: 11px; color: #a1a1aa;">${relogio.dataFormatada}</span>
+        <div class="snoopy-toolbar" style="gap: 6px;">
+          <button id="dash-btn-foco" class="snoopy-btn-action snoopy-btn-sm" style="font-size: 11px; padding: 2px 8px;" title="Direcionar Pomodoro da Home para leitura">Foco na Home</button>
+          <button id="dash-btn-meta" class="snoopy-btn-action snoopy-btn-sm" style="font-size: 11px; padding: 2px 8px;" title="Alterar meta diária de páginas">Ajustar Meta</button>
         </div>
-      </div>
-
-      <div class="snoopy-toolbar" style="margin-top: 2px;">
-        <button id="dash-btn-foco" class="snoopy-btn-action snoopy-btn-sm" style="font-size: 13px; padding: 4px 10px;" title="Direcionar Pomodoro da Home para leitura">Foco na Home</button>
-        <button id="dash-btn-meta" class="snoopy-btn-action snoopy-btn-sm" style="font-size: 13px; padding: 4px 10px;" title="Alterar meta diária de páginas">Ajustar Meta Diária</button>
       </div>
     `;
 
-    const btnFoco = cardTempo.querySelector('#dash-btn-foco');
+    // Card 2: Padrão Semanal de Produtividade & Pico
+    const cardProdutividade = colEsq.createEl('div', {
+      cls: 'snoopy-card-box',
+      attr: {
+        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: var(--snoopy-radius-lg, 10px); padding: 18px; display: flex; flex-direction: column; gap: 10px;'
+      }
+    });
+
+    cardProdutividade.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: baseline;">
+        <span class="snoopy-section-title" style="font-size: 13.5px; letter-spacing: 0.04em;">DIAS MAIS PRODUTIVOS</span>
+        <span class="snoopy-meta" style="font-size: 11px; color: #86efac;">Pico: ${padraoSemanal.diaPico.diaSemana}</span>
+      </div>
+
+      <div style="font-size: 12.5px; color: #d4d4d8; line-height: 1.4;">
+        Você lê mais aos <strong style="color: #ffffff;">${padraoSemanal.diaPico.diaSemana}s</strong> (${padraoSemanal.diaPico.paginas} págs, ${padraoSemanal.diaPico.pct}% do volume consolidado).
+      </div>
+
+      <!-- Barra de Ritmo da Semana -->
+      <div style="display: flex; justify-content: space-between; font-size: 11px; color: #a1a1aa; margin-top: 4px;">
+        <span>Meta Semanal: ${metas.semanal.horasLidas}h de ${metas.semanal.metaHoras}h</span>
+        <span style="font-weight: 700; color: #60a5fa;">${metas.semanal.pct}%</span>
+      </div>
+      <div class="snoopy-prog-track" style="height: 5px; width: 100%; border-radius: 99px;">
+        <div class="snoopy-prog-fill" style="width: ${metas.semanal.pct}%; background: #60a5fa; border-radius: 99px;"></div>
+      </div>
+    `;
+
+    // -------------------------------------------------------------------------
+    // COLUNA 2: DISTRIBUIÇÃO DO ACERVO, DONUT SVG & GÊNEROS
+    // -------------------------------------------------------------------------
+    const colDir = mainGrid.createEl('div', {
+      attr: { style: 'display: flex; flex-direction: column; gap: 16px;' }
+    });
+
+    // Card 3: Donut SVG do Acervo (Lidos, Lendo, Quero Ler)
+    const cardAcervo = colDir.createEl('div', {
+      cls: 'snoopy-card-box',
+      attr: {
+        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: var(--snoopy-radius-lg, 10px); padding: 18px; display: flex; flex-direction: column; gap: 14px;'
+      }
+    });
+
+    // Matemática do Donut SVG
+    const raioAcervo = 44;
+    const circAcervo = 2 * Math.PI * raioAcervo; // ~276.46
+    const totalAcervoLivros = Math.max(1, distribuicaoAcervo.total);
+    let offsetDonutAcumulado = 0;
+    let circlesDonutHtml = '';
+
+    const dadosFatias = [
+      { nome: 'Lidos', qtd: distribuicaoAcervo.lidos, pct: distribuicaoAcervo.pctLidos, cor: '#86efac' },
+      { nome: 'Lendo', qtd: distribuicaoAcervo.lendo, pct: distribuicaoAcervo.pctLendo, cor: '#60a5fa' },
+      { nome: 'Quero Ler', qtd: distribuicaoAcervo.queroLer, pct: distribuicaoAcervo.pctQueroLer, cor: '#fdba74' }
+    ];
+
+    if (distribuicaoAcervo.total === 0) {
+      circlesDonutHtml = `<circle cx="55" cy="55" r="${raioAcervo}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="12" />`;
+    } else {
+      dadosFatias.forEach(f => {
+        if (f.qtd <= 0) return;
+        const proporcao = f.qtd / totalAcervoLivros;
+        const strokeDash = proporcao * circAcervo;
+        const strokeOffset = -offsetDonutAcumulado;
+        offsetDonutAcumulado += strokeDash;
+
+        circlesDonutHtml += `
+          <circle cx="55" cy="55" r="${raioAcervo}" fill="none" stroke="${f.cor}" stroke-width="12"
+            stroke-dasharray="${strokeDash.toFixed(2)} ${(circAcervo - strokeDash).toFixed(2)}"
+            stroke-dashoffset="${strokeOffset.toFixed(2)}" style="transition: stroke-dasharray 0.3s ease;" />
+        `;
+      });
+    }
+
+    cardAcervo.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: baseline;">
+        <span class="snoopy-section-title" style="font-size: 13.5px; letter-spacing: 0.04em;">DISTRIBUIÇÃO DO ACERVO</span>
+        <span class="snoopy-meta" style="font-size: 11px;">${distribuicaoAcervo.total} livros • ${distribuicaoAcervo.paginasLidas}/${distribuicaoAcervo.paginasCatalogo} págs</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 110px 1fr; gap: 16px; align-items: center;">
+        <!-- Donut SVG -->
+        <div style="position: relative; width: 110px; height: 110px; display: flex; align-items: center; justify-content: center;">
+          <svg width="110" height="110" viewBox="0 0 110 110" style="transform: rotate(-90deg);">
+            <circle cx="55" cy="55" r="${raioAcervo}" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="12" />
+            ${circlesDonutHtml}
+          </svg>
+          <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; text-align: center;">
+            <span style="font-size: 17px; font-weight: 800; color: #ffffff; line-height: 1;">${distribuicaoAcervo.total}</span>
+            <span class="snoopy-micro" style="font-size: 8px; color: #a1a1aa; text-transform: uppercase;">LIVROS</span>
+          </div>
+        </div>
+
+        <!-- Legenda com Indicadores Semânticos -->
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          ${dadosFatias.map(f => `
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11.5px;">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background: ${f.cor}; flex-shrink: 0;"></span>
+                <span style="color: #ffffff; font-weight: 600;">${f.nome}</span>
+              </div>
+              <span class="snoopy-meta" style="font-size: 11px;">${f.qtd} (${f.pct}%)</span>
+            </div>
+            <div class="snoopy-prog-track" style="height: 3px; width: 100%; border-radius: 99px;">
+              <div class="snoopy-prog-fill" style="width: ${f.pct}%; background: ${f.cor}; border-radius: 99px;"></div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- Barra Segmentada Tricolor (Mantida para Integridade e Testes) -->
+      <div class="snoopy-seg-bar" style="display: flex; height: 4px; width: 100%; border-radius: 99px; overflow: hidden; background: rgba(255,255,255,0.05); margin-top: 4px;">
+        <div style="height: 100%; width: ${distribuicaoAcervo.pctLidos}%; background: #86efac;"></div>
+        <div style="height: 100%; width: ${distribuicaoAcervo.pctLendo}%; background: #60a5fa;"></div>
+        <div style="height: 100%; width: ${distribuicaoAcervo.pctQueroLer}%; background: #fdba74;"></div>
+      </div>
+    `;
+
+    // Card 4: Gêneros Mais Lidos (Storytelling: Equilíbrio Intelectual)
+    const cardGeneros = colDir.createEl('div', {
+      cls: 'snoopy-card-box',
+      attr: {
+        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: var(--snoopy-radius-lg, 10px); padding: 18px; display: flex; flex-direction: column; gap: 12px;'
+      }
+    });
+
+    const topGeneros = generosMaisLidos.slice(0, 4);
+    const totalObrasGeneros = topGeneros.reduce((acc, g) => acc + g.quantidade, 0) || 1;
+
+    cardGeneros.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: baseline;">
+        <span class="snoopy-section-title" style="font-size: 13.5px; letter-spacing: 0.04em;">GÊNEROS MAIS LIDOS</span>
+        <span class="snoopy-meta" style="font-size: 11px;">${generosMaisLidos.length} categorias</span>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        ${topGeneros.length > 0 ? topGeneros.map(g => {
+          const pctGen = Math.round((g.quantidade / totalObrasGeneros) * 100);
+          return `
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 3px;">
+                <span style="color: #ffffff; font-weight: 600;">${g.genero}</span>
+                <span class="snoopy-meta" style="font-size: 11px;">${g.quantidade} livros (${pctGen}%)</span>
+              </div>
+              <div class="snoopy-prog-track" style="height: 4px; width: 100%; border-radius: 99px;">
+                <div class="snoopy-prog-fill" style="width: ${pctGen}%; background: #60a5fa; border-radius: 99px;"></div>
+              </div>
+            </div>
+          `;
+        }).join('') : '<span class="snoopy-meta" style="font-size: 11.5px;">Nenhuma categoria registrada no acervo ainda.</span>'}
+      </div>
+    `;
+
+    // =========================================================================
+    // 4. BLOCOS CONDICIONAIS DE IMPACTO (Apenas se houver dados reais!)
+    // =========================================================================
+
+    // Destaque de Citação Marcante (se houver pelo menos 1 citação)
+    if (destaques.length > 0) {
+      const citacaoPrincipal = destaques[0];
+      const cardCitacao = dashContainer.createEl('div', {
+        cls: 'snoopy-card-box',
+        attr: {
+          style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-left: 3px solid #60a5fa; border-radius: var(--snoopy-radius-lg, 10px); padding: 14px 18px;'
+        }
+      });
+      cardCitacao.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <span class="snoopy-section-title" style="font-size: 12px; letter-spacing: 0.04em;">DESTAQUE DA SEMANA</span>
+          <span class="snoopy-meta" style="font-size: 10.5px;">${destaques.length} citações salvas</span>
+        </div>
+        <div style="font-size: 13.5px; font-style: italic; color: #e4e4e7; line-height: 1.45;">
+          "${citacaoPrincipal.citacao}"
+        </div>
+        <div class="snoopy-meta" style="font-size: 11px; color: #a1a1aa; margin-top: 6px; text-align: right;">
+          — ${citacaoPrincipal.autor}, em <strong style="color: #ffffff;">${citacaoPrincipal.livro}</strong>
+        </div>
+      `;
+    }
+
+    // Séries & Sagas (se houver pelo menos 1 série cadastrada)
+    if (series.length > 0) {
+      const cardSeries = dashContainer.createEl('div', {
+        cls: 'snoopy-card-box',
+        attr: {
+          style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: var(--snoopy-radius-lg, 10px); padding: 16px 18px; display: flex; flex-direction: column; gap: 10px;'
+        }
+      });
+      cardSeries.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+          <span class="snoopy-section-title" style="font-size: 13px; letter-spacing: 0.04em;">SÉRIES & SAGAS</span>
+          <span class="snoopy-meta" style="font-size: 11px;">${series.length} coleções</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          ${series.slice(0, 3).map(s => `
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 3px;">
+                <span style="font-weight: 700; color: #ffffff;">${s.nome}</span>
+                <span class="snoopy-meta" style="font-size: 11px;">${s.livrosLidos}/${s.totalLivros} lidos (${s.progressoPct}%)</span>
+              </div>
+              <div class="snoopy-prog-track" style="height: 4px; width: 100%; border-radius: 99px;">
+                <div class="snoopy-prog-fill" style="width: ${s.progressoPct}%; background: #60a5fa; border-radius: 99px;"></div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    // Próxima Leitura Sugerida (Descoberta Inteligente)
+    if (descoberta && descoberta.livro) {
+      const cardDesc = dashContainer.createEl('div', {
+        cls: 'snoopy-card-box',
+        attr: {
+          style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: var(--snoopy-radius-lg, 10px); padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; gap: 14px;'
+        }
+      });
+      cardDesc.innerHTML = `
+        <div>
+          <div class="snoopy-micro" style="color: #60a5fa; font-weight: 700;">EXPERIMENTE ALGO NOVO</div>
+          <div style="font-size: 13.5px; font-weight: 700; color: #ffffff; margin-top: 2px;">${descoberta.livro.title || 'Livro'}</div>
+          <div class="snoopy-meta" style="font-size: 11px; color: #a1a1aa;">${descoberta.motivo || 'Recomendado para expandir horizontes'}</div>
+        </div>
+        <button id="btn-abrir-descoberta" class="snoopy-btn-action snoopy-btn-sm" style="font-size: 11px; padding: 4px 10px; flex-shrink: 0;">Ver Livro ↗</button>
+      `;
+
+      const btnDesc = cardDesc.querySelector('#btn-abrir-descoberta');
+      if (btnDesc && ctx.onSelectLivro) {
+        btnDesc.onclick = () => ctx.onSelectLivro(descoberta.livro.file ? descoberta.livro.file.path : descoberta.livro);
+      }
+    }
+
+    // Handlers dos botões do card de constância
+    const btnFoco = cardGraficoSemanal.querySelector('#dash-btn-foco');
     if (btnFoco) {
       btnFoco.onclick = () => {
         const tarefaFoco = 'Sessão de Leitura';
@@ -1374,269 +1622,13 @@ const BookshelfView = {
       };
     }
 
-    const btnMeta = cardTempo.querySelector('#dash-btn-meta');
+    const btnMeta = cardGraficoSemanal.querySelector('#dash-btn-meta');
     if (btnMeta && ctx.modais && ctx.modais.abrirModalEditarMetaDiaria) {
       btnMeta.onclick = () => {
         ctx.modais.abrirModalEditarMetaDiaria(metas.diaria.meta, (nova) => {
           if (ctx.onDefinirMetaDiaria) ctx.onDefinirMetaDiaria(nova);
         });
       };
-    }
-
-    // Card 2: Ofensiva & Consistência 7D
-    const cardOfensiva = colEsq.createEl('div', {
-      cls: 'snoopy-card-box',
-      attr: {
-        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: var(--snoopy-radius-lg, 10px); padding: 16px; display: flex; flex-direction: column; gap: 10px;'
-      }
-    });
-
-    cardOfensiva.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: baseline;">
-        <span class="snoopy-section-title" style="font-size: 14px; letter-spacing: 0.04em;">OFENSIVA & CONSISTÊNCIA</span>
-        <span class="snoopy-meta" style="font-size: 13px;">Recorde: ${ofensiva.recordeStreak} dias</span>
-      </div>
-
-      <div style="font-size: 17px; font-weight: 800; color: #ffffff;">
-        ${ofensiva.streakAtual} dias seguidos de leitura ativa
-      </div>
-
-      <!-- Mini Heatmap 7 Dias -->
-      <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;">
-        ${ofensiva.historico7Dias.map(d => `
-          <div style="text-align: center; padding: 5px 2px; border-radius: 4px; background: ${d.leu ? 'rgba(96, 165, 250, 0.15)' : 'rgba(255,255,255,0.03)'}; border: 1px solid ${d.leu ? 'rgba(96, 165, 250, 0.4)' : 'rgba(255,255,255,0.06)'};">
-            <div style="font-size: 11px; font-weight: 700; color: ${d.leu ? '#60a5fa' : '#71717a'};">${d.diaSemana}</div>
-            <div style="font-size: 14px; margin-top: 1px; color: ${d.leu ? '#60a5fa' : '#52525b'};">${d.leu ? '■' : '□'}</div>
-          </div>
-        `).join('')}
-      </div>
-
-      <!-- Meta Diária e Desafio Anual -->
-      <div style="border-top: 1px solid var(--snoopy-border); padding-top: 8px; display: flex; flex-direction: column; gap: 6px;">
-        <div style="display: flex; justify-content: space-between; font-size: 14px;">
-          <span>Meta Diária: <strong>${metas.diaria.paginasHoje}/${metas.diaria.meta} págs</strong></span>
-          <span style="color: ${metas.diaria.batida ? '#86efac' : '#a1a1aa'}; font-weight: 600;">${metas.diaria.batida ? 'Batida ✓' : `${metas.diaria.porcentagem}%`}</span>
-        </div>
-        <div class="snoopy-prog-track" style="height: 4px; width: 100%; border-radius: 99px;">
-          <div class="snoopy-prog-fill" style="width: ${metas.diaria.porcentagem}%; background: ${metas.diaria.batida ? '#86efac' : '#60a5fa'}; border-radius: 99px;"></div>
-        </div>
-
-        <div style="display: flex; justify-content: space-between; font-size: 14px; margin-top: 4px;">
-          <span>Desafio Anual: <strong>${desafios.desafioAnual.concluidos}/${desafios.desafioAnual.meta} livros</strong></span>
-          <span style="color: #60a5fa; font-weight: 600;">${desafios.desafioAnual.pct}%</span>
-        </div>
-        <div class="snoopy-prog-track" style="height: 4px; width: 100%; border-radius: 99px;">
-          <div class="snoopy-prog-fill" style="width: ${desafios.desafioAnual.pct}%; background: #60a5fa; border-radius: 99px;"></div>
-        </div>
-        <div class="snoopy-meta" style="font-size: 12.5px; color: #a1a1aa;">
-          Ritmo atual: ~${desafios.desafioAnual.projecaoFimAno || desafios.desafioAnual.concluidos} livros até Dezembro (${desafios.desafioAnual.statusRitmo || 'Em andamento'})
-        </div>
-      </div>
-    `;
-
-    // Card 3: Dias Mais Produtivos (Padrão Semanal)
-    const cardSemanal = colEsq.createEl('div', {
-      cls: 'snoopy-card-box',
-      attr: {
-        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: var(--snoopy-radius-lg, 10px); padding: 16px; display: flex; flex-direction: column; gap: 10px;'
-      }
-    });
-
-    const maxPagsSemana = Math.max(...(padraoSemanal.dias.map(d => d.paginas)), 1);
-
-    cardSemanal.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: baseline;">
-        <span class="snoopy-section-title" style="font-size: 14px; letter-spacing: 0.04em;">DIAS MAIS PRODUTIVOS</span>
-        <span class="snoopy-meta" style="font-size: 12.5px; color: #86efac;">Pico: ${padraoSemanal.diaPico.diaSemana}</span>
-      </div>
-
-      <div style="font-size: 15px; color: #a1a1aa;">
-        Você lê mais aos <strong>${padraoSemanal.diaPico.diaSemana}s</strong> (${padraoSemanal.diaPico.paginas} págs, ${padraoSemanal.diaPico.pct}% do total).
-      </div>
-
-      <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; align-items: flex-end; height: 60px; padding-top: 10px; border-bottom: 1px solid var(--snoopy-border); padding-bottom: 6px;">
-        ${padraoSemanal.dias.map(d => {
-          const alturaPct = Math.round((d.paginas / maxPagsSemana) * 100);
-          const isPico = d.diaSemana === padraoSemanal.diaPico.diaSemana && d.paginas > 0;
-          return `
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 4px;">
-              <div style="width: 100%; max-width: 16px; height: ${Math.max(4, Math.round(alturaPct * 0.45))}px; background: ${isPico ? '#86efac' : (d.paginas > 0 ? '#60a5fa' : 'rgba(255,255,255,0.06)')}; border-radius: 3px;" title="${d.diaSemana}: ${d.paginas} págs (${d.pct}%)"></div>
-              <span class="snoopy-micro" style="font-size: 11px; font-weight: 700; color: ${isPico ? '#86efac' : (d.paginas > 0 ? '#ffffff' : '#71717a')};">${d.diaCurto}</span>
-            </div>
-          `;
-        }).join('')}
-      </div>
-    `;
-
-    // =========================================================================
-    // COLUNA 2: ACERVO, GÊNEROS & CONTEÚDO
-    // =========================================================================
-    const colDir = mainGrid.createEl('div', {
-      attr: { style: 'display: flex; flex-direction: column; gap: 16px;' }
-    });
-
-    // Card 4: Distribuição do Acervo (Barra Segmentada Tricolor)
-    const cardDistribuicao = colDir.createEl('div', {
-      cls: 'snoopy-card-box',
-      attr: {
-        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: var(--snoopy-radius-lg, 10px); padding: 16px; display: flex; flex-direction: column; gap: 10px;'
-      }
-    });
-
-    cardDistribuicao.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: baseline;">
-        <span class="snoopy-section-title" style="font-size: 14px; letter-spacing: 0.04em;">DISTRIBUIÇÃO DO ACERVO</span>
-        <span class="snoopy-meta" style="font-size: 12.5px;">${distribuicaoAcervo.total} livros • ${distribuicaoAcervo.paginasLidas}/${distribuicaoAcervo.paginasCatalogo} págs</span>
-      </div>
-
-      <!-- Barra Segmentada Tricolor -->
-      <div class="snoopy-seg-bar" style="display: flex; height: 8px; width: 100%; border-radius: 99px; overflow: hidden; background: rgba(255,255,255,0.05);">
-        <div style="height: 100%; width: ${distribuicaoAcervo.pctLidos}%; background: #86efac;" title="Lidos: ${distribuicaoAcervo.pctLidos}%"></div>
-        <div style="height: 100%; width: ${distribuicaoAcervo.pctLendo}%; background: #60a5fa;" title="Lendo: ${distribuicaoAcervo.pctLendo}%"></div>
-        <div style="height: 100%; width: ${distribuicaoAcervo.pctQueroLer}%; background: #fdba74;" title="Quero Ler: ${distribuicaoAcervo.pctQueroLer}%"></div>
-      </div>
-
-      <!-- Legenda em Linha -->
-      <div style="display: flex; flex-wrap: wrap; gap: 10px; font-size: 13px; color: #a1a1aa; margin-top: 2px;">
-        <div style="display: flex; align-items: center; gap: 4px;">
-          <span style="width: 8px; height: 8px; border-radius: 50%; background: #86efac; display: inline-block;"></span>
-          <span>Lidos: <strong>${distribuicaoAcervo.lidos}</strong> (${distribuicaoAcervo.pctLidos}%)</span>
-        </div>
-        <div style="display: flex; align-items: center; gap: 4px;">
-          <span style="width: 8px; height: 8px; border-radius: 50%; background: #60a5fa; display: inline-block;"></span>
-          <span>Lendo: <strong>${distribuicaoAcervo.lendo}</strong> (${distribuicaoAcervo.pctLendo}%)</span>
-        </div>
-        <div style="display: flex; align-items: center; gap: 4px;">
-          <span style="width: 8px; height: 8px; border-radius: 50%; background: #fdba74; display: inline-block;"></span>
-          <span>Quero Ler: <strong>${distribuicaoAcervo.queroLer}</strong> (${distribuicaoAcervo.pctQueroLer}%)</span>
-        </div>
-      </div>
-    `;
-
-    // Card 5: Gêneros & Categorias Mais Lidos
-    const cardGeneros = colDir.createEl('div', {
-      cls: 'snoopy-card-box',
-      attr: {
-        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: var(--snoopy-radius-lg, 10px); padding: 16px; display: flex; flex-direction: column; gap: 10px;'
-      }
-    });
-
-    const topGeneros = generosMaisLidos.slice(0, 4);
-    const totalObrasGeneros = topGeneros.reduce((acc, g) => acc + g.quantidade, 0) || 1;
-
-    cardGeneros.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: baseline;">
-        <span class="snoopy-section-title" style="font-size: 14px; letter-spacing: 0.04em;">GÊNEROS MAIS LIDOS</span>
-        <span class="snoopy-meta" style="font-size: 12.5px;">${generosMaisLidos.length} categorias</span>
-      </div>
-
-      <div style="display: flex; flex-direction: column; gap: 8px;">
-        ${topGeneros.length > 0 ? topGeneros.map(g => {
-          const pctGen = Math.round((g.quantidade / totalObrasGeneros) * 100);
-          return `
-            <div>
-              <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 2px;">
-                <span style="color: #ffffff; font-weight: 600;">${g.genero}</span>
-                <span class="snoopy-meta" style="font-size: 12.5px;">${g.quantidade} livros (${pctGen}%)</span>
-              </div>
-              <div class="snoopy-prog-track" style="height: 4px; width: 100%; border-radius: 99px;">
-                <div class="snoopy-prog-fill" style="width: ${pctGen}%; background: #60a5fa; border-radius: 99px;"></div>
-              </div>
-            </div>
-          `;
-        }).join('') : '<span class="snoopy-meta" style="font-size: 14px;">Nenhuma categoria registrada no acervo ainda.</span>'}
-      </div>
-    `;
-
-    // Card 6: Destaques & Citações
-    const cardCitacoes = colDir.createEl('div', {
-      cls: 'snoopy-card-box',
-      attr: {
-        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: var(--snoopy-radius-lg, 10px); padding: 16px; display: flex; flex-direction: column; gap: 10px;'
-      }
-    });
-
-    const citacaoPrincipal = destaques.length > 0 ? destaques[0] : null;
-    cardCitacoes.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span class="snoopy-section-title" style="font-size: 14px; letter-spacing: 0.04em;">DESTAQUES & CITAÇÕES</span>
-        <span class="snoopy-meta" style="font-size: 13px;">${destaques.length} lições salvas</span>
-      </div>
-
-      ${citacaoPrincipal ? `
-        <div style="background: rgba(255,255,255,0.02); border-left: 3px solid #60a5fa; border-radius: 0 6px 6px 0; padding: 10px 14px; margin: 2px 0;">
-          <div style="font-size: 15.5px; font-style: italic; color: #ffffff; line-height: 1.45;">
-            "${citacaoPrincipal.citacao}"
-          </div>
-          <div class="snoopy-meta" style="font-size: 14px; color: #a1a1aa; margin-top: 6px; text-align: right;">
-            — ${citacaoPrincipal.autor}, em <strong>${citacaoPrincipal.livro}</strong>
-          </div>
-        </div>
-      ` : `
-        <div class="snoopy-meta" style="font-size: 14.5px; padding: 14px 0; text-align: center;">
-          Nenhuma citação registrada ainda. Registre citações marcantes no companion de leitura.
-        </div>
-      `}
-    `;
-
-    // Card 7: Séries & Sagas
-    const cardSeries = colDir.createEl('div', {
-      cls: 'snoopy-card-box',
-      attr: {
-        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: var(--snoopy-radius-lg, 10px); padding: 16px; display: flex; flex-direction: column; gap: 10px;'
-      }
-    });
-
-    const seriesHtml = series.length > 0 ? series.slice(0, 3).map(s => `
-      <div style="margin-bottom: 6px;">
-        <div style="display: flex; justify-content: space-between; font-size: 14.5px; margin-bottom: 2px;">
-          <span style="font-weight: 700; color: #ffffff;">${s.nome}</span>
-          <span class="snoopy-meta" style="font-size: 13px;">${s.livrosLidos}/${s.totalLivros} lidos (${s.progressoPct}%)</span>
-        </div>
-        <div class="snoopy-prog-track" style="height: 4px; width: 100%; border-radius: 99px;">
-          <div class="snoopy-prog-fill" style="width: ${s.progressoPct}%; background: #60a5fa; border-radius: 99px;"></div>
-        </div>
-      </div>
-    `).join('') : '<span class="snoopy-meta" style="font-size: 14px;">Cadastre "series" nos metadados para acompanhar sagas.</span>';
-
-    cardSeries.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: baseline;">
-        <span class="snoopy-section-title" style="font-size: 14px; letter-spacing: 0.04em;">SÉRIES & SAGAS</span>
-        <span class="snoopy-meta" style="font-size: 13px;">${series.length} coleções</span>
-      </div>
-
-      <div>${seriesHtml}</div>
-    `;
-
-    // Card 8: Descoberta de Leitura ("Experimente algo novo")
-    const cardDescoberta = colDir.createEl('div', {
-      cls: 'snoopy-card-box',
-      attr: {
-        style: 'background: #0d0d12; border: 1px solid var(--snoopy-border); border-radius: var(--snoopy-radius-lg, 10px); padding: 14px 16px; display: flex; flex-direction: column; gap: 8px;'
-      }
-    });
-
-    cardDescoberta.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: baseline;">
-        <span class="snoopy-section-title" style="font-size: 13px; letter-spacing: 0.04em; color: #a1a1aa;">EXPERIMENTE ALGO NOVO</span>
-      </div>
-
-      ${descoberta && descoberta.livro ? `
-        <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
-          <div>
-            <div style="font-size: 15.5px; font-weight: 700; color: #ffffff;">${descoberta.livro.title || 'Livro'}</div>
-            <div class="snoopy-micro" style="color: #a1a1aa;">${descoberta.motivo || 'Recomendado para expandir horizontes'}</div>
-          </div>
-          <button id="btn-abrir-descoberta" class="snoopy-btn-action snoopy-btn-sm" style="font-size: 13px; padding: 3px 8px; flex-shrink: 0;">Ver ↗</button>
-        </div>
-      ` : `
-        <div class="snoopy-meta" style="font-size: 14px;">Todos os livros da lista já foram iniciados!</div>
-      `}
-    `;
-
-    const btnDescoberta = cardDescoberta.querySelector('#btn-abrir-descoberta');
-    if (btnDescoberta && descoberta && descoberta.livro && ctx.onSelectLivro) {
-      btnDescoberta.onclick = () => ctx.onSelectLivro(descoberta.livro);
     }
   }
 };

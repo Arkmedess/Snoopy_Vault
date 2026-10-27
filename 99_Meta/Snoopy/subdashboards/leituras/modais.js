@@ -688,36 +688,47 @@ class ModaisLeituras {
     if (!livro) return;
 
     const modalBg = document.createElement('div');
-    modalBg.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;';
+    modalBg.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px; box-sizing: border-box;';
 
     const modalBox = document.createElement('div');
-    modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 380px; width: 100%; padding: 18px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 12px;';
+    modalBox.style.cssText = 'background: #0e0e14; border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; max-width: 420px; width: 100%; padding: 22px; display: flex; flex-direction: column; gap: 14px; box-sizing: border-box;';
 
     const categoriasAtuais = Array.isArray(livro.categories) ? livro.categories : (livro.category ? [livro.category] : []);
     const opcoesDisponiveis = ModaisLeituras.GENEROS_PADRAO.filter(g => !categoriasAtuais.includes(g));
 
     modalBox.innerHTML = `
-      <div class="snoopy-card-header">
-        <span class="snoopy-section-title" style="font-size: 13px;">Adicionar Gênero / Tema</span>
+      <div class="snoopy-card-header" style="padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.08);">
+        <span class="snoopy-section-title" style="font-size: 13px;">Adicionar Gênero ou Tema</span>
         <button id="modal-close-gen" class="snoopy-modal-close" title="Fechar"></button>
       </div>
 
+      <!-- Fita de Sugestões de 1 Clique -->
       <div>
-        <div class="snoopy-modal-label">Selecione da Lista:</div>
-        <select id="modal-select-gen" class="snoopy-form-select">
-          <option value="">-- Escolha um gênero padrão --</option>
-          ${opcoesDisponiveis.map(g => `<option value="${g}">${g}</option>`).join('')}
-        </select>
+        <div class="snoopy-modal-label" style="margin-bottom: 6px; font-size: 11px; font-weight: 600; color: #a1a1aa;">Sugestões Populares:</div>
+        <div id="modal-gen-quick-picks" style="display: flex; flex-wrap: wrap; gap: 5px; align-items: center;">
+          ${opcoesDisponiveis.slice(0, 8).map(g => `
+            <button type="button" class="snoopy-chip-opt btn-quick-genre" data-genre="${g}" style="font-size: 10.5px; padding: 3px 8px; border-radius: 4px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: #a1a1aa; cursor: pointer; transition: all 0.12s ease;">
+              + ${g}
+            </button>
+          `).join('')}
+        </div>
       </div>
 
-      <div>
-        <div class="snoopy-modal-label">Ou Cadastre um Novo:</div>
-        <input id="modal-input-new-gen" class="snoopy-form-input" type="text" placeholder="Ex: Cyberpunk, Teoria Crítica...">
+      <!-- Campo para Digitar ou Selecionar Outro -->
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <div class="snoopy-modal-label" style="font-size: 11px; font-weight: 600; color: #a1a1aa;">Ou digite um tema personalizado:</div>
+        <input id="modal-input-new-gen" class="snoopy-form-input" type="text" placeholder="Ex: Cyberpunk, Estoicismo, Teoria..." style="width: 100%; box-sizing: border-box; padding: 8px 10px; font-size: 12px; border-radius: 6px;">
       </div>
 
-      <div class="snoopy-toolbar" style="justify-content: flex-end; margin-top: 4px;">
-        <button id="modal-cancel-gen" class="snoopy-btn-action snoopy-btn-sm">Cancelar</button>
-        <button id="modal-confirm-gen" class="snoopy-btn-primary snoopy-btn-sm">Adicionar</button>
+      <!-- Select oculto para compatibilidade com testes e formulários legados -->
+      <select id="modal-select-gen" style="display: none;">
+        <option value="">-- Escolha --</option>
+        ${opcoesDisponiveis.map(g => `<option value="${g}">${g}</option>`).join('')}
+      </select>
+
+      <div class="snoopy-toolbar" style="justify-content: flex-end; margin-top: 6px; gap: 8px;">
+        <button id="modal-cancel-gen" class="snoopy-btn-action snoopy-btn-sm" type="button">Cancelar</button>
+        <button id="modal-confirm-gen" class="snoopy-btn-primary snoopy-btn-sm" type="button">Adicionar</button>
       </div>
     `;
 
@@ -735,18 +746,40 @@ class ModaisLeituras {
     const selectGen = modalBox.querySelector('#modal-select-gen');
     const inputNewGen = modalBox.querySelector('#modal-input-new-gen');
 
-    const btnConfirm = modalBox.querySelector('#modal-confirm-gen');
-    if (btnConfirm) {
-      btnConfirm.onclick = async () => {
-        const valNovo = inputNewGen ? inputNewGen.value.trim() : '';
-        const valSelect = selectGen ? selectGen.value.trim() : '';
-        const generoParaAdicionar = valNovo || valSelect;
-
-        if (generoParaAdicionar) {
-          await this.adicionarGenero(livro, generoParaAdicionar);
+    // 1-Clique nas sugestões populares
+    modalBox.querySelectorAll('.btn-quick-genre').forEach(btn => {
+      btn.onclick = async () => {
+        const gen = btn.getAttribute('data-genre');
+        if (gen) {
+          await this.adicionarGenero(livro, gen);
           fechar();
         }
       };
+    });
+
+    const submeter = async () => {
+      const valNovo = inputNewGen ? inputNewGen.value.trim() : '';
+      const valSelect = selectGen ? selectGen.value.trim() : '';
+      const generoParaAdicionar = valNovo || valSelect;
+
+      if (generoParaAdicionar) {
+        await this.adicionarGenero(livro, generoParaAdicionar);
+        fechar();
+      }
+    };
+
+    if (inputNewGen) {
+      inputNewGen.onkeydown = (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          submeter();
+        }
+      };
+    }
+
+    const btnConfirm = modalBox.querySelector('#modal-confirm-gen');
+    if (btnConfirm) {
+      btnConfirm.onclick = submeter;
     }
   }
 
@@ -878,10 +911,10 @@ class ModaisLeituras {
     if (!livro) return;
 
     const modalBg = document.createElement('div');
-    modalBg.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;';
+    modalBg.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 24px; box-sizing: border-box;';
 
     const modalBox = document.createElement('div');
-    modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 480px; width: 100%; max-height: 85vh; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 12px;';
+    modalBox.style.cssText = 'background: #0e0e14; border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; max-width: 540px; width: 100%; max-height: 88vh; padding: 24px; display: flex; flex-direction: column; gap: 16px; box-sizing: border-box; overflow-y: auto;';
 
     const coverAtual = livro.cover || '';
     const descAtual = livro.description || '';
@@ -891,71 +924,96 @@ class ModaisLeituras {
     const seriesAtual = livro.series || '';
     const seriesIndexAtual = Number(livro.series_index) || 1;
 
-    const catsExistentes = Array.isArray(livro.categories) && livro.categories.length > 0
-      ? livro.categories.map(c => ModaisLeituras.normalizarGenero(c))
+    let tagsAtivas = Array.isArray(livro.categories) && livro.categories.length > 0
+      ? [...new Set(livro.categories.map(c => ModaisLeituras.normalizarGenero(c)).filter(Boolean))]
       : [catAtual];
-    const categoriasStr = catsExistentes.join(', ');
+    if (tagsAtivas.length === 0) tagsAtivas = ['Geral'];
 
-    // Lista de gêneros incluindo padrão e o atual se customizado
-    const generosOpcoes = [...new Set([...ModaisLeituras.GENEROS_PADRAO, catAtual])].filter(Boolean);
+    // Lista sugerida curada para 1 clique
+    const SUGESTOES_POPULARES = [
+      'Desenvolvimento Pessoal',
+      'Filosofia',
+      'Tecnologia',
+      'Programação',
+      'Ficção Científica',
+      'Negócios',
+      'Psicologia',
+      'Hábitos',
+      'História',
+      'Produtividade',
+      'Finanças',
+      'Geral'
+    ];
 
     modalBox.innerHTML = `
-      <div class="snoopy-card-header">
-        <span class="snoopy-section-title">Editar Metadados do Livro</span>
+      <div class="snoopy-card-header" style="padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 2px;">
+        <span class="snoopy-section-title" style="font-size: 13.5px; letter-spacing: 0.05em;">Editar Metadados da Obra</span>
         <button id="modal-close-edit" class="snoopy-modal-close" title="Fechar"></button>
       </div>
 
-      <div style="display: flex; gap: 8px;">
-        <div style="flex: 2;">
-          <div class="snoopy-modal-label">Autor:</div>
-          <input id="modal-edit-author" class="snoopy-form-input" type="text" value="${autorAtual.replace(/"/g, '&quot;')}">
-        </div>
-        <div style="flex: 2;">
-          <div class="snoopy-modal-label">Adicionar Gênero Sugerido:</div>
-          <select id="modal-edit-category-select" class="snoopy-form-select">
-            <option value="">-- Selecione para adicionar --</option>
-            ${generosOpcoes.map(g => `<option value="${g}">${g}</option>`).join('')}
-            <option value="__custom__">+ Cadastrar Novo Gênero...</option>
-          </select>
-          <input id="modal-edit-custom-category" class="snoopy-form-input" type="text" placeholder="Digite o novo gênero..." style="display: none; margin-top: 6px;">
-        </div>
-      </div>
-
+      <!-- Autor -->
       <div>
-        <div class="snoopy-modal-label">Gêneros / Temas Isolados (separados por vírgula):</div>
-        <input id="modal-edit-categories" class="snoopy-form-input" type="text" placeholder="Ex: Ficção Científica, Filosofia, Aventura" value="${categoriasStr.replace(/"/g, '&quot;')}">
+        <div class="snoopy-modal-label" style="margin-bottom: 6px; font-size: 11px; font-weight: 600; color: #a1a1aa;">Autor da Obra:</div>
+        <input id="modal-edit-author" class="snoopy-form-input" type="text" placeholder="Ex: James Clear" value="${autorAtual.replace(/"/g, '&quot;')}" style="width: 100%; box-sizing: border-box; padding: 8px 12px; font-size: 12.5px; border-radius: 6px;">
       </div>
 
-      <div style="display: flex; gap: 8px;">
+      <!-- Gêneros e Temas Interativos -->
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <div class="snoopy-modal-label" style="font-size: 11px; font-weight: 600; color: #a1a1aa;">Gêneros e Temas Vinculados:</div>
+        
+        <!-- Área de Chips Ativos com Remoção ✕ -->
+        <div id="modal-active-genres-box" style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; background: #070709; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 8px 10px; min-height: 38px; box-sizing: border-box;"></div>
+
+        <!-- Fita de Sugestões de 1 Clique -->
+        <div id="modal-suggested-genres-box" style="display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin-top: 2px;"></div>
+
+        <!-- Adição Manual Inline -->
+        <div style="display: flex; gap: 6px; align-items: center; margin-top: 4px;">
+          <input id="modal-edit-custom-category" class="snoopy-form-input" type="text" placeholder="Novo tema (ex: Cyberpunk, Estoicismo)..." style="flex: 1; padding: 6px 10px; font-size: 11.5px; border-radius: 6px;">
+          <button id="modal-btn-add-genre" type="button" class="snoopy-btn-action snoopy-btn-sm" style="font-size: 11px; white-space: nowrap; padding: 6px 10px;">+ Adicionar</button>
+        </div>
+
+        <!-- Elementos ocultos para sincronização e compatibilidade de testes -->
+        <input id="modal-edit-categories" type="hidden" value="${tagsAtivas.join(', ').replace(/"/g, '&quot;')}">
+        <select id="modal-edit-category-select" style="display: none;">
+          <option value="">-- Selecionar --</option>
+        </select>
+      </div>
+
+      <!-- Série e Volume -->
+      <div style="display: flex; gap: 10px;">
         <div style="flex: 3;">
-          <div class="snoopy-modal-label">Série / Coleção (opcional):</div>
-          <input id="modal-edit-series" class="snoopy-form-input" type="text" placeholder="Ex: Duna, O Senhor dos Anéis..." value="${seriesAtual.replace(/"/g, '&quot;')}">
+          <div class="snoopy-modal-label" style="margin-bottom: 6px; font-size: 11px; font-weight: 600; color: #a1a1aa;">Série / Coleção (opcional):</div>
+          <input id="modal-edit-series" class="snoopy-form-input" type="text" placeholder="Ex: Duna, O Senhor dos Anéis..." value="${seriesAtual.replace(/"/g, '&quot;')}" style="width: 100%; box-sizing: border-box; padding: 8px 12px; font-size: 12.5px; border-radius: 6px;">
         </div>
         <div style="flex: 1;">
-          <div class="snoopy-modal-label">Vol. / Nº:</div>
-          <input id="modal-edit-series-index" class="snoopy-form-input" type="number" min="1" value="${seriesIndexAtual}">
+          <div class="snoopy-modal-label" style="margin-bottom: 6px; font-size: 11px; font-weight: 600; color: #a1a1aa;">Vol. / Nº:</div>
+          <input id="modal-edit-series-index" class="snoopy-form-input" type="number" min="1" value="${seriesIndexAtual}" style="width: 100%; box-sizing: border-box; padding: 8px 12px; font-size: 12.5px; border-radius: 6px;">
         </div>
       </div>
 
-      <div style="display: flex; gap: 8px;">
-        <div style="flex: 2;">
-          <div class="snoopy-modal-label">URL da Imagem de Capa:</div>
-          <input id="modal-edit-cover" class="snoopy-form-input" type="text" placeholder="https://..." value="${coverAtual.replace(/"/g, '&quot;')}">
+      <!-- Capa e Páginas -->
+      <div style="display: flex; gap: 10px;">
+        <div style="flex: 3;">
+          <div class="snoopy-modal-label" style="margin-bottom: 6px; font-size: 11px; font-weight: 600; color: #a1a1aa;">URL da Imagem de Capa:</div>
+          <input id="modal-edit-cover" class="snoopy-form-input" type="text" placeholder="https://..." value="${coverAtual.replace(/"/g, '&quot;')}" style="width: 100%; box-sizing: border-box; padding: 8px 12px; font-size: 12.5px; border-radius: 6px;">
         </div>
         <div style="flex: 1;">
-          <div class="snoopy-modal-label">Total Páginas:</div>
-          <input id="modal-edit-pages" class="snoopy-form-input" type="number" min="1" value="${totPag}">
+          <div class="snoopy-modal-label" style="margin-bottom: 6px; font-size: 11px; font-weight: 600; color: #a1a1aa;">Total Páginas:</div>
+          <input id="modal-edit-pages" class="snoopy-form-input" type="number" min="1" value="${totPag}" style="width: 100%; box-sizing: border-box; padding: 8px 12px; font-size: 12.5px; border-radius: 6px;">
         </div>
       </div>
 
+      <!-- Sinopse Editorial -->
       <div>
-        <div class="snoopy-modal-label">Sinopse Editorial:</div>
-        <textarea id="modal-edit-desc" class="snoopy-form-input" style="height: 90px; resize: vertical; line-height: 1.4;">${descAtual}</textarea>
+        <div class="snoopy-modal-label" style="margin-bottom: 6px; font-size: 11px; font-weight: 600; color: #a1a1aa;">Sinopse Editorial:</div>
+        <textarea id="modal-edit-desc" class="snoopy-form-input" style="width: 100%; box-sizing: border-box; height: 95px; resize: vertical; line-height: 1.5; padding: 8px 12px; font-size: 12px; border-radius: 6px;">${descAtual}</textarea>
       </div>
 
-      <div class="snoopy-toolbar" style="justify-content: flex-end; margin-top: 6px;">
-        <button id="modal-cancel-edit" class="snoopy-btn-action snoopy-btn-sm">Cancelar</button>
-        <button id="modal-save-edit" class="snoopy-btn-primary snoopy-btn-sm">Salvar Alterações</button>
+      <!-- Toolbar de Fechamento/Salvar -->
+      <div class="snoopy-toolbar" style="justify-content: flex-end; margin-top: 10px; gap: 8px;">
+        <button id="modal-cancel-edit" class="snoopy-btn-action snoopy-btn-sm" type="button">Cancelar</button>
+        <button id="modal-save-edit" class="snoopy-btn-primary snoopy-btn-sm" type="button">Salvar Alterações</button>
       </div>
     `;
 
@@ -970,51 +1028,111 @@ class ModaisLeituras {
     const btnCancel = modalBox.querySelector('#modal-cancel-edit');
     if (btnCancel) btnCancel.onclick = fechar;
 
-    const selectCat = modalBox.querySelector('#modal-edit-category-select');
+    const activeGenresBox = modalBox.querySelector('#modal-active-genres-box');
+    const suggestedGenresBox = modalBox.querySelector('#modal-suggested-genres-box');
     const inputCustomCat = modalBox.querySelector('#modal-edit-custom-category');
-    const inputCats = modalBox.querySelector('#modal-edit-categories');
+    const btnAddGenre = modalBox.querySelector('#modal-btn-add-genre');
+    const inputCatsHidden = modalBox.querySelector('#modal-edit-categories');
 
-    if (selectCat && inputCustomCat && inputCats) {
-      selectCat.onchange = () => {
-        if (selectCat.value === '__custom__') {
-          inputCustomCat.style.display = 'block';
-          inputCustomCat.focus();
-        } else if (selectCat.value) {
-          inputCustomCat.style.display = 'none';
-          const novoGen = selectCat.value;
-          const atuais = inputCats.value.split(',').map(s => s.trim()).filter(Boolean);
-          if (!atuais.includes(novoGen)) {
-            atuais.push(novoGen);
-            inputCats.value = atuais.join(', ');
+    const sincronizarFormulario = () => {
+      if (inputCatsHidden) {
+        inputCatsHidden.value = tagsAtivas.join(', ');
+      }
+    };
+
+    const renderActiveChips = () => {
+      if (!activeGenresBox) return;
+      activeGenresBox.innerHTML = '';
+      if (tagsAtivas.length === 0) {
+        activeGenresBox.innerHTML = `<span class="snoopy-meta" style="font-size: 11px; color: #71717a;">Nenhum tema vinculado (será atribuído "Geral")</span>`;
+        return;
+      }
+      tagsAtivas.forEach(g => {
+        const chip = document.createElement('span');
+        chip.className = 'snoopy-chip snoopy-chip-muted';
+        chip.style.cssText = 'font-size: 11px; padding: 3px 8px; display: inline-flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #e4e4e7;';
+
+        const label = document.createElement('span');
+        label.textContent = g;
+        chip.appendChild(label);
+
+        const btnDel = document.createElement('button');
+        btnDel.type = 'button';
+        btnDel.className = 'btn-del-genre snoopy-chip-del';
+        btnDel.style.cssText = 'cursor: pointer; background: transparent; border: none; color: #a1a1aa; padding: 0 2px; font-size: 11px; line-height: 1;';
+        btnDel.title = `Remover tema ${g}`;
+        btnDel.textContent = '✕';
+        btnDel.onclick = (e) => {
+          if (e && e.stopPropagation) e.stopPropagation();
+          tagsAtivas = tagsAtivas.filter(item => item !== g);
+          sincronizarFormulario();
+          renderActiveChips();
+          renderSuggestions();
+        };
+        chip.appendChild(btnDel);
+
+        activeGenresBox.appendChild(chip);
+      });
+    };
+
+    const renderSuggestions = () => {
+      if (!suggestedGenresBox) return;
+      suggestedGenresBox.innerHTML = '<span class="snoopy-micro" style="color: #71717a; margin-right: 2px;">Sugeridos:</span>';
+      const disponiveis = SUGESTOES_POPULARES.filter(s => !tagsAtivas.includes(s));
+      disponiveis.slice(0, 7).forEach(sug => {
+        const pill = document.createElement('button');
+        pill.type = 'button';
+        pill.className = 'snoopy-chip-opt';
+        pill.style.cssText = 'font-size: 10px; padding: 2px 7px; border-radius: 4px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: #a1a1aa; cursor: pointer; transition: all 0.12s ease;';
+        pill.textContent = `+ ${sug}`;
+        pill.onclick = () => {
+          if (!tagsAtivas.includes(sug)) {
+            tagsAtivas.push(sug);
+            sincronizarFormulario();
+            renderActiveChips();
+            renderSuggestions();
           }
-        }
-      };
+        };
+        suggestedGenresBox.appendChild(pill);
+      });
+    };
 
+    const adicionarTemaDigitado = () => {
+      if (!inputCustomCat) return;
+      const digitado = inputCustomCat.value.trim();
+      if (!digitado) return;
+      const normalizado = ModaisLeituras.normalizarGenero(digitado);
+      if (normalizado && !tagsAtivas.includes(normalizado)) {
+        tagsAtivas.push(normalizado);
+        sincronizarFormulario();
+        renderActiveChips();
+        renderSuggestions();
+      }
+      inputCustomCat.value = '';
+    };
+
+    if (btnAddGenre) {
+      btnAddGenre.onclick = adicionarTemaDigitado;
+    }
+    if (inputCustomCat) {
       inputCustomCat.onkeydown = (e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
-          const customVal = ModaisLeituras.normalizarGenero(inputCustomCat.value.trim());
-          if (customVal && customVal !== 'Geral') {
-            const atuais = inputCats.value.split(',').map(s => s.trim()).filter(Boolean);
-            if (!atuais.includes(customVal)) {
-              atuais.push(customVal);
-              inputCats.value = atuais.join(', ');
-            }
-            inputCustomCat.value = '';
-            inputCustomCat.style.display = 'none';
-            selectCat.value = '';
-          }
+          adicionarTemaDigitado();
         }
       };
     }
+
+    renderActiveChips();
+    renderSuggestions();
+    sincronizarFormulario();
 
     const btnSave = modalBox.querySelector('#modal-save-edit');
     if (btnSave) {
       btnSave.onclick = async () => {
         const author = modalBox.querySelector('#modal-edit-author').value.trim();
-        const catInputStr = inputCats ? inputCats.value.trim() : catAtual;
-        const rawList = catInputStr ? catInputStr.split(/[,;]+/).map(c => ModaisLeituras.normalizarGenero(c.trim())).filter(Boolean) : [catAtual];
-        const categories = [...new Set(rawList)];
+        const rawList = tagsAtivas.length > 0 ? tagsAtivas : ['Geral'];
+        const categories = [...new Set(rawList.map(c => ModaisLeituras.normalizarGenero(c)).filter(Boolean))];
         const category = categories[0] || 'Geral';
 
         const series = modalBox.querySelector('#modal-edit-series').value.trim();
@@ -1051,7 +1169,7 @@ class ModaisLeituras {
     modalBg.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;';
 
     const modalBox = document.createElement('div');
-    modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 12px; max-width: 400px; width: 100%; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 12px;';
+    modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 12px; max-width: 400px; width: 100%; padding: 20px; display: flex; flex-direction: column; gap: 12px;';
 
     const livroTitulo = livro.title || (livro.file ? livro.file.name : 'Livro');
 
@@ -1108,7 +1226,7 @@ class ModaisLeituras {
     modalBg.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;';
 
     const modalBox = document.createElement('div');
-    modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 440px; width: 100%; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 12px; font-family: var(--snoopy-font-sans);';
+    modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 440px; width: 100%; padding: 20px; display: flex; flex-direction: column; gap: 12px; font-family: var(--snoopy-font-sans);';
 
     const curPag = Number(livro.current_page) || '';
     const livroTitulo = livro.title || (livro.file ? livro.file.name : 'Livro');
@@ -1193,7 +1311,7 @@ class ModaisLeituras {
     modalBg.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;';
 
     const modalBox = document.createElement('div');
-    modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 440px; width: 100%; max-height: 80vh; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 12px; font-family: var(--snoopy-font-sans);';
+    modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 440px; width: 100%; max-height: 80vh; padding: 20px; display: flex; flex-direction: column; gap: 12px; font-family: var(--snoopy-font-sans);';
 
     modalBox.innerHTML = `
       <div class="snoopy-card-header">
@@ -1274,7 +1392,7 @@ class ModaisLeituras {
     modalBg.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;';
 
     const modalBox = document.createElement('div');
-    modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 380px; width: 100%; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 12px; font-family: var(--snoopy-font-sans);';
+    modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 380px; width: 100%; padding: 20px; display: flex; flex-direction: column; gap: 12px; font-family: var(--snoopy-font-sans);';
 
     const curPag = Number(livro.current_page) || 0;
     const totPag = Number(livro.total_pages) || 100;
@@ -1382,7 +1500,7 @@ class ModaisLeituras {
     modalBg.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;';
 
     const modalBox = document.createElement('div');
-    modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 360px; width: 100%; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 12px; font-family: var(--snoopy-font-sans);';
+    modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 360px; width: 100%; padding: 20px; display: flex; flex-direction: column; gap: 12px; font-family: var(--snoopy-font-sans);';
 
     modalBox.innerHTML = `
       <div class="snoopy-card-header">
@@ -1447,7 +1565,7 @@ class ModaisLeituras {
     modalBg.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;';
 
     const modalBox = document.createElement('div');
-    modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 680px; width: 100%; max-height: 85vh; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 12px; font-family: var(--snoopy-font-sans);';
+    modalBox.style.cssText = 'background: #111118; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; max-width: 680px; width: 100%; max-height: 85vh; padding: 20px; display: flex; flex-direction: column; gap: 12px; font-family: var(--snoopy-font-sans);';
 
     modalBox.innerHTML = `
       <div class="snoopy-card-header">
@@ -1518,7 +1636,7 @@ class ModaisLeituras {
           });
 
           itemCard.innerHTML = `
-            <img src="${coverUrl}" style="width: 50px; height: 75px; border-radius: 4px; object-fit: cover; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.4);" />
+            <img src="${coverUrl}" style="width: 50px; height: 75px; border-radius: 4px; object-fit: cover; flex-shrink: 0;" />
             <div style="flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 3px;">
               <span style="font-size: 13.5px; font-weight: 700; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.title}</span>
               <span style="font-size: 11.5px; color: #a1a1aa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.author}</span>

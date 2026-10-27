@@ -408,6 +408,14 @@ categories:
     assert.doesNotMatch(conteudoModificado, /"Romance"/);
     assert.match(conteudoModificado, /"Aventura"/);
   });
+
+  test('Garante que abrirModalEditarMetadados e abrirModalAdicionarGenero sejam funções exportadas', () => {
+    const modais = new ModaisLeituras({ app: { vault: {} } });
+    assert.strictEqual(typeof modais.abrirModalEditarMetadados, 'function');
+    assert.strictEqual(typeof modais.abrirModalAdicionarGenero, 'function');
+    assert.strictEqual(typeof modais.adicionarGenero, 'function');
+    assert.strictEqual(typeof modais.removerGenero, 'function');
+  });
 });
 
 

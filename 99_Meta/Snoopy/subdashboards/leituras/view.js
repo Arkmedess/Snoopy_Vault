@@ -57,7 +57,10 @@ async function renderLeituras(dv, app) {
   const BookshelfView = await ModuleLoader.carregar(app, "99_Meta/Snoopy/subdashboards/leituras/bookshelf_view.js");
   const GamificacaoLeituras = await ModuleLoader.carregar(app, "99_Meta/Snoopy/subdashboards/leituras/gamificacao.js");
 
-  const root = dv.container.createEl('div', { cls: 'snoopy-container' });
+  const root = dv.container.createEl('div', {
+    cls: 'snoopy-container',
+    attr: { style: 'padding: 16px 16px 32px 16px; box-sizing: border-box;' }
+  });
 
   if (!ModaisLeiturasClass || !BookshelfView || !GamificacaoLeituras) {
     root.innerHTML = `<div class="snoopy-meta" style="color: #fca5a5; padding: 20px;">Erro ao carregar os submódulos do Bookshelf. Verifique os caminhos do Snoopy Vault.</div>`;
