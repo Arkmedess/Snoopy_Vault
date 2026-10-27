@@ -8,9 +8,9 @@ tema_preset: "snoopy"
 modulos_ativos:
   - snoopy_banner_cabecalho
   - snoopy_cockpit_pomodoro
-  - snoopy_kanban_projetos
   - snoopy_daily_tracker
   - snoopy_leituras_estudos
+  - snoopy_planner_calendario
 ---
 
 # ⚙️ Configurações do Snoopy Vault
@@ -47,6 +47,8 @@ Remova ou adicione itens na lista **`modulos_ativos`** para escolher quais bloco
 - `snoopy_kanban_projetos`: Quadro Kanban interativo com drag & drop e tarefas.
 - `snoopy_daily_tracker`: Daily Tracker com hábitos do dia e tarefas prioritárias do vault.
 - `snoopy_leituras_estudos`: Estante de livros com leitura ativa e cards de matérias.
+- `snoopy_planner_calendario`: Planner & Calendário Mensal integrado com blocos de estudo, tarefas e revisões.
+- `snoopy_kanban_projetos`: Quadro Kanban interativo com drag & drop e tarefas (opcional).
 
 ---
 

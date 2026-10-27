@@ -3,6 +3,15 @@
   "cicloOrdem": [
     "03_Estudos/Exemplo - Arquitetura de Software.md"
   ],
+  "temaCicloAtivo": "Todos",
+  "estudosCiclo": [],
+  "simulados": [],
+  "simulacaoProva": {
+    "rodando": false,
+    "iniciadaEm": null,
+    "acumuladoSeg": 0,
+    "tempoLimiteMin": 240
+  },
   "metaHorasSemanal": 20,
   "metaQuestoesSemanal": 150,
   "nomeMetaProva": "Concurso / Exame",
@@ -12,6 +21,11 @@
       "minutosFoco": 1,
       "questoesFeitas": 10,
       "questoesAcertos": 8
+    },
+    "2026-10-25": {
+      "minutosFoco": 100,
+      "questoesFeitas": 0,
+      "questoesAcertos": 0
     }
   },
   "revisoes": [
