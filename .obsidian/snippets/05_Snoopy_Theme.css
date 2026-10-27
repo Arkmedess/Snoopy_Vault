@@ -215,39 +215,74 @@
 /* Títulos de Bloco (H2) Rigorosamente Padronizados */
 .snoopy-section-title {
   font-family: var(--snoopy-font-heading) !important;
-  font-size: 18px !important;
+  font-size: var(--snoopy-fs-h2, 14.5px) !important;
   font-weight: 700 !important;
   color: #ffffff !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
+  letter-spacing: var(--snoopy-tracking-wide, 0.05em) !important;
 }
 
 /* Subtítulos Internos Padronizados */
 .snoopy-sub-title {
   font-family: var(--snoopy-font-heading) !important;
-  font-size: 14px !important;
-  font-weight: 700 !important;
+  font-size: var(--snoopy-fs-small, 12.5px) !important;
+  font-weight: 600 !important;
   color: var(--snoopy-muted) !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
+  letter-spacing: var(--snoopy-tracking-wide, 0.05em) !important;
 }
 
 /* Utilitários Tipográficos Modulares Centralizados */
 .snoopy-meta {
   font-family: var(--snoopy-font-mono) !important;
-  font-size: 14px;
+  font-size: var(--snoopy-fs-meta, 11.5px) !important;
   color: var(--snoopy-muted);
 }
 
 .snoopy-micro {
   font-family: var(--snoopy-font-mono) !important;
-  font-size: 12.5px;
+  font-size: var(--snoopy-fs-micro, 10.5px) !important;
   letter-spacing: 0.03em;
+}
+
+/* Faixas de KPIs Padronizadas (Estudos & Estante) */
+.snoopy-kpi-tile {
+  background: var(--background-secondary-alt) !important;
+  border: 1px solid var(--background-modifier-border) !important;
+  border-radius: var(--snoopy-radius-sm, 6px) !important;
+  padding: 8px 12px !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  transition: border-color var(--snoopy-transition, 120ms ease), background var(--snoopy-transition, 120ms ease) !important;
+}
+
+.snoopy-kpi-tile:hover {
+  border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+.snoopy-kpi-label {
+  font-family: var(--snoopy-font-sans) !important;
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+  color: var(--snoopy-muted, #a1a1aa) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  user-select: none !important;
+}
+
+.snoopy-kpi-val {
+  font-family: var(--snoopy-font-mono) !important;
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+  letter-spacing: -0.01em !important;
 }
 
 .snoopy-modal-label {
   font-family: var(--snoopy-font-sans) !important;
-  font-size: 14px;
+  font-size: var(--snoopy-fs-small, 12px) !important;
   font-weight: 600;
   color: var(--snoopy-muted);
   margin-bottom: 4px;
@@ -353,6 +388,107 @@
   }
 }
 
+/* Grid de Trabalho Integrado de Estudos (Planner 60% + Métricas/Revisões 40%) */
+.snoopy-estudos-workspace-grid {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr) !important;
+  gap: 16px !important;
+  margin-bottom: 12px !important;
+}
+
+@media (max-width: 960px) {
+  .snoopy-estudos-workspace-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Tabela Moderna de Alta Densidade (Estudos & Disciplinas) */
+.markdown-rendered .snoopy-table,
+.snoopy-table {
+  width: 100% !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  font-family: var(--snoopy-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif) !important;
+  font-size: 12.5px !important;
+  text-align: left !important;
+  background: transparent !important;
+  background-image: none !important;
+}
+
+.markdown-rendered .snoopy-table thead,
+.markdown-rendered .snoopy-table thead tr,
+.markdown-rendered .snoopy-table th,
+.snoopy-table thead tr,
+.snoopy-table th {
+  background: rgba(255, 255, 255, 0.02) !important;
+  background-image: none !important; /* Neutraliza o pontilhado do tema Border */
+  border-bottom: 1px solid var(--background-modifier-border) !important;
+}
+
+.snoopy-table th {
+  padding: 10px 14px !important;
+  font-family: var(--snoopy-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: var(--snoopy-muted, #a1a1aa) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+.snoopy-table tbody tr {
+  transition: background var(--snoopy-transition, 120ms ease) !important;
+  background: transparent !important;
+  background-image: none !important;
+}
+
+.snoopy-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.035) !important;
+}
+
+.snoopy-table td {
+  padding: 12px 14px !important;
+  vertical-align: middle !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  font-family: var(--snoopy-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif) !important;
+}
+
+/* Painel de Ações Rápidas & Tabs de Cadastro */
+.snoopy-quick-actions-box {
+  background: var(--background-secondary-alt) !important;
+  border: 1px solid var(--background-modifier-border) !important;
+  border-radius: 8px !important;
+  padding: 12px 14px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+
+.snoopy-tab-pill-btn {
+  font-size: 11px !important;
+  padding: 4px 10px !important;
+  border-radius: 5px !important;
+  background: transparent !important;
+  color: var(--text-muted) !important;
+  border: 1px solid transparent !important;
+  cursor: pointer !important;
+  transition: all var(--snoopy-transition, 120ms ease) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+}
+
+.snoopy-tab-pill-btn:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text-normal) !important;
+}
+
+.snoopy-tab-pill-btn.active {
+  background: var(--background-modifier-border) !important;
+  color: var(--text-normal) !important;
+  font-weight: 700 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
 /* --------------------------------------------------------------------------
    3. HERO COMMAND & SEARCH BAR (Fundo Tematizado com Banner do Snoopy)
    -------------------------------------------------------------------------- */
@@ -374,7 +510,30 @@
   background-size: cover !important;
   background-position: center 85% !important;
   background-repeat: no-repeat !important;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6) !important;
+  box-shadow: none !important;
+  transition: border-color 0.15s ease !important;
+}
+
+.snoopy-banner-box::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(ellipse 90% 70% at 50% 100%, rgba(6, 6, 9, 0.65) 0%, transparent 80%);
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.snoopy-banner-box:hover {
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  box-shadow: none !important;
+}
+
+.snoopy-banner-box:hover::before,
+.snoopy-banner-box:focus-within::before {
+  opacity: 1;
 }
 
 .snoopy-banner-box img {
@@ -383,8 +542,9 @@
 
 .snoopy-omni-container {
   width: 100%;
-  max-width: 860px;
+  max-width: 780px;
   position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -399,71 +559,91 @@
 
 .snoopy-omni-icon {
   position: absolute;
-  left: 14px;
-  color: var(--snoopy-muted);
+  left: 12px;
+  color: rgba(255, 255, 255, 0.45);
   pointer-events: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2;
+  z-index: 3;
+  font-family: var(--font-monospace, monospace);
+  font-size: 13px;
+  font-weight: 700;
+  transition: color 0.15s ease;
+}
+
+.snoopy-omni-icon.is-cli {
+  color: #4ade80 !important;
 }
 
 .snoopy-omni-input {
   width: 100%;
-  height: 44px;
-  background: rgba(13, 13, 18, 0.88) !important;
-  backdrop-filter: blur(10px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.16) !important;
-  border-radius: var(--snoopy-radius-md, 8px) !important;
-  color: #ffffff !important;
-  font-family: var(--snoopy-font-sans) !important;
-  font-size: 14px !important;
-  padding: 0 40px 0 42px !important;
+  height: 38px !important;
+  background: rgba(9, 9, 13, 0.88) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 6px !important;
+  color: #f4f4f5 !important;
+  font-family: var(--font-monospace, 'JetBrains Mono', 'Fira Code', Menlo, Monaco, Consolas, monospace) !important;
+  font-size: 12.5px !important;
+  letter-spacing: -0.01em !important;
+  padding: 0 68px 0 32px !important;
   outline: none !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45) !important;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+  box-shadow: none !important;
+  transition: border-color 0.15s ease, background 0.15s ease !important;
+}
+
+.snoopy-omni-input::placeholder {
+  color: rgba(255, 255, 255, 0.38) !important;
+  font-family: var(--font-monospace, monospace) !important;
+  font-size: 12px !important;
 }
 
 .snoopy-omni-input:focus {
-  border-color: rgba(96, 165, 250, 0.55) !important;
-  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.4), 0 6px 20px rgba(0, 0, 0, 0.6) !important;
+  border-color: rgba(255, 255, 255, 0.28) !important;
+  background: rgba(7, 7, 10, 0.95) !important;
+  box-shadow: none !important;
 }
 
 .snoopy-omni-clear-btn {
   position: absolute;
-  right: 12px;
+  right: 10px;
   background: transparent !important;
   border: none !important;
-  color: var(--snoopy-muted) !important;
+  color: rgba(255, 255, 255, 0.4) !important;
   cursor: pointer !important;
   display: none;
   align-items: center;
   justify-content: center;
-  padding: 4px !important;
-  font-size: 12px !important;
-  z-index: 2;
+  padding: 2px !important;
+  font-size: 11px !important;
+  z-index: 3;
+  transition: color 0.12s ease !important;
 }
 
 .snoopy-omni-clear-btn:hover {
   color: #ffffff !important;
 }
 
-/* Painel de Resultados e Live Preview */
+/* Painel de Resultados e Live Preview CLI */
 .snoopy-omni-preview-box {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 6px);
   left: 0;
   right: 0;
-  background: #0d0d12 !important;
-  border: 1px solid rgba(255, 255, 255, 0.16) !important;
-  border-radius: var(--snoopy-radius-md, 8px) !important;
-  padding: 8px !important;
+  background: rgba(9, 9, 13, 0.96) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 6px !important;
+  padding: 6px !important;
   display: none;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
   z-index: 999;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85) !important;
-  max-height: 280px;
+  box-shadow: none !important;
+  max-height: 290px;
   overflow-y: auto;
 }
 
@@ -471,17 +651,18 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 12px;
-  border-radius: var(--snoopy-radius-sm, 6px);
+  padding: 6px 10px;
+  border-radius: 4px;
   cursor: pointer;
   background: transparent;
-  transition: background 0.12s ease;
-  gap: 10px;
+  transition: background 0.1s ease;
+  gap: 8px;
+  font-family: var(--font-monospace, monospace);
 }
 
 .snoopy-omni-item:hover,
 .snoopy-omni-item.active {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.08) !important;
 }
 
 /* --------------------------------------------------------------------------
@@ -490,26 +671,35 @@
 .snoopy-header-row {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
-  gap: 14px;
+  gap: 16px;
   padding-bottom: 16px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   margin-bottom: 20px;
 }
 
+.snoopy-header-datebox {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 240px;
+}
+
 .snoopy-date-title {
   font-family: var(--snoopy-font-display);
-  font-size: 2.25rem;
+  font-size: 2rem;
   font-weight: 700;
   color: #ffffff;
   letter-spacing: -0.01em;
+  line-height: 1.15;
 }
 
 .snoopy-nav-pills {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
 }
 
 /* Botões de Ação Rápida Monocromáticos (Clean, Minimalista, Flat) */
@@ -519,20 +709,20 @@ button.snoopy-nav-pill-btn,
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 6px !important;
-  padding: 5px 13px !important;
+  gap: 5px !important;
+  padding: 4px 10px !important;
   border-radius: 6px !important;
-  background-color: var(--text-normal) !important;
-  background: var(--text-normal) !important;
-  border: 1px solid var(--text-normal) !important;
-  color: var(--background-primary) !important;
-  font-size: 14.5px !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid var(--background-modifier-border) !important;
+  color: var(--text-normal) !important;
+  font-size: 11.5px !important;
   font-weight: 600 !important;
-  letter-spacing: 0.02em !important;
+  letter-spacing: 0.03em !important;
   cursor: pointer !important;
   box-shadow: none !important;
   transform: none !important;
-  transition: opacity 0.12s ease !important;
+  transition: all var(--snoopy-transition, 120ms ease) !important;
   user-select: none !important;
   line-height: 1.3 !important;
 }
@@ -540,7 +730,9 @@ button.snoopy-nav-pill-btn,
 .snoopy-container .snoopy-nav-pill-btn:hover,
 button.snoopy-nav-pill-btn:hover,
 .snoopy-nav-pill-btn:hover {
-  opacity: 0.88 !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
   box-shadow: none !important;
   transform: none !important;
 }
@@ -548,7 +740,7 @@ button.snoopy-nav-pill-btn:hover,
 .snoopy-container .snoopy-nav-pill-btn:active,
 button.snoopy-nav-pill-btn:active,
 .snoopy-nav-pill-btn:active {
-  opacity: 0.75 !important;
+  background: rgba(255, 255, 255, 0.18) !important;
   box-shadow: none !important;
   transform: none !important;
 }
@@ -577,7 +769,7 @@ button.snoopy-nav-pill-btn:active,
   border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
   border-radius: var(--snoopy-radius-lg, 10px) !important;
   padding: 18px 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35) !important;
+  box-shadow: none !important;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -607,6 +799,18 @@ button.snoopy-nav-pill-btn:active,
   stroke: #60a5fa !important;
 }
 
+/* Timer Display Central do Pomodoro (Tamanho Proporcional & Imponente) */
+#snoopy-timer-display,
+.snoopy-timer-num {
+  font-size: 42px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  letter-spacing: 0.04em !important;
+  color: #ffffff !important;
+  font-family: var(--font-monospace, monospace) !important;
+  user-select: none !important;
+}
+
 #snoopy-playlist-count {
   white-space: nowrap !important;
   flex-shrink: 0 !important;
@@ -633,6 +837,11 @@ button.snoopy-nav-pill-btn:active,
   z-index: 10;
 }
 
+.snoopy-heat-cell.is-today {
+  outline: 1.5px dashed rgba(134, 239, 172, 0.6) !important;
+  outline-offset: 1px !important;
+}
+
 .snoopy-heat-cell:focus-visible,
 .snoopy-heat-cell.is-selected {
   outline: 2px solid #86efac !important;
@@ -645,13 +854,13 @@ button.snoopy-nav-pill-btn:active,
   margin-top: 8px !important;
   padding: 5px 10px !important;
   border-radius: 6px !important;
-  background: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  font-size: 11px !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  font-size: 11.5px !important;
   color: #a1a1aa !important;
-  font-family: var(--font-monospace) !important;
+  font-family: var(--snoopy-font-sans, inherit) !important;
   text-align: center !important;
-  letter-spacing: 0.02em !important;
+  letter-spacing: 0.01em !important;
   user-select: none !important;
   white-space: nowrap !important;
   overflow: hidden !important;
@@ -665,8 +874,8 @@ button.snoopy-nav-pill-btn:active,
 
 /* Terrário do Jardim de Constância (Estilo Minimalista e Sóbrio) */
 .snoopy-planter-pot {
-  width: 58px !important;
-  height: 58px !important;
+  width: 40px !important;
+  height: 40px !important;
   border-radius: 50% !important;
   background: #14141f !important;
   border: 1px solid rgba(255, 255, 255, 0.12) !important;
@@ -691,19 +900,19 @@ button.snoopy-nav-pill-btn:active,
   width: 22px !important;
   height: 22px !important;
   border-radius: 6px !important;
-  background: radial-gradient(circle, rgba(74, 222, 128, 0.15) 0%, rgba(20, 20, 28, 0.8) 100%) !important;
+  background: rgba(20, 20, 28, 0.8) !important;
   border: 1px solid rgba(74, 222, 128, 0.3) !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
   cursor: pointer !important;
-  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+  transition: border-color 0.12s ease, background 0.12s ease !important;
+  box-shadow: none !important;
 }
 
 .snoopy-grove-tree:hover {
-  transform: translateY(-2px) scale(1.15) !important;
-  box-shadow: 0 4px 8px rgba(74, 222, 128, 0.4) !important;
   border-color: #86efac !important;
+  background: rgba(74, 222, 128, 0.15) !important;
 }
 
 .heat-lvl-0 { background-color: var(--heat-empty); border: 1px solid rgba(255, 255, 255, 0.04); }
@@ -718,9 +927,10 @@ button.snoopy-btn-action {
   background: var(--background-modifier-form-field, rgba(128, 128, 128, 0.08)) !important;
   border: 1px solid var(--background-modifier-border) !important;
   color: var(--text-normal) !important;
-  border-radius: 6px !important;
-  padding: 6px 14px !important;
-  font-size: 14.5px !important;
+  border-radius: var(--snoopy-radius-xs, 4px) !important;
+  padding: 5px 12px !important;
+  font-family: var(--snoopy-font-sans) !important;
+  font-size: var(--snoopy-fs-small, 12px) !important;
   font-weight: 600 !important;
   cursor: pointer !important;
   transition: background 0.12s ease, border-color 0.12s ease, opacity 0.12s ease !important;
@@ -747,9 +957,10 @@ button.snoopy-btn-primary {
   background: var(--text-normal) !important;
   color: var(--background-primary) !important;
   border: 1px solid var(--text-normal) !important;
-  border-radius: 6px !important;
-  padding: 6px 16px !important;
-  font-size: 14.5px !important;
+  border-radius: var(--snoopy-radius-xs, 4px) !important;
+  padding: 5px 14px !important;
+  font-family: var(--snoopy-font-sans) !important;
+  font-size: var(--snoopy-fs-small, 12px) !important;
   font-weight: 600 !important;
   cursor: pointer !important;
   transition: opacity 0.12s ease, background 0.12s ease !important;
@@ -774,8 +985,8 @@ button.snoopy-btn-primary:hover {
 button.snoopy-btn-mode,
 button.snoopy-btn-tab {
   padding: 5px 12px !important;
-  border-radius: 5px !important;
-  font-size: 14px !important;
+  border-radius: var(--snoopy-radius-xs, 4px) !important;
+  font-size: var(--snoopy-fs-small, 12px) !important;
   font-family: var(--snoopy-font-sans) !important;
   font-weight: 600 !important;
   cursor: pointer !important;
@@ -817,12 +1028,12 @@ button.snoopy-modal-close {
   background: transparent !important;
   border: 1px solid transparent !important;
   color: var(--text-muted, #a1a1aa) !important;
-  border-radius: 4px !important;
+  border-radius: var(--snoopy-radius-xs, 4px) !important;
   width: 28px !important;
   height: 28px !important;
   min-width: 28px !important;
   padding: 0 !important;
-  font-size: 14px !important;
+  font-size: var(--snoopy-fs-small, 12px) !important;
   cursor: pointer !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -858,9 +1069,10 @@ button.snoopy-btn-danger {
   background: rgba(239, 68, 68, 0.12) !important;
   border: 1px solid rgba(239, 68, 68, 0.25) !important;
   color: #fca5a5 !important;
-  border-radius: 6px !important;
-  padding: 6px 14px !important;
-  font-size: 14.5px !important;
+  border-radius: var(--snoopy-radius-xs, 4px) !important;
+  padding: 5px 12px !important;
+  font-family: var(--snoopy-font-sans) !important;
+  font-size: var(--snoopy-fs-small, 12px) !important;
   font-weight: 600 !important;
   cursor: pointer !important;
   transition: background 0.12s ease, border-color 0.12s ease !important;
@@ -880,20 +1092,43 @@ button.snoopy-btn-danger:hover {
   color: #ffffff !important;
 }
 
+/* Botão de Excluir Livro no Companion (Neutro em repouso, alerta sutil no hover) */
+#btn-trash-book:hover {
+  color: #f87171 !important;
+  border-color: rgba(248, 113, 113, 0.4) !important;
+  background: rgba(248, 113, 113, 0.1) !important;
+}
+
+#btn-trash-book:hover svg {
+  stroke: #f87171 !important;
+}
+
+/* Rating por Estrelas do Companion - Suavidade e Neutralidade */
+#companion-star-rating .star-btn {
+  user-select: none;
+  cursor: pointer;
+  transition: transform 0.12s ease, color 0.12s ease;
+}
+
+#companion-star-rating .star-btn:hover {
+  transform: scale(1.15);
+  color: #ffffff !important;
+}
+
 /* Modificadores de Escala / Tamanho de Botão */
 .snoopy-btn-sm {
-  padding: 4px 10px !important;
-  font-size: 13px !important;
+  padding: 3px 8px !important;
+  font-size: var(--snoopy-fs-meta, 11px) !important;
 }
 
 .snoopy-btn-md {
-  padding: 6px 14px !important;
-  font-size: 14.5px !important;
+  padding: 5px 12px !important;
+  font-size: var(--snoopy-fs-small, 12px) !important;
 }
 
 .snoopy-btn-lg {
-  padding: 8px 18px !important;
-  font-size: 15.5px !important;
+  padding: 7px 16px !important;
+  font-size: var(--snoopy-fs-body, 13px) !important;
 }
 
 .snoopy-btn-block {
@@ -1068,7 +1303,7 @@ button.snoopy-btn-danger:hover {
   border-radius: var(--snoopy-radius-lg, 10px) !important;
   padding: 18px 20px;
   margin-bottom: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35) !important;
+  box-shadow: none !important;
   transition: border-color 0.15s ease !important;
 }
 
@@ -1320,7 +1555,7 @@ button.snoopy-btn-danger:hover {
   object-fit: cover;
   background: var(--background-secondary-alt);
   border: 1px solid var(--background-modifier-border);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: none !important;
   transition: border-color 0.12s ease !important;
 }
 
@@ -1364,7 +1599,7 @@ button.snoopy-btn-danger:hover {
   background: rgba(255, 255, 255, 0.04) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 20px !important;
-  font-size: 14.5px !important;
+  font-size: var(--snoopy-fs-small, 12px) !important;
   color: #d4d4d8 !important;
   cursor: pointer !important;
   transition: all 0.12s ease !important;
@@ -1400,7 +1635,7 @@ button.snoopy-btn-danger:hover {
   max-height: 90vh;
   overflow-y: auto;
   padding: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+  box-shadow: none !important;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -1597,13 +1832,13 @@ button.snoopy-btn-danger:hover {
   overflow: hidden !important;
   background: #161622 !important;
   border: 1px solid var(--background-modifier-border) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35) !important;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+  box-shadow: none !important;
+  transition: border-color 0.15s ease !important;
 }
 
 .snoopy-shelf-card:hover .snoopy-shelf-cover-box {
   border-color: rgba(255, 255, 255, 0.22) !important;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5) !important;
+  box-shadow: none !important;
 }
 
 .snoopy-shelf-ribbon-done {
@@ -1619,7 +1854,7 @@ button.snoopy-btn-danger:hover {
   justify-content: center !important;
   clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 75%, 0 100%) !important;
   z-index: 5 !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: none !important;
 }
 
 .snoopy-shelf-badge-notes {
@@ -1635,7 +1870,7 @@ button.snoopy-btn-danger:hover {
   border-radius: var(--snoopy-radius-xs, 4px) !important;
   letter-spacing: 0.04em !important;
   z-index: 5 !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: none !important;
 }
 
 .snoopy-shelf-badge-reading {
@@ -1667,7 +1902,9 @@ button.snoopy-btn-danger:hover {
   flex-direction: column !important;
   gap: 4px !important;
   z-index: 99 !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.85) !important;
+  box-shadow: none !important;
+  min-width: 140px !important;
+}
   min-width: 140px !important;
 }
 
@@ -1792,6 +2029,45 @@ button.snoopy-btn-danger:hover {
   font-weight: 700 !important;
 }
 
+/* Override específico para o Planner Mensal de Estudos (evita esmagamento vertical das células) */
+.snoopy-planner-section .snoopy-cal-day,
+.snoopy-planner-day {
+  height: auto !important;
+  min-height: 84px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  border-radius: 6px !important;
+  border: 1px solid var(--background-modifier-border) !important;
+  background: var(--background-secondary) !important;
+  padding: 5px 6px !important;
+  gap: 3px !important;
+  box-sizing: border-box !important;
+  overflow: visible !important;
+  transition: all 0.12s ease !important;
+}
+
+.snoopy-planner-section .snoopy-cal-day:hover,
+.snoopy-planner-day:hover {
+  background: var(--background-secondary-alt) !important;
+  border-color: rgba(96, 165, 250, 0.4) !important;
+}
+
+.snoopy-planner-section .snoopy-cal-day.today,
+.snoopy-planner-day.today {
+  border-color: var(--interactive-accent, #60a5fa) !important;
+  background: rgba(96, 165, 250, 0.08) !important;
+}
+
+.snoopy-planner-section .snoopy-cal-day.active,
+.snoopy-planner-day.active {
+  border-color: #60a5fa !important;
+  background: rgba(96, 165, 250, 0.16) !important;
+  box-shadow: none !important;
+  outline: 1px solid #60a5fa !important;
+}
+
 .snoopy-cal-dot {
   width: 3px !important;
   height: 3px !important;
@@ -1802,17 +2078,17 @@ button.snoopy-btn-danger:hover {
 
 .snoopy-cal-dot.dot-pending {
   background: #60a5fa !important;
-  box-shadow: 0 0 4px rgba(96, 165, 250, 0.6) !important;
+  box-shadow: none !important;
 }
 
 .snoopy-cal-dot.dot-late {
   background: #f87171 !important;
-  box-shadow: 0 0 4px rgba(248, 113, 113, 0.6) !important;
+  box-shadow: none !important;
 }
 
 .snoopy-cal-dot.dot-done {
   background: #86efac !important;
-  box-shadow: 0 0 4px rgba(134, 239, 172, 0.6) !important;
+  box-shadow: none !important;
 }
 
 /* =========================================================================
@@ -1948,14 +2224,15 @@ button.snoopy-btn-danger:hover {
   color: #070709 !important;
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
   cursor: pointer !important;
-  box-shadow: 0 0 10px rgba(74, 222, 128, 0.35) !important;
-  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: opacity 0.12s ease, background 0.12s ease !important;
 }
 
 .snoopy-player-btn-main:hover {
-  transform: scale(1.05) !important;
+  transform: none !important;
   background: #86efac !important;
-  box-shadow: 0 0 14px rgba(74, 222, 128, 0.55) !important;
+  box-shadow: none !important;
 }
 
 .snoopy-player-btn-icon {
@@ -2069,25 +2346,30 @@ button.snoopy-btn-danger:hover {
 }
 
 .snoopy-omni-submit-btn {
+  position: absolute;
+  right: 28px;
   background: rgba(255, 255, 255, 0.06) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  border-radius: var(--snoopy-radius-xs, 4px) !important;
-  color: var(--text-muted) !important;
-  padding: 3px 8px !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 4px !important;
+  color: rgba(255, 255, 255, 0.65) !important;
+  padding: 2px 7px !important;
+  font-family: var(--font-monospace, monospace) !important;
   font-size: 11px !important;
   font-weight: 600 !important;
   cursor: pointer !important;
   display: inline-flex !important;
   align-items: center !important;
-  gap: 4px !important;
-  margin-right: 6px !important;
+  justify-content: center !important;
+  height: 22px !important;
+  line-height: 1 !important;
+  z-index: 3;
   transition: all 0.12s ease !important;
 }
 
 .snoopy-omni-submit-btn:hover {
-  background: rgba(255, 255, 255, 0.12) !important;
-  border-color: rgba(255, 255, 255, 0.25) !important;
-  color: var(--text-normal) !important;
+  background: rgba(255, 255, 255, 0.14) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #ffffff !important;
 }
 
 /* =========================================================================
@@ -2148,11 +2430,12 @@ button.snoopy-btn-danger:hover {
   background: rgba(255, 255, 255, 0.04) !important;
   border: 1px solid rgba(255, 255, 255, 0.06) !important;
   cursor: pointer !important;
-  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), background 0.15s ease, border-color 0.15s ease !important;
+  transition: background 0.12s ease, border-color 0.12s ease !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 .snoopy-grove-tree:hover {
-  transform: translateY(-2px) scale(1.15) !important;
   background: rgba(74, 222, 128, 0.12) !important;
   border-color: rgba(74, 222, 128, 0.35) !important;
 }
@@ -2169,7 +2452,7 @@ button.snoopy-btn-danger:hover {
   padding: 2px !important;
   gap: 3px !important;
   margin-right: 4px !important;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+  box-shadow: none !important;
 }
 
 .snoopy-btn-view-mode {
@@ -2198,21 +2481,21 @@ button.snoopy-btn-danger:hover {
   background: rgba(255, 255, 255, 0.16) !important;
   color: #ffffff !important;
   border-color: rgba(255, 255, 255, 0.3) !important;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5) !important;
+  box-shadow: none !important;
 }
 
 .snoopy-btn-view-mode[data-mode="kanban"].active {
   background: rgba(167, 139, 250, 0.18) !important;
   color: #c4b5fd !important;
   border-color: rgba(167, 139, 250, 0.45) !important;
-  box-shadow: 0 0 10px rgba(167, 139, 250, 0.3) !important;
+  box-shadow: none !important;
 }
 
 .snoopy-btn-view-mode[data-mode="calendario"].active {
   background: rgba(96, 165, 250, 0.18) !important;
   color: #93c5fd !important;
   border-color: rgba(96, 165, 250, 0.45) !important;
-  box-shadow: 0 0 10px rgba(96, 165, 250, 0.3) !important;
+  box-shadow: none !important;
 }
 
 .snoopy-task-calendar-view-wrap {
@@ -2268,7 +2551,7 @@ button.snoopy-btn-danger:hover {
 
 .snoopy-kanban-dot.dot-hoje {
   background-color: #60a5fa !important;
-  box-shadow: 0 0 6px rgba(96, 165, 250, 0.4) !important;
+  box-shadow: none !important;
 }
 
 .snoopy-kanban-dot.dot-concluido {
@@ -2337,14 +2620,9 @@ button.snoopy-btn-danger:hover {
   box-shadow: none !important;
 }
 
-@keyframes snoopyCoinPulse {
-  0% { transform: scale(1); filter: brightness(1); }
-  40% { transform: scale(1.15); filter: brightness(1.6); border-color: #facc15; }
-  100% { transform: scale(1); filter: brightness(1); }
-}
-
 .snoopy-coin-pulse {
-  animation: snoopyCoinPulse 0.9s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  /* Pulso removido em conformidade com DESIGN_GUIDELINES (zero animações espalhafatosas) */
+  transition: opacity 0.12s ease !important;
 }
 
 .snoopy-btn-santuario {

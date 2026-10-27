@@ -63,7 +63,8 @@ describe('UIKit - Núcleo de Componentes de Interface', () => {
         'sparkles', 'refresh-cw', 'shield', 'sun', 'sunrise',
         'moon', 'repeat', 'pencil', 'play', 'pause', 'calendar', 'settings',
         'skip-back', 'skip-forward', 'list-plus', 'maximize-2', 'sliders',
-        'tree-pine', 'flower-2', 'list-music', 'library', 'arrow-up-right'
+        'tree-pine', 'flower-2', 'list-music', 'library', 'arrow-up-right',
+        'coins', 'shopping-bag'
       ];
 
       for (const icone of iconesObrigatorios) {
@@ -223,5 +224,72 @@ describe('UIKit - Padronização v2 (ícones ampliados, plural e estado vazio)',
     const linha = titleBox.children[0];
     assert.ok(linha.children.some(c => c.className.includes('snoopy-icon')));
     assert.ok(titleBox.children.some(c => c.className === 'snoopy-card-subtitle'));
+  });
+});
+
+describe('Design System Sentinel: Padronização de Botões, Fontes, Cores e Purgatório de Sombras', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const cssPath = path.resolve(__dirname, '../../.obsidian/snippets/05_Snoopy_Theme.css');
+  const cssContent = fs.readFileSync(cssPath, 'utf8');
+
+  test('05_Snoopy_Theme.css não deve conter box-shadow que não seja "none" ou "var(--snoopy-focus-ring)"', () => {
+    const lines = cssContent.split('\n');
+    const violacoes = [];
+    lines.forEach((line, idx) => {
+      const cleanLine = line.replace(/\/\*.*?\*\//g, '').trim();
+      if (cleanLine.includes('box-shadow:') && !cleanLine.includes('none') && !cleanLine.includes('var(--snoopy-focus-ring)')) {
+        violacoes.push(`Linha ${idx + 1}: ${cleanLine}`);
+      }
+    });
+    assert.deepEqual(violacoes, [], `Violações de box-shadow encontradas:\n${violacoes.join('\n')}`);
+  });
+
+  test('05_Snoopy_Theme.css não deve conter animações keyframe espalhafatosas ou transform no hover', () => {
+    assert.doesNotMatch(cssContent, /@keyframes\s+snoopyCoinPulse/i, 'Não deve conter keyframe snoopyCoinPulse');
+    assert.doesNotMatch(cssContent, /\.snoopy-grove-tree:hover\s*\{[^}]*transform/i, 'Não deve conter transform no hover de árvores');
+    assert.doesNotMatch(cssContent, /\.snoopy-btn[^{]*:hover\s*\{[^}]*transform:\s*(scale|translate)/i, 'Não deve conter transform no hover de botões');
+  });
+
+  test('05_Snoopy_Theme.css deve padronizar a tipografia de botões em 12px (md/padrão) e 11px (sm)', () => {
+    assert.doesNotMatch(cssContent, /\.snoopy-btn-md\s*\{[^}]*font-size:\s*14\.5px/i, 'Botão md não pode ter 14.5px');
+    assert.doesNotMatch(cssContent, /\.snoopy-btn-lg\s*\{[^}]*font-size:\s*15\.5px/i, 'Botão lg não pode ter 15.5px');
+    assert.match(cssContent, /\.snoopy-btn-sm\s*\{[^}]*font-size:\s*(?:var\(--snoopy-fs-meta,\s*11px\)|11px)/i, 'Botão sm deve ter 11px ou token correspondente');
+    assert.match(cssContent, /\.snoopy-btn-action[^{]*\{[^}]*font-size:\s*(?:var\(--snoopy-fs-small,\s*12px\)|12px)/i, 'Botão action deve ter 12px ou token correspondente');
+    assert.match(cssContent, /\.snoopy-btn-primary[^{]*\{[^}]*font-size:\s*(?:var\(--snoopy-fs-small,\s*12px\)|12px)/i, 'Botão primary deve ter 12px ou token correspondente');
+  });
+
+  test('05_Snoopy_Theme.css deve definir as superfícies canônicas e tokens essenciais', () => {
+    assert.match(cssContent, /--snoopy-font-sans:\s*"Anthropic Sans"/i);
+    assert.match(cssContent, /--snoopy-fs-small:\s*12px/i);
+    assert.match(cssContent, /--snoopy-fs-meta:\s*11px/i);
+    assert.match(cssContent, /--snoopy-focus-ring:/i);
+  });
+
+  test('código JavaScript em 99_Meta/Snoopy não deve conter box-shadow inline', () => {
+    const globFiles = (dir) => {
+      let results = [];
+      const list = fs.readdirSync(dir);
+      list.forEach(file => {
+        const full = path.join(dir, file);
+        const stat = fs.statSync(full);
+        if (stat && stat.isDirectory()) {
+          results = results.concat(globFiles(full));
+        } else if (file.endsWith('.js')) {
+          results.push(full);
+        }
+      });
+      return results;
+    };
+
+    const jsFiles = globFiles(path.resolve(__dirname, '../../99_Meta/Snoopy'));
+    const violacoes = [];
+    jsFiles.forEach(f => {
+      const content = fs.readFileSync(f, 'utf8');
+      if (content.includes('box-shadow') || content.includes('boxShadow')) {
+        violacoes.push(path.relative(path.resolve(__dirname, '../..'), f));
+      }
+    });
+    assert.deepEqual(violacoes, [], `Arquivos JS com box-shadow inline:\n${violacoes.join('\n')}`);
   });
 });
