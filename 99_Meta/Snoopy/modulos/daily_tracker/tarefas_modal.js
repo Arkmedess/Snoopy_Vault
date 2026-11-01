@@ -5,8 +5,8 @@
  * @module modulos/daily_tracker/tarefas_modal
  */
 
-const REGEX_DATA_TASKS = /\u{1F4C5}\s*(\d{2}-\d{2}-\d{4}|\d{4}-\d{2}-\d{2})/u;
-const REGEX_PRIO_CHARS = /[\u{23EB}\u{1F53C}\u{1F53D}]/gu;
+const REGEX_DATA_TASKS = /\u{1F4C5}\u{FE0F}?\s*(\d{2}-\d{2}-\d{4}|\d{4}-\d{2}-\d{2})/u;
+const REGEX_PRIO_CHARS = /(?:[\u{23EB}\u{1F53C}\u{1F53D}]\u{FE0F}?)/gu;
 const NoticeRef = (typeof Notice !== 'undefined') ? Notice : class { constructor() {} };
 
 const TarefasModal = {
@@ -108,9 +108,9 @@ const TarefasModal = {
           <div style="flex: 1;">
             <div class="snoopy-modal-label" style="margin-bottom: 4px; font-size: 12.5px;">5. Prioridade:</div>
             <select id="modal-task-prio" style="width: 100%; background: #14141c; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 7px 9px; color: #ffffff; font-size: 12.5px; outline: none;">
-              <option value="⏫">Alta (⏫)</option>
-              <option value="🔼" selected>Média (🔼)</option>
-              <option value="🔽">Baixa (🔽)</option>
+              <option value="⏫">Alta</option>
+              <option value="🔼" selected>Média</option>
+              <option value="🔽">Baixa</option>
               <option value="">Normal</option>
             </select>
           </div>
@@ -286,9 +286,9 @@ const TarefasModal = {
             <label class="snoopy-modal-label" style="display: block; margin-bottom: 4px; font-size: 12.5px;">Prioridade:</label>
             <select id="modal-edit-prio" class="snoopy-form-input" style="width: 100%; padding: 7px 9px; font-size: 12.5px;">
               <option value="" ${!item.prio ? 'selected' : ''}>Normal</option>
-              <option value="alta" ${item.prio === 'alta' ? 'selected' : ''}>Alta (⏫)</option>
-              <option value="media" ${item.prio === 'media' ? 'selected' : ''}>Média (🔼)</option>
-              <option value="baixa" ${item.prio === 'baixa' ? 'selected' : ''}>Baixa (🔽)</option>
+              <option value="alta" ${item.prio === 'alta' ? 'selected' : ''}>Alta</option>
+              <option value="media" ${item.prio === 'media' ? 'selected' : ''}>Média</option>
+              <option value="baixa" ${item.prio === 'baixa' ? 'selected' : ''}>Baixa</option>
             </select>
           </div>
         </div>
@@ -391,7 +391,7 @@ const TarefasModal = {
             if (typeof window._snoopyDefinirTarefaFoco === 'function') {
               window._snoopyDefinirTarefaFoco({ texto: item.cleanText, path: filePath, line: t.line });
             }
-            new NoticeRef('🎯 Foco direcionado ao Cockpit Pomodoro!');
+            new NoticeRef('[Snoopy Pomodoro] Foco direcionado ao cockpit!');
           };
         }
 

@@ -5,6 +5,11 @@
  * @module subdashboards/estudos/graficos_svg
  */
 
+let _UIKit = null;
+try {
+  _UIKit = require('../../core/ui_kit.js');
+} catch (_) {}
+
 const CORES_PALETA = ['#2DCDAA', '#6735BC', '#2196F3', '#FF6347', '#E7D827', '#93c5fd', '#86efac', '#f472b6'];
 
 /**
@@ -292,10 +297,16 @@ const GraficosSVG = {
           style: 'position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: #181822; border: 1px solid rgba(255,255,255,0.18); border-radius: 6px; padding: 6px 10px; min-width: 140px; pointer-events: none; z-index: 999; opacity: 0; visibility: hidden; transition: opacity 0.15s ease, transform 0.15s ease; white-space: nowrap; text-align: left;'
         }
       });
+      const clockSvg = (_UIKit && _UIKit.ICONS && _UIKit.ICONS['clock']) 
+        ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="10" height="10" style="display: inline-block; vertical-align: -1px; margin-right: 3px;">${_UIKit.ICONS['clock']}</svg>`
+        : '';
+      const bookSvg = (_UIKit && _UIKit.ICONS && _UIKit.ICONS['book-open']) 
+        ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="10" height="10" style="display: inline-block; vertical-align: -1px; margin-right: 3px;">${_UIKit.ICONS['book-open']}</svg>`
+        : '';
       tooltip.innerHTML = `
         <div style="font-weight: 700; color: #fff; font-size: 11px; margin-bottom: 2px;">${d.diaSemana} (${d.diaMes || ''})</div>
-        <div style="color: #93c5fd; font-size: 10.5px; font-weight: 600;">⏱️ ${minTxt || '0m'} ${quest > 0 ? `• ${quest}q` : ''}</div>
-        <div style="color: #86efac; font-size: 10px; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; max-width: 180px;">📚 ${materiasLista}</div>
+        <div style="color: #93c5fd; font-size: 10.5px; font-weight: 600;">${clockSvg}${minTxt || '0m'} ${quest > 0 ? `• ${quest}q` : ''}</div>
+        <div style="color: #86efac; font-size: 10px; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; max-width: 180px;">${bookSvg}${materiasLista}</div>
       `;
 
       const badgeTop = col.createEl('span', {

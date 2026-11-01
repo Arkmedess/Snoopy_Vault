@@ -6,15 +6,16 @@
  * @module core/task_parser
  */
 
-// Regexes pré-compiladas com escapes unicode para portabilidade absoluta
-const REGEX_DATA_TASKS = /\u{1F4C5}\s*(\d{2}-\d{2}-\d{4}|\d{4}-\d{2}-\d{2})/u;
-const REGEX_CHECKED_TASKS = /\u{2705}\s*(\d{2}-\d{2}-\d{4}|\d{4}-\d{2}-\d{2})/u;
-const REGEX_POMO = /\u{1F345}\s*(\d+)/u;
-const REGEX_PRIO_CHARS = /[\u{23EB}\u{1F53C}\u{1F53D}]/gu;
-const REGEX_PERIODO = /(\u{1F305}\s*Manh[ãa]|\u{2600}\s*Tarde|\u{1F319}\s*Noite)/giu;
-const REGEX_REPETICAO = /\u{1F501}[^\n]+/gu;
+// Regexes pré-compiladas com escapes unicode e suporte a Variation Selector 16 (\u{FE0F}?)
+const REGEX_DATA_TASKS = /\u{1F4C5}\u{FE0F}?\s*(\d{2}-\d{2}-\d{4}|\d{4}-\d{2}-\d{2})/u;
+const REGEX_CHECKED_TASKS = /\u{2705}\u{FE0F}?\s*(\d{2}-\d{2}-\d{4}|\d{4}-\d{2}-\d{2})/u;
+const REGEX_POMO = /\u{1F345}\u{FE0F}?\s*(\d+)/u;
+const REGEX_PRIO_CHARS = /(?:[\u{23EB}\u{1F53C}\u{1F53D}]\u{FE0F}?)/gu;
+const REGEX_PERIODO = /(\u{1F305}\u{FE0F}?\s*Manh[ãa]|\u{2600}\u{FE0F}?\s*Tarde|\u{1F319}\u{FE0F}?\s*Noite)/giu;
+const REGEX_REPETICAO = /\u{1F501}\u{FE0F}?[^\n]+/gu;
 const REGEX_HABIT_TASK = /^- \[([ xX])\] (.*)$/;
 const REGEX_PROGRESSO_QUANTIDADE = /\[\s*(?:(\d+(?:\.\d+)?)\s*\/\s*)?(\d+(?:\.\d+)?)\s*([a-zA-ZÀ-ÿ]+)\s*\]/u;
+const REGEX_FREQ_HABITO = /\u{1F501}\u{FE0F}?\s*([A-Za-zÀ-ÿ,\- ]+)/u;
 
 const TaskParser = {
   /**
@@ -46,7 +47,7 @@ const TaskParser = {
 
     let periodo = null;
     if (textRaw.includes('🌅') || /manh[ãa]/i.test(textRaw)) periodo = '🌅 Manhã';
-    else if (textRaw.includes('☀️') || /tarde/i.test(textRaw)) periodo = '☀️ Tarde';
+    else if (textRaw.includes('☀️') || textRaw.includes('\u{2600}') || /tarde/i.test(textRaw)) periodo = '☀️ Tarde';
     else if (textRaw.includes('🌙') || /noite/i.test(textRaw)) periodo = '🌙 Noite';
 
     const pomoMatch = textRaw.match(REGEX_POMO);
@@ -103,11 +104,11 @@ const TaskParser = {
 
     let periodoIcon = '';
     if (rawText.includes('🌅') || /manh[ãa]/i.test(rawText)) periodoIcon = '🌅';
-    else if (rawText.includes('☀️') || /tarde/i.test(rawText)) periodoIcon = '☀️';
+    else if (rawText.includes('☀️') || rawText.includes('\u{2600}') || /tarde/i.test(rawText)) periodoIcon = '☀️';
     else if (rawText.includes('🌙') || /noite/i.test(rawText)) periodoIcon = '🌙';
 
     let freqTag = '';
-    const matchFreq = rawText.match(/🔁\s*([A-Za-zÀ-ÿ,\- ]+)/);
+    const matchFreq = rawText.match(REGEX_FREQ_HABITO);
     if (matchFreq) freqTag = matchFreq[1].trim();
 
     return { cleanName, rawText, periodoIcon, freqTag };

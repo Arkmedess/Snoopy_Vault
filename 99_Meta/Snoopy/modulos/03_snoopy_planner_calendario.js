@@ -629,7 +629,7 @@ return {
         const tarefasFiltradas = mapaTarefas.get(diaFiltroSelecionado)?.total || 0;
         calFooter.innerHTML = `
           <span>Filtro ativo: <strong>${formatarDataBR(diaFiltroSelecionado)}</strong> (${tarefasFiltradas} tarefa(s) na Central)</span>
-          <button id="btn-limpar-planner-filtro" class="snoopy-btn-action snoopy-btn-sm" style="font-size: 10px; padding: 1px 7px; height: 20px;">✕ Limpar Filtro</button>
+          <button id="btn-limpar-planner-filtro" class="snoopy-btn-action snoopy-btn-sm" style="font-size: 10px; padding: 1px 7px; height: 20px; display: inline-flex; align-items: center; gap: 4px;">${getSvgIcon('x', 10)} Limpar Filtro</button>
         `;
 
         const btnLimpar = calFooter.querySelector('#btn-limpar-planner-filtro');

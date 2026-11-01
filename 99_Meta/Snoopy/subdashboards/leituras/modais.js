@@ -6,6 +6,11 @@
  * @module subdashboards/leituras/modais
  */
 
+let _UIKit = null;
+try {
+  _UIKit = require('../../core/ui_kit.js');
+} catch (_) {}
+
 class ModaisLeituras {
   /**
    * Inicializa o gerenciador de modais de leituras.
@@ -19,6 +24,7 @@ class ModaisLeituras {
     this.app = ctx.app;
     this.onReload = ctx.onReload || (() => {});
     this.onSelectLivro = ctx.onSelectLivro || (() => {});
+    this.UIKit = ctx.UIKit || _UIKit;
   }
 
   /**
@@ -474,7 +480,7 @@ class ModaisLeituras {
     }
 
     await this.app.vault.modify(file, updated);
-    this._notify(`Avaliação salva: ${'★'.repeat(clampedRating)}${'☆'.repeat(5 - clampedRating)}`);
+    this._notify(`[Snoopy Leituras] Avaliação salva: ${clampedRating}/5 estrelas`);
     this.onReload();
   }
 
@@ -961,7 +967,7 @@ class ModaisLeituras {
       <div style="display: flex; flex-direction: column; gap: 6px;">
         <div class="snoopy-modal-label" style="font-size: 11px; font-weight: 600; color: #a1a1aa;">Gêneros e Temas Vinculados:</div>
         
-        <!-- Área de Chips Ativos com Remoção ✕ -->
+        <!-- Área de Chips Ativos com Remoção -->
         <div id="modal-active-genres-box" style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; background: #070709; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 8px 10px; min-height: 38px; box-sizing: border-box;"></div>
 
         <!-- Fita de Sugestões de 1 Clique -->
@@ -1059,9 +1065,13 @@ class ModaisLeituras {
         const btnDel = document.createElement('button');
         btnDel.type = 'button';
         btnDel.className = 'btn-del-genre snoopy-chip-del';
-        btnDel.style.cssText = 'cursor: pointer; background: transparent; border: none; color: #a1a1aa; padding: 0 2px; font-size: 11px; line-height: 1;';
+        btnDel.style.cssText = 'cursor: pointer; background: transparent; border: none; color: #a1a1aa; padding: 0 2px; font-size: 11px; line-height: 1; display: inline-flex; align-items: center; justify-content: center;';
         btnDel.title = `Remover tema ${g}`;
-        btnDel.textContent = '✕';
+        if (this.UIKit && typeof this.UIKit.renderIcon === 'function') {
+          this.UIKit.renderIcon(btnDel, 'x', { size: 10 });
+        } else {
+          btnDel.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="10" height="10"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+        }
         btnDel.onclick = (e) => {
           if (e && e.stopPropagation) e.stopPropagation();
           tagsAtivas = tagsAtivas.filter(item => item !== g);

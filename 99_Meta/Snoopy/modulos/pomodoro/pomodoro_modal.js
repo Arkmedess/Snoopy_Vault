@@ -179,7 +179,7 @@ class PomodoroModal {
 
             if (txt || (p && r)) {
               await this.registrarLogNaNotaDiaria(txt, p, r);
-              this._notify('📝 Aprendizado registrado na Nota Diária!');
+              this._notify('[Snoopy Pomodoro] Aprendizado registrado na Nota Diária!');
             }
             fechar();
             this.onPausaIniciar();

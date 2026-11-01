@@ -126,7 +126,7 @@ describe('Subdashboard Leituras - BookshelfView', () => {
     assert.match(rootCompanion.innerHTML, /Arquitetura de Software/);
     assert.match(rootCompanion.innerHTML, /OFENSIVA:/);
     assert.match(rootCompanion.innerHTML, /Meta Diária:/);
-    assert.match(rootCompanion.innerHTML, /✕/); // Botão natural para exclusão de citação/estudo/gênero
+    assert.match(rootCompanion.innerHTML, /btn-del-genre/); // Botão para exclusão de citação/estudo/gênero
     assert.match(rootCompanion.innerHTML, /\+ Tema/); // Botão explícito para adicionar gênero abaixo do título
     // Garante que nenhum emoji está presente no HTML
     assert.doesNotMatch(rootCompanion.innerHTML, /[\u{1F300}-\u{1FAFF}]/u);

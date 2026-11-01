@@ -26,7 +26,7 @@ const BookshelfView = {
       <div class="snoopy-meta" style="font-size: 9.5px; font-style: italic;">
         ${livro.author || 'Autor'}
       </div>
-      <div style="margin-top: 10px; font-size: 10px; opacity: 0.4;">❖</div>
+      <div style="margin-top: 10px; width: 16px; height: 1px; background: rgba(255,255,255,0.25);"></div>
     `;
     return box;
   },
@@ -67,7 +67,7 @@ const BookshelfView = {
       { label: 'Lendo Agora', val: `${lendoCount}`, sub: 'em andamento', icon: 'book-open' },
       { label: 'Lidos', val: `${lidosCount}`, sub: `${totalAcervo > 0 ? Math.round((lidosCount / totalAcervo) * 100) : 0}% do acervo`, icon: 'check' },
       { label: 'Páginas Lidas', val: `${paginasLidas}`, sub: 'páginas no total', icon: 'bookmark' },
-      { label: 'Média de Avaliação', val: `${mediaRating} ★`, sub: `${livrosAvaliados.length} avaliados`, icon: 'star' }
+      { label: 'Média de Avaliação', val: `${mediaRating} / 5`, sub: `${livrosAvaliados.length} avaliados`, icon: 'star' }
     ];
 
     items.forEach(it => {
@@ -190,14 +190,14 @@ const BookshelfView = {
       <div style="background: #13131c; border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;">
         <div style="display: flex; justify-content: space-between; font-size: 11px;">
           <span>Diversidade de Gêneros: <strong>${desafios.desafioDiversidade.generosExplorados.length}/4</strong></span>
-          <span style="color: ${desafios.desafioDiversidade.concluiuMeta ? '#86efac' : '#a1a1aa'}; font-size: 10px;">${desafios.desafioDiversidade.concluiuMeta ? 'Concluído ✓' : 'Em progresso'}</span>
+          <span style="color: ${desafios.desafioDiversidade.concluiuMeta ? '#86efac' : '#a1a1aa'}; font-size: 10px;">${desafios.desafioDiversidade.concluiuMeta ? 'Concluído' : 'Em progresso'}</span>
         </div>
         <div style="display: flex; flex-wrap: wrap; gap: 4px;">
           ${desafios.desafioDiversidade.generosExplorados.map(g => `
-            <span class="snoopy-micro" style="background: rgba(134, 239, 172, 0.12); color: #86efac; border: 1px solid rgba(134, 239, 172, 0.3); padding: 2px 6px; border-radius: 3px;">✓ ${g}</span>
+            <span class="snoopy-micro" style="background: rgba(134, 239, 172, 0.12); color: #86efac; border: 1px solid rgba(134, 239, 172, 0.3); padding: 2px 6px; border-radius: 3px; display: inline-flex; align-items: center; gap: 3px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="10" height="10" style="display: block;"><polyline points="20 6 9 17 4 12"/></svg>${g}</span>
           `).join('')}
           ${desafios.desafioDiversidade.generosFaltantes.slice(0, 3).map(g => `
-            <span class="snoopy-micro" style="background: rgba(255,255,255,0.04); color: #71717a; border: 1px solid rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 3px;">○ ${g}</span>
+            <span class="snoopy-micro" style="background: rgba(255,255,255,0.04); color: #71717a; border: 1px solid rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 3px;">${g}</span>
           `).join('')}
         </div>
 
@@ -715,9 +715,9 @@ const BookshelfView = {
       <!-- Tags de Gêneros Interativas -->
       <div id="companion-genres-row" style="display: flex; flex-wrap: wrap; gap: 5px; align-items: center; margin-top: 2px;">
         ${(Array.isArray(livroDestaque.categories) && livroDestaque.categories.length > 0 ? livroDestaque.categories : [livroDestaque.category || 'Geral']).map(g => `
-          <span class="snoopy-chip snoopy-chip-muted" style="font-size: 11px; padding: 2px 7px;">
+          <span class="snoopy-chip snoopy-chip-muted" style="font-size: 11px; padding: 2px 7px; display: inline-flex; align-items: center; gap: 4px;">
             <span>${g}</span>
-            <button class="btn-del-genre snoopy-chip-del" data-genre="${String(g).replace(/"/g, '&quot;')}" title="Remover tema ${g}">✕</button>
+            <button class="btn-del-genre snoopy-chip-del" data-genre="${String(g).replace(/"/g, '&quot;')}" title="Remover tema ${g}" style="display: inline-flex; align-items: center; justify-content: center; background: none; border: none; padding: 0; cursor: pointer; color: inherit;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="10" height="10" style="display: block;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
           </span>
         `).join('')}
         <button id="btn-add-genre-chip" class="snoopy-btn-action snoopy-btn-sm" style="font-size: 9.5px; padding: 1px 6px;" title="Adicionar tema a este livro">+ Tema</button>
@@ -727,7 +727,7 @@ const BookshelfView = {
       <div id="companion-star-rating" style="display: flex; gap: 3px; align-items: center; margin-top: 2px; cursor: pointer;">
         <span class="snoopy-micro" style="color: #a1a1aa; margin-right: 2px;">Avaliação:</span>
         ${[1, 2, 3, 4, 5].map(star => `
-          <span class="star-btn" data-star="${star}" style="font-size: 14px; color: ${star <= ratingAtual ? '#e4e4e7' : 'rgba(255,255,255,0.15)'}; transition: color 0.12s ease;">★</span>
+          <span class="star-btn" data-star="${star}" title="${star} estrela${star > 1 ? 's' : ''}" style="display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; color: ${star <= ratingAtual ? '#facc15' : 'rgba(255,255,255,0.2)'}; cursor: pointer; transition: color 0.12s ease;"><svg viewBox="0 0 24 24" fill="${star <= ratingAtual ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" style="display: block;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
         `).join('')}
       </div>
 

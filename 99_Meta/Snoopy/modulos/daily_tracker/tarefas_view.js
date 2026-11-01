@@ -6,7 +6,7 @@
  * @module modulos/daily_tracker/tarefas_view
  */
 
-const REGEX_CHECKED_TASKS = /\u{2705}\s*(\d{2}-\d{2}-\d{4}|\d{4}-\d{2}-\d{2})/u;
+const REGEX_CHECKED_TASKS = /\u{2705}\u{FE0F}?\s*(\d{2}-\d{2}-\d{4}|\d{4}-\d{2}-\d{2})/u;
 
 const TarefasView = {
   /**
@@ -248,10 +248,15 @@ const TarefasView = {
         const btnLimpar = chipFilterBox.createEl('button', {
           cls: 'snoopy-chip-del',
           attr: {
-            style: 'background: transparent; border: none; color: #93c5fd; cursor: pointer; font-size: 11px; padding: 2px 4px;'
-          },
-          text: '✕ Limpar filtro'
+            style: 'background: transparent; border: none; color: #93c5fd; cursor: pointer; font-size: 11px; padding: 2px 4px; display: inline-flex; align-items: center; gap: 3px;'
+          }
         });
+        if (ctx.renderIcon) {
+          ctx.renderIcon(btnLimpar, 'x', { size: 11 });
+        } else if (ctx.UIKit && ctx.UIKit.renderIcon) {
+          ctx.UIKit.renderIcon(btnLimpar, 'x', { size: 11 });
+        }
+        btnLimpar.createEl('span', { text: 'Limpar filtro' });
 
         btnLimpar.onclick = () => {
           dataFiltroAtiva = null;
@@ -365,13 +370,14 @@ const TarefasView = {
               title: `Período: ${isManha ? 'Manhã' : isTarde ? 'Tarde' : 'Noite'}` 
             } 
           });
-          if (ctx.renderIcon) {
-            if (isManha) ctx.renderIcon(pSpan, 'sunrise', { size: 12, color: '#fdba74' });
-            else if (isTarde) ctx.renderIcon(pSpan, 'sun', { size: 12, color: '#fbbf24' });
-            else if (isNoite) ctx.renderIcon(pSpan, 'moon', { size: 12, color: '#818cf8' });
+          const renderIconFn = ctx.renderIcon || (ctx.UIKit && ctx.UIKit.renderIcon ? ctx.UIKit.renderIcon.bind(ctx.UIKit) : null);
+          if (renderIconFn) {
+            if (isManha) renderIconFn(pSpan, 'sunrise', { size: 12, color: '#fdba74' });
+            else if (isTarde) renderIconFn(pSpan, 'sun', { size: 12, color: '#fbbf24' });
+            else if (isNoite) renderIconFn(pSpan, 'moon', { size: 12, color: '#818cf8' });
           } else {
-            pSpan.className = 'snoopy-emoji-meta';
-            pSpan.textContent = item.periodo.split(' ')[0] || '';
+            pSpan.className = 'snoopy-periodo-meta';
+            pSpan.textContent = isManha ? 'Manhã' : isTarde ? 'Tarde' : isNoite ? 'Noite' : '';
           }
         }
 
@@ -499,7 +505,7 @@ const TarefasView = {
                   ? l.replace(/- \[ \]/, `- [x] ✅ ${todayStr}`) 
                   : l.replace(/- \[[xX]\]/, '- [ ]').replace(REGEX_CHECKED_TASKS, '').trim()
               );
-              new Notice(cb.checked ? `✅ Concluída: ${item.cleanText}` : `↩ Reaberta: ${item.cleanText}`);
+              if (typeof Notice !== 'undefined') new Notice(cb.checked ? `[Snoopy] Concluída: ${item.cleanText}` : `[Snoopy] Reaberta: ${item.cleanText}`);
               await recarregarEAtualizarTarefas();
             }
           }
@@ -615,7 +621,7 @@ const TarefasView = {
                 ? l.replace(/- \[ \]/, `- [x] ✅ ${todayStr}`) 
                 : l.replace(/- \[[xX]\]/, '- [ ]').replace(REGEX_CHECKED_TASKS, '').trim()
             );
-            if (typeof Notice !== 'undefined') new Notice(cb.checked ? `✅ Concluída: ${item.cleanText}` : `↩ Reaberta: ${item.cleanText}`);
+            if (typeof Notice !== 'undefined') new Notice(cb.checked ? `[Snoopy] Concluída: ${item.cleanText}` : `[Snoopy] Reaberta: ${item.cleanText}`);
             await recarregarEAtualizarTarefas();
           }
         }
@@ -786,7 +792,7 @@ const TarefasView = {
       const file = app.vault.getAbstractFileByPath(tarefaAtiva.path);
       if (file) {
         await VaultStore.substituirLinha(app, file, l => l.includes(tarefaAtiva.texto), l => l.replace(/- \[ \]/, `- [x] ✅ ${DateUtils.formatarDDMMYYYY(todayStr)}`));
-        new Notice(`✅ Tarefa concluída: ${tarefaAtiva.texto}`);
+        if (typeof Notice !== 'undefined') new Notice(`[Snoopy] Tarefa concluída: ${tarefaAtiva.texto}`);
         await recarregarEAtualizarTarefas();
       }
     };

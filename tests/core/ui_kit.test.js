@@ -185,6 +185,16 @@ describe('UIKit - Padronização v2 (ícones ampliados, plural e estado vazio)',
     }
   });
 
+  test('catálogo inclui ícones expandidos para M2 (áudio, cultivo e tarefas)', () => {
+    const iconesM2 = [
+      'check-square', 'leaf', 'award', 'volume-2', 'volume-1', 'volume-x', 'music', 'headphones'
+    ];
+    for (const icone of iconesM2) {
+      assert.ok(UIKit.ICONS[icone], `Ícone M2 '${icone}' deve existir no catálogo UIKit.ICONS`);
+      assert.ok(typeof UIKit.ICONS[icone] === 'string' && UIKit.ICONS[icone].length > 5, `SVG do ícone '${icone}' deve ser válido`);
+    }
+  });
+
   test('pluralizar() concorda singular e plural com o número', () => {
     assert.equal(UIKit.pluralizar(1, 'matéria', 'matérias'), '1 matéria');
     assert.equal(UIKit.pluralizar(0, 'matéria', 'matérias'), '0 matérias');

@@ -6,6 +6,11 @@
  * @module subdashboards/estudos/modais
  */
 
+let _UIKit = null;
+try {
+  _UIKit = require('../../core/ui_kit.js');
+} catch (_) {}
+
 class ModaisEstudos {
   /**
    * Inicializa o gerenciador de modais de estudos.
@@ -27,6 +32,7 @@ class ModaisEstudos {
     this.salvarEstado = ctx.salvarEstado || (async () => {});
     this.obterDisciplinas = ctx.obterDisciplinas || (() => []);
     this.onReload = ctx.onReload || (() => {});
+    this.UIKit = ctx.UIKit || _UIKit;
   }
 
   /**
@@ -457,7 +463,7 @@ Conceito::Definição
           <div class="snoopy-toolbar">
             <button class="btn-subir snoopy-btn-icon" data-idx="${idx}" ${idx === 0 ? 'disabled style="opacity: 0.3;"' : ''}>▲</button>
             <button class="btn-descer snoopy-btn-icon" data-idx="${idx}" ${idx === filaTemp.length - 1 ? 'disabled style="opacity: 0.3;"' : ''}>▼</button>
-            <button class="btn-remover-fila snoopy-btn-icon snoopy-btn-danger" data-idx="${idx}" title="Remover da rotação">✕</button>
+            <button class="btn-remover-fila snoopy-btn-icon snoopy-btn-danger" data-idx="${idx}" title="Remover da rotação">${(this.UIKit && this.UIKit.ICONS && this.UIKit.ICONS['x']) ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">${this.UIKit.ICONS['x']}</svg>` : ''}</button>
           </div>
         `;
 
@@ -852,9 +858,9 @@ Conceito::Definição
           <div class="snoopy-modal-label">Prioridade:</div>
           <select id="modal-task-prio" style="width: 100%; background: #181824; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 7px; color: #ffffff; font-size: 11.5px; outline: none;">
             <option value="">Normal</option>
-            <option value="⏫">Alta (⏫)</option>
-            <option value="🔼">Média (🔼)</option>
-            <option value="🔽">Baixa (🔽)</option>
+            <option value="⏫">Alta</option>
+            <option value="🔼">Média</option>
+            <option value="🔽">Baixa</option>
           </select>
         </div>
         <div style="flex: 1;">

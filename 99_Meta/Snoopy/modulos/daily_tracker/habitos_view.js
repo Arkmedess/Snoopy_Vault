@@ -277,9 +277,23 @@ const HabitosView = {
                 attr: { style: 'font-size: 12px; font-weight: 500; color: #ffffff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;' }
               });
               if (item.periodoIcon) {
-                leftCol.createEl('span', {
-                  text: item.periodoIcon,
-                  attr: { style: 'font-size: 9.5px; padding: 1px 4px; border-radius: 3px; background: rgba(255,255,255,0.06); color: #d4d4d8; flex-shrink: 0;' }
+                const isManha = /manh|🌅/i.test(item.periodoIcon);
+                const isTarde = /tard|☀️/i.test(item.periodoIcon);
+                const isNoite = /noit|🌙/i.test(item.periodoIcon);
+                const pSpan = leftCol.createEl('span', {
+                  attr: {
+                    style: 'font-size: 9.5px; padding: 1px 4px; border-radius: 3px; background: rgba(255,255,255,0.06); display: inline-flex; align-items: center; gap: 3px; flex-shrink: 0;',
+                    title: `Período: ${isManha ? 'Manhã' : isTarde ? 'Tarde' : 'Noite'}`
+                  }
+                });
+                if (renderIcon) {
+                  if (isManha) renderIcon(pSpan, 'sunrise', { size: 10, color: '#fdba74' });
+                  else if (isTarde) renderIcon(pSpan, 'sun', { size: 10, color: '#fbbf24' });
+                  else if (isNoite) renderIcon(pSpan, 'moon', { size: 10, color: '#818cf8' });
+                }
+                pSpan.createEl('span', {
+                  text: isManha ? 'Manhã' : isTarde ? 'Tarde' : 'Noite',
+                  attr: { style: 'color: #d4d4d8;' }
                 });
               }
               if (item.freqTag) {

@@ -243,13 +243,29 @@ const CalendarioView = {
         const dataBrFormatada = `${p[2]}/${p[1]}/${p[0]}`;
         const contagem = mapaTarefas.get(dataSelecionada)?.total || 0;
 
+        const iconX = (ctx.UIKit && ctx.UIKit.ICONS && ctx.UIKit.ICONS['x'])
+          ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="10" height="10" style="display: block;">${ctx.UIKit.ICONS['x']}</svg>`
+          : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="10" height="10" style="display: block;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+
         footer.innerHTML = `
           <span>Filtro: <strong>${dataBrFormatada}</strong> (${contagem} tarefa${contagem === 1 ? '' : 's'})</span>
-          <button id="btn-limpar-cal-filtro" class="snoopy-chip-del" title="Limpar filtro de data" style="font-size: 11px;">✕ Limpar</button>
+          <button id="btn-limpar-cal-filtro" class="snoopy-chip-del" title="Limpar filtro de data" style="font-size: 11px; display: inline-flex; align-items: center; gap: 3px;">
+            ${iconX}
+            <span>Limpar</span>
+          </button>
         `;
 
         const btnLimpar = footer.querySelector('#btn-limpar-cal-filtro');
         if (btnLimpar) {
+          if (typeof ctx.renderIcon === 'function') {
+            btnLimpar.innerHTML = '';
+            ctx.renderIcon(btnLimpar, 'x', { size: 10 });
+            if (typeof btnLimpar.createEl === 'function') {
+              btnLimpar.createEl('span', { text: 'Limpar' });
+            } else {
+              btnLimpar.innerHTML += '<span>Limpar</span>';
+            }
+          }
           btnLimpar.onclick = () => {
             dataSelecionada = null;
             if (typeof onSelectData === 'function') onSelectData(null);

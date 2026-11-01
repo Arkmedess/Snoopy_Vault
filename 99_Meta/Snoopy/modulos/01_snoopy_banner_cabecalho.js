@@ -65,9 +65,13 @@ return {
 
     const clearBtn = inputWrapper.createEl('button', {
       cls: 'snoopy-omni-clear-btn',
-      text: '✕',
       attr: { title: 'Limpar barra' }
     });
+    if (ctx.renderIcon) {
+      ctx.renderIcon(clearBtn, 'x', { size: 12 });
+    } else if (ctx.UIKit && ctx.UIKit.renderIcon) {
+      ctx.UIKit.renderIcon(clearBtn, 'x', { size: 12 });
+    }
 
     const previewBox = omniContainer.createEl('div', { cls: 'snoopy-omni-preview-box' });
 

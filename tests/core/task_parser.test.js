@@ -99,4 +99,45 @@ describe('TaskParser - Parser Puro de Tarefas e Hábitos', () => {
       assert.equal(res.freqTag, '');
     });
   });
+
+  describe('Resiliência Unicode Variation Selector 16 (\\u{FE0F}) e Exceção 2.1', () => {
+    test('limpa "☀️ Tarde" com VS16 composto (\\u2600\\uFE0F) sem vazar para cleanText', () => {
+      const res = TaskParser.parseMetadata('Estudo tarde 📅 2026-10-10 ☀️ Tarde', todayStr, DateUtils);
+      assert.equal(res.cleanText, 'Estudo tarde');
+      assert.equal(res.periodo, '☀️ Tarde');
+      assert.ok(!res.cleanText.includes('☀️'));
+      assert.ok(!res.cleanText.includes('\u{FE0F}'));
+    });
+
+    test('limpa períodos com e sem VS16 (🌅 Manhã, ☀️ Tarde, 🌙 Noite)', () => {
+      const rManha = TaskParser.parseMetadata('Caminhada matinal 🌅\u{FE0F} Manhã', todayStr, DateUtils);
+      assert.equal(rManha.cleanText, 'Caminhada matinal');
+      assert.equal(rManha.periodo, '🌅 Manhã');
+
+      const rNoite = TaskParser.parseMetadata('Leitura profunda 🌙\u{FE0F} Noite', todayStr, DateUtils);
+      assert.equal(rNoite.cleanText, 'Leitura profunda');
+      assert.equal(rNoite.periodo, '🌙 Noite');
+    });
+
+    test('limpa prioridades e tags com VS16 sem deixar código U+FE0F residual em cleanText', () => {
+      const resPrio = TaskParser.parseMetadata('Tarefa urgente ⏫\u{FE0F} 🍅\u{FE0F} 2', todayStr, DateUtils);
+      assert.equal(resPrio.cleanText, 'Tarefa urgente');
+      assert.equal(resPrio.prio, 'alta');
+      assert.equal(resPrio.pomosEst, '2');
+      assert.equal(resPrio.cleanText.indexOf('\u{FE0F}'), -1, 'Não deve conter VS16 residual');
+    });
+
+    test('parseHabit extrai período e frequência com VS16', () => {
+      const h = TaskParser.parseHabit('Exercício físico ☀️ Tarde 🔁\u{FE0F} Seg,Qua,Sex');
+      assert.equal(h.cleanName, 'Exercício físico');
+      assert.equal(h.periodoIcon, '☀️');
+      assert.equal(h.freqTag, 'Seg,Qua,Sex');
+    });
+
+    test('normalização de data fallback brasileira sem DateUtils cobre ramos internos', () => {
+      const res = TaskParser.parseMetadata('Tarefa sem util 📅 10-10-2026', todayStr);
+      assert.equal(res.dueStr, '2026-10-10');
+      assert.equal(res.cleanText, 'Tarefa sem util');
+    });
+  });
 });
