@@ -90,6 +90,12 @@ function createMockEl(tag = 'div', attrs = {}) {
     set innerText(val) {
       customInnerText = val || '';
     },
+    get textContent() {
+      return el.innerText;
+    },
+    set textContent(val) {
+      el.innerText = val;
+    },
     value: attrs.value || '',
     checked: Boolean(attrs.checked),
     disabled: false,
@@ -175,6 +181,13 @@ function createMockEl(tag = 'div', attrs = {}) {
       el.children = [];
       innerHtmlVal = '';
       el.innerText = '';
+    },
+
+    hasChildNodes: () => {
+      return el.children.length > 0 || Boolean(customInnerText) || Boolean(innerHtmlVal && innerHtmlVal.trim().length > 0);
+    },
+    get childNodes() {
+      return el.children;
     },
 
     querySelector: (sel) => {
