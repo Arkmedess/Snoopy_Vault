@@ -36,7 +36,7 @@ Toda a lógica opera localmente sobre as notas e metadados (`frontmatter` YAML e
 ### Central de Tarefas e Hábitos
 - Layout dividido entre **Hábitos do Dia** (30%) e **Central de Execução** (70%).
 - Filtros por abas: *Hoje*, *Amanhã*, *Esta Semana*, *Próximas* e *Concluídas*.
-- Inserção ágil de tarefas na nota diária (`01_Inbox/Diário/AAAA-MM-DD.md`) com suporte a prioridades (`⏫`, `🔼`, `🔽`) e datas (`📅`).
+- Inserção ágil de tarefas na nota diária (`01_Inbox/Diário/AAAA-MM-DD.md`) com suporte a prioridades (Alta, Média, Baixa) e datas no padrão Tasks (`due: AAAA-MM-DD` / ícone `calendar`).
 - Botão direto de foco que transfere a tarefa ativa imediatamente para o Cockpit Pomodoro.
 
 ### Templates Conectados de Tarefas
@@ -49,6 +49,7 @@ Toda a lógica opera localmente sobre as notas e metadados (`frontmatter` YAML e
 
 ### Cockpit Pomodoro e Modo Foco Imersivo
 - Temporizador circular com anel SVG, alternância entre modos de Foco e Pausa e ajuste de minutos.
+- **Motor de Áudio Procedural de Foco (Web Audio API):** Síntese nativa em tempo real de ruído branco, ruído rosa, ruído marrom profundo, chuva zen estocástica e tons binaurais de foco (ondas alfa de 10Hz e beta de 16Hz). Controle completo de volume, mudo e alternância de faixas diretamente no cockpit (`.snoopy-audio-dock`), com sincronização automática opcional ao iniciar/pausar o timer e persistência de preferências em `localStorage` (zero latência e zero arquivos externos).
 - **Feedback Sonoro:** Chime harmônico zen sintetizado nativamente via Web Audio API ao final de cada bloco de foco e pausa (sem arquivos de áudio externos).
 - **Modo Foco Sem Distrações:** Botão dedicado que aciona overlay em tela cheia com fundo 96% escurecido e desfoque (`backdrop-filter`), isolando exclusivamente o alvo atual e o cronômetro ampliado, com controles de pausa e saída rápida pela tecla `Esc`.
 - **Registro Pós-Foco:** Prompt automático para consolidação de aprendizados e criação de flashcards na nota diária ao concluir cada bloco.
@@ -57,6 +58,15 @@ Toda a lógica opera localmente sobre as notas e metadados (`frontmatter` YAML e
 <p align="center">
   <img src="99_Meta/Attachments/pomodoro_modo_foco.png" alt="Modo Foco Imersivo em Tela Cheia" width="90%">
 </p>
+
+### Central de Customizações & Loja Autônoma (Shop)
+- **Hub Independente do Sistema:** Módulo desacoplado de economia e personalização (`modulos/shop/shop_modal.js` e `core/shop_store.js`), permitindo adquirir cosméticos visuais, itens botânicos e sons de foco com saldo acumulado.
+- **Economia de Foco Transacional:** Ganho de moedas a cada ciclo de foco Pomodoro completado (1 moeda a cada 5 minutos + bônus progressivo por combo de disciplina).
+- **Catálogo Multi-Categoria:**
+  - *Botânica:* Brotinho Verdejante, Cerejeira Sakura, Pinheiro Alpino, Árvore Estelar, Bonsai Filosófico e Floresta Mágica.
+  - *Áudios de Foco:* Desbloqueio permanente de faixas de ruídos coloridos, chuva procedural e batimentos binaurais neuroacústicos.
+  - *Cosméticos:* Temas visuais Obsidian Classic Dark, Cyber Minimalist, Solar Amber e Velvet Sakura.
+- **Interface Modal Responsiva:** Pré-visualização sonora de faixas procedurais antes da compra, visualização de saldo atualizado em tempo real e equipamento imediato com garantia de consistência concorrente via `WeakMap`.
 
 ### Framework Analítico de Estudos
 Subdashboard dedicado acessível pela navegação superior (`03_Estudos/Painel de Estudos.md`):
@@ -93,7 +103,7 @@ Subdashboard dedicado à leitura (`04_Leituras/Painel de Leituras.md`):
 ```text
 Snoopy_Vault/
 ├── 00_Home/                      # Ponto de entrada do cofre
-│   ├── Guia do Usuário.md        # Documentação de apoio
+│   ├── Guia do Usuário.md        # Documentação operacional de apoio
 │   └── Home.md                   # Dashboard principal em DataviewJS
 ├── 01_Inbox/                     # Notas de captura rápida
 │   └── Diário/                   # Notas diárias (AAAA-MM-DD.md)
@@ -107,14 +117,17 @@ Snoopy_Vault/
 ├── 99_Meta/                      # Configurações e módulos do cofre
 │   ├── Attachments/              # Imagens e anexos
 │   ├── Snoopy/                   # Módulos DataviewJS do dashboard
-│   │   ├── core/                 # Microsserviços centrais (TaskTemplates, VaultStore, etc.)
-│   │   ├── home/                 # Orquestrador da página inicial
-│   │   ├── modulos/              # Módulos da home (Banner, Pomodoro, Tarefas, etc.)
-│   │   └── subdashboards/        # Lógica dos painéis de Estudos e Leituras
+│   │   ├── core/                 # Microsserviços centrais (ShopStore, PomodoroAudio, UIKit, etc.)
+│   │   ├── docs/                 # Documentação técnica e ADRs (MADR)
+│   │   ├── home/                 # Orquestrador da página inicial (view.js)
+│   │   ├── modulos/              # Módulos da home (Banner, Pomodoro, Tarefas, Shop, etc.)
+│   │   └── subdashboards/        # Lógica dos painéis de Estudos, Leituras e Configurações
 │   ├── Templates/                # Modelos de notas Markdown e Tarefas JSON
 │   │   └── Tarefas/              # Templates de tarefas conectados (JSON)
 │   ├── ciclo-estudos.json        # Base de dados do ciclo e revisões
-│   └── ⚙️ Configurações.md       # Painel de parâmetros do cofre
+│   ├── jardim-constancia.json    # Histórico de constância botânica (espelhado)
+│   ├── snoopy-shop.json          # Estado da central de economia e inventário
+│   └── Configurações.md          # Painel de parâmetros do cofre
 ├── tests/                        # Testes unitários automatizados (node --test)
 ├── .obsidian/                    # Configurações e plugins do Obsidian
 │   └── snippets/                 # Folhas de estilo (05_Snoopy_Theme.css)
@@ -126,7 +139,7 @@ Snoopy_Vault/
 
 ## Atualização Segura e Gestão de Dados
 
-O Snoopy Vault conta com um mecanismo nativo de atualização em 1 clique integrado à nota [`99_Meta/⚙️ Configurações.md`](99_Meta/%E2%9A%99%EF%B8%8F%20Configura%C3%A7%C3%B5es.md), dispensando comandos manuais de terminal:
+O Snoopy Vault conta com um mecanismo nativo de atualização em 1 clique integrado à nota [`99_Meta/Configurações.md`](99_Meta/%E2%9A%99%EF%B8%8F%20Configura%C3%A7%C3%B5es.md), dispensando comandos manuais de terminal:
 
 - **Arquitetura de 3 Zonas:**
   - **Dados Pessoais (`01_Inbox/`, `02_Projetos/`, `03_Estudos/`, `04_Leituras/`):** Intocáveis. O atualizador é estritamente proibido de alterar ou excluir notas pessoais do usuário.

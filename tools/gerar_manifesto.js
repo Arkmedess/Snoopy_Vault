@@ -29,10 +29,14 @@ function listarArquivosRecursivo(dir, filtro = () => true) {
 const versao = '0.9.0';
 const changelog = [
   'Sistema de fontes embutidas offline-first (Inter, JetBrains Mono e Source Serif 4)',
-  'UIKit v2 com 16 novos vetores SVG Lucide nativos e componentes de Estado Vazio e Pluralização',
-  'Anatomia de cabeçalho unificada e padronização dos nomes dos módulos (Tarefas, Hábitos, Pomodoro, Jardim de Constância, Estudos, Estante, Kanban)',
-  'Diretrizes de design v2.1 com política de zero emojis na interface e botões principais em maiúsculo'
+  'UIKit v2 com catálogo canônico de 87 ícones Lucide SVG, componentes de Estado Vazio e Pluralização',
+  'Anatomia de cabeçalho unificada e padronização dos nomes dos módulos',
+  'Diretrizes de design v2.2 com política de zero emojis na interface e botões principais em maiúsculo',
+  'Desacoplamento autônomo da Central de Customizações & Loja (ShopStore) com catálogo multi-categoria e fachada JardimStore retrocompatível',
+  'Motor de áudio procedural de foco puramente sintetizado via Web Audio API (ruídos coloridos, chuva e tons binaurais)',
+  'Documentação técnica Docs-as-Code aprofundada com C4 Mermaid, JSDoc de contratos públicos e registros MADR (ADRs 0001, 0002 e 0003)'
 ];
+
 
 // Zona Motor
 const arquivosMotor = [
@@ -77,4 +81,3 @@ const manifesto = {
 
 fs.writeFileSync('99_Meta/Snoopy/manifest.json', JSON.stringify(manifesto, null, 2) + '\n');
 process.stdout.write(`Manifesto v${versao} gerado com sucesso em 99_Meta/Snoopy/manifest.json (${Object.keys(mapaMotor).length} arquivos de motor, ${Object.keys(mapaSeed).length} seeds).\n`);
-
