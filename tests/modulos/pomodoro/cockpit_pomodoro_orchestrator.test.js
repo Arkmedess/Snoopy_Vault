@@ -102,6 +102,13 @@ describe('Módulo 02 - Cockpit Pomodoro Orquestrador (02_snoopy_cockpit_pomodoro
     const metaTracker = colCockpit.querySelector('.snoopy-daily-tracker-box');
     assert.ok(metaTracker, 'Painel ampliado de meta diária deve existir');
 
+    // Verificação do Audio Dock procedural integrado
+    const audioDock = colCockpit.querySelector('.snoopy-audio-dock');
+    assert.ok(audioDock, 'Dock de áudio procedural deve ser renderizado no cockpit');
+    assert.ok(audioDock.querySelector('.snoopy-audio-toggle'), 'Botão toggle de áudio deve existir');
+    assert.ok(audioDock.querySelector('.snoopy-audio-track-selector'), 'Seletor de faixas deve existir');
+    assert.ok(audioDock.querySelector('.snoopy-volume-slider'), 'Slider de volume deve existir');
+
     // Coluna 2: Jardim de Constância
     const colJardim = topGrid.children[1];
     assert.ok(findText(colJardim, 'JARDIM DE CONSTÂNCIA'));

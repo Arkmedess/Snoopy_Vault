@@ -47,6 +47,9 @@ return {
     const PomodoroModalClass = await carregarModulo("99_Meta/Snoopy/modulos/pomodoro/pomodoro_modal.js");
     const PomodoroPlaylistClass = await carregarModulo("99_Meta/Snoopy/modulos/pomodoro/pomodoro_playlist.js");
     const JardimStore = await carregarModulo("99_Meta/Snoopy/core/jardim_store.js");
+    const PomodoroAudio = await carregarModulo("99_Meta/Snoopy/core/pomodoro_audio.js");
+    const ShopStore = await carregarModulo("99_Meta/Snoopy/core/shop_store.js");
+    const ShopModal = await carregarModulo("99_Meta/Snoopy/modulos/shop/shop_modal.js");
 
     let completedCyclesToday = ctx.completedCyclesToday || 0;
     let focusMin = (ctx.config && ctx.config.tempo_foco) ? Number(ctx.config.tempo_foco) : 25;
@@ -83,8 +86,34 @@ return {
           <input id="cfg-break" class="snoopy-time-chip-input" type="number" value="${breakMin}" min="1" max="30" aria-label="Tempo de pausa em minutos">
           <span class="snoopy-time-chip-unit">m</span>
         </label>
+        <button id="snoopy-btn-header-shop" class="snoopy-shop-trigger-btn" title="Central de Customizações & Loja" aria-label="Abrir Loja de Customizações" type="button">
+          <span class="snoopy-icon-header-shop"></span>
+        </button>
       </div>
     `;
+
+    const btnHeaderShop = pomoHeader.querySelector('#snoopy-btn-header-shop');
+    if (btnHeaderShop) {
+      if (renderIconFn) {
+        const iconSpan = btnHeaderShop.querySelector('.snoopy-icon-header-shop');
+        renderIconFn(iconSpan, 'shopping-bag', { size: 14, color: '#facc15' });
+      }
+      btnHeaderShop.onclick = async () => {
+        if (ShopModal && typeof ShopModal.abrir === 'function') {
+          await ShopModal.abrir(app, {
+            ModalFactory,
+            ShopStore,
+            PomodoroAudio,
+            renderIcon: renderIconFn,
+            onAtualizar: async () => {
+              await atualizarTelasJardim();
+              if (typeof popularFaixasAudio === 'function') await popularFaixasAudio();
+            }
+          });
+        }
+      };
+    }
+
 
     // Banner de Alvo de Foco Selecionado
     const targetBanner = pomoBox.createEl('div', {
@@ -212,6 +241,157 @@ return {
       attr: { title: 'Simular término do ciclo (Testar)' }
     });
     if (renderIconFn) renderIconFn(btnTestar, 'zap', { size: 14, color: '#facc15' });
+
+    // DOCK DE ÁUDIO DE FOCO PROCEDURAL (Web Audio API)
+    const audioWrap = playerCol.createEl('div', { cls: 'snoopy-audio-wrap' });
+    audioWrap.innerHTML = '<div class="snoopy-sub-title" style="margin-bottom: 5px; font-size: 11px;">ÁUDIO DE FOCO PROCEDURAL</div>';
+    const audioDock = audioWrap.createEl('div', { cls: 'snoopy-audio-dock' });
+
+    // Botão Mudo / Play-Pause de Áudio
+    const btnAudioToggle = audioDock.createEl('button', {
+      cls: 'snoopy-player-btn-icon snoopy-audio-toggle',
+      attr: { title: 'Tocar / Pausar áudio de foco', type: 'button' }
+    });
+
+    // Botão de atalho para a Loja na categoria Áudios
+    const btnAudioShop = audioDock.createEl('button', {
+      cls: 'snoopy-player-btn-icon snoopy-audio-shop-btn',
+      attr: { title: 'Desbloquear novas faixas de som na Loja', type: 'button', 'aria-label': 'Abrir loja na categoria de áudio' }
+    });
+    if (renderIconFn) renderIconFn(btnAudioShop, 'shopping-bag', { size: 13, color: '#facc15' });
+    btnAudioShop.onclick = async () => {
+      if (ShopModal && typeof ShopModal.abrir === 'function') {
+        await ShopModal.abrir(app, {
+          ModalFactory,
+          ShopStore,
+          PomodoroAudio,
+          categoriaInicial: 'audio',
+          renderIcon: renderIconFn,
+          onAtualizar: async () => {
+            if (typeof popularFaixasAudio === 'function') await popularFaixasAudio();
+            await atualizarTelasJardim();
+          }
+        });
+      }
+    };
+
+
+    const atualizarIconeAudio = () => {
+      if (!btnAudioToggle) return;
+      btnAudioToggle.innerHTML = '';
+      if (!PomodoroAudio) return;
+      const estado = PomodoroAudio.obterEstado();
+      let iconName = 'volume-x';
+      let iconColor = 'var(--snoopy-muted, #71717a)';
+      if (estado.isPlaying && !estado.isMuted && estado.volume > 0) {
+        iconName = estado.volume <= 0.5 ? 'volume-1' : 'volume-2';
+        iconColor = '#4ade80';
+      }
+      if (renderIconFn) renderIconFn(btnAudioToggle, iconName, { size: 14, color: iconColor });
+    };
+
+    // Seletor de Faixas Procedurais
+    const trackSelect = audioDock.createEl('select', {
+      cls: 'snoopy-audio-track-selector',
+      attr: { 'aria-label': 'Selecionar faixa de som de foco' }
+    });
+
+    const popularFaixasAudio = async () => {
+      if (!trackSelect || !PomodoroAudio) return;
+      trackSelect.innerHTML = '';
+      try {
+        const faixas = await PomodoroAudio.obterFaixasDisponiveis(app);
+        const estado = PomodoroAudio.obterEstado();
+        for (const faixa of faixas) {
+          const opt = trackSelect.createEl('option', {
+            attr: { value: faixa.trackId || faixa.id },
+            text: faixa.label || faixa.nome
+          });
+          if (faixa.trackId === estado.currentTrack || faixa.id === estado.currentTrack) {
+            opt.selected = true;
+          }
+        }
+      } catch (err) {
+        console.warn('[Pomodoro Audio] Erro ao carregar faixas disponíveis:', err);
+      }
+    };
+    popularFaixasAudio();
+
+    trackSelect.addEventListener('change', async (e) => {
+      if (!PomodoroAudio) return;
+      const idFaixa = e.target.value;
+      if (PomodoroAudio.obterEstado().isPlaying) {
+        await PomodoroAudio.iniciar();
+        PomodoroAudio.tocar(idFaixa);
+      } else {
+        PomodoroAudio.tocar(idFaixa);
+        PomodoroAudio.pausar();
+      }
+      atualizarIconeAudio();
+    });
+
+    // Slider de Volume (0 a 100)
+    const initialVol = PomodoroAudio ? Math.round(PomodoroAudio.obterEstado().volume * 100) : 50;
+    const volSlider = audioDock.createEl('input', {
+      cls: 'snoopy-volume-slider',
+      attr: {
+        type: 'range',
+        min: '0',
+        max: '100',
+        value: String(initialVol),
+        'aria-label': 'Volume do áudio de foco',
+        title: `Volume: ${initialVol}%`
+      }
+    });
+
+    const volLabel = audioDock.createEl('span', {
+      cls: 'snoopy-audio-vol-txt',
+      text: `${initialVol}%`
+    });
+
+    volSlider.addEventListener('input', (e) => {
+      const val = Number(e.target.value);
+      volLabel.textContent = `${val}%`;
+      volSlider.setAttribute('title', `Volume: ${val}%`);
+      if (PomodoroAudio) {
+        PomodoroAudio.ajustarVolume(val / 100);
+        if (val > 0 && PomodoroAudio.obterEstado().isMuted) {
+          PomodoroAudio.mutar(false);
+        }
+        atualizarIconeAudio();
+      }
+    });
+
+    btnAudioToggle.addEventListener('click', async () => {
+      if (!PomodoroAudio) return;
+      const estado = PomodoroAudio.obterEstado();
+      if (estado.isPlaying) {
+        PomodoroAudio.pausar();
+      } else {
+        await PomodoroAudio.iniciar();
+        PomodoroAudio.tocar();
+      }
+      atualizarIconeAudio();
+    });
+
+    // Toggle de Sincronização Automática com o Timer
+    const syncLabel = audioDock.createEl('label', {
+      cls: 'snoopy-audio-sync-label',
+      attr: { title: 'Tocar automaticamente durante o ciclo e pausar ao término' }
+    });
+    const syncCb = syncLabel.createEl('input', {
+      attr: { type: 'checkbox' }
+    });
+    syncCb.checked = PomodoroAudio ? PomodoroAudio.obterAutoSync() : true;
+    syncLabel.createEl('span', { cls: 'snoopy-micro', text: 'Auto-sync foco' });
+
+    syncCb.addEventListener('change', (e) => {
+      if (PomodoroAudio) {
+        PomodoroAudio.definirAutoSync(e.target.checked);
+      }
+    });
+
+    atualizarIconeAudio();
 
     // 2. FILA DE FOCO / PLAYLIST (Spotify Vibe)
     const playlistWrap = playerCol.createEl('div', { cls: 'snoopy-pomodoro-playlist' });
@@ -383,7 +563,24 @@ return {
         }
       };
     }
-    if (moedasBadgeEl) moedasBadgeEl.onclick = abrirEstufa;
+    if (moedasBadgeEl) {
+      moedasBadgeEl.onclick = async () => {
+        if (ShopModal && typeof ShopModal.abrir === 'function') {
+          await ShopModal.abrir(app, {
+            ModalFactory,
+            ShopStore,
+            PomodoroAudio,
+            renderIcon: renderIconFn,
+            onAtualizar: async () => {
+              await atualizarTelasJardim();
+              if (typeof popularFaixasAudio === 'function') await popularFaixasAudio();
+            }
+          });
+        } else {
+          abrirEstufa();
+        }
+      };
+    }
 
     const historySplit = historyBox.createEl('div', { attr: { style: 'padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.08);' } });
     historySplit.innerHTML = `
@@ -643,9 +840,11 @@ return {
 
         const delBtn = rightCol.createEl('button', {
           cls: 'snoopy-playlist-track-del',
-          text: '✕',
           attr: { title: 'Remover da fila' }
         });
+        if (renderIconFn) {
+          renderIconFn(delBtn, 'x', { size: 10 });
+        }
 
         delBtn.onclick = (e) => {
           e.stopPropagation();
@@ -930,6 +1129,10 @@ return {
           window.__snoopyPomodoroState = null;
         }
         tocarChimePomodoro();
+        if (PomodoroAudio && PomodoroAudio.obterAutoSync()) {
+          PomodoroAudio.parar();
+          if (typeof atualizarIconeAudio === 'function') atualizarIconeAudio();
+        }
         if (mode === 'foco') {
           finalizarFoco();
           // Automação: transita para Pausa automaticamente
@@ -978,10 +1181,22 @@ return {
             alvoAtual: timer.alvoAtual
           };
         }
-        if (!btnMainPlay) return;
-        btnMainPlay.innerHTML = '';
-        const iconName = isRunning ? 'pause' : 'play';
-        if (renderIconFn) renderIconFn(btnMainPlay, iconName, { size: 16, color: '#070709' });
+        if (btnMainPlay) {
+          btnMainPlay.innerHTML = '';
+          const iconName = isRunning ? 'pause' : 'play';
+          if (renderIconFn) renderIconFn(btnMainPlay, iconName, { size: 16, color: '#070709' });
+        }
+        if (PomodoroAudio && PomodoroAudio.obterAutoSync()) {
+          if (isRunning && timer && timer.currentMode === 'foco') {
+            PomodoroAudio.iniciar().then(() => {
+              PomodoroAudio.tocar();
+              if (typeof atualizarIconeAudio === 'function') atualizarIconeAudio();
+            }).catch(() => {});
+          } else {
+            PomodoroAudio.pausar();
+            if (typeof atualizarIconeAudio === 'function') atualizarIconeAudio();
+          }
+        }
       }
     }) : null;
 
@@ -1078,6 +1293,9 @@ return {
     if (ctx.Lifecycle && timer) {
       ctx.Lifecycle.onDispose('home', () => {
         timer.destroy();
+        if (PomodoroAudio && typeof PomodoroAudio.destroy === 'function') {
+          PomodoroAudio.destroy();
+        }
         if (typeof window !== 'undefined' && window.__snoopyActiveTimerInstance === timer) {
           window.__snoopyActiveTimerInstance = null;
         }
@@ -1137,7 +1355,7 @@ return {
       breakMin = parseInt(cfgBreakInput.value) || 5;
       if (timer) timer.setTempos(focusMin, breakMin);
       const taxaEl = historyBox.querySelector('#snoopy-card-taxa-foco');
-      if (taxaEl) taxaEl.textContent = `Ciclo ${focusMin}m = ${Math.max(1, Math.floor(focusMin / 5))} 🪙`;
+      if (taxaEl) taxaEl.textContent = `Ciclo ${focusMin}m = +${Math.max(1, Math.floor(focusMin / 5))} seiva`;
     };
 
     if (cfgFocusInput) cfgFocusInput.onchange = atualizarTempos;
@@ -1148,6 +1366,10 @@ return {
     if (btnReset) btnReset.onclick = () => { 
       if (typeof window !== 'undefined') window.__snoopyPomodoroCombo = 0;
       if (timer) timer.reset();
+      if (PomodoroAudio && PomodoroAudio.obterAutoSync()) {
+        PomodoroAudio.parar();
+        if (typeof atualizarIconeAudio === 'function') atualizarIconeAudio();
+      }
       atualizarTelasJardim();
     };
     if (btnPrev) btnPrev.onclick = () => {
