@@ -949,6 +949,51 @@ return {
           console.warn('[Snoopy] Erro ao alternar modo claro/escuro:', err);
         }
       });
+
+      const btnAmbient = modeGroup.createEl('button', {
+        cls: 'snoopy-ambient-mode-toggle snoopy-nav-pill-btn snoopy-btn-sm',
+        attr: {
+          style: 'padding: 4px 8px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; margin-left: 4px;',
+          title: 'Habilitar ou desabilitar animações de fundo ambiente'
+        }
+      });
+
+      const atualizarIconeAmbient = async () => {
+        let ativo = false;
+        if (typeof ShopStore.obterAmbientEnabled === 'function') {
+          ativo = await ShopStore.obterAmbientEnabled(app);
+        } else if (typeof document !== 'undefined' && document.body) {
+          ativo = document.body.classList.contains('snoopy-ambient-active');
+        }
+        btnAmbient.innerHTML = '';
+        if (ativo) {
+          btnAmbient.setAttribute('title', 'Animação de fundo ATIVADA. Clique para desligar e economizar recursos.');
+          btnAmbient.innerHTML = '<span style="font-size: 12px; line-height: 1;">✨</span> <span style="font-size: 11px; font-weight: 600;">ANIM: ON</span>';
+        } else {
+          btnAmbient.setAttribute('title', 'Animação de fundo DESATIVADA. Clique para ligar.');
+          btnAmbient.innerHTML = '<span style="font-size: 12px; line-height: 1; opacity: 0.6;">✨</span> <span style="font-size: 11px; font-weight: 600; opacity: 0.6;">ANIM: OFF</span>';
+        }
+      };
+
+      await atualizarIconeAmbient();
+
+      btnAmbient.addEventListener('click', async (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+        if (e && e.stopPropagation) e.stopPropagation();
+        try {
+          const ativoAtual = typeof ShopStore.obterAmbientEnabled === 'function' ? await ShopStore.obterAmbientEnabled(app) : false;
+          const novo = !ativoAtual;
+          if (typeof ShopStore.definirAmbientEnabled === 'function') {
+            await ShopStore.definirAmbientEnabled(app, novo);
+          }
+          await atualizarIconeAmbient();
+          if (typeof Notice !== 'undefined') {
+            new Notice(`[Snoopy] Animação ambiente ${novo ? 'ativada' : 'desativada'}`);
+          }
+        } catch (err) {
+          console.warn('[Snoopy] Erro ao alternar animação ambiente:', err);
+        }
+      });
     }
   }
 };

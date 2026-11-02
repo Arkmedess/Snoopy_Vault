@@ -60,19 +60,43 @@ describe('Auditoria de Contraste WCAG 2.2 AA nos 4 Temas (Light e Dark)', () => 
         const btnBg = confModo.tokens.btnBg;
         const btnText = confModo.tokens.btnText;
 
-        // 1. Texto Normal sobre Fundo (Mínimo WCAG AA: 4.5:1)
+        // 1. Texto Normal sobre Fundo, Painel e Card (Mínimo WCAG AA: 4.5:1)
         const contrasteTexto = calcularRazaoContraste(text, bg);
         assert.ok(
           contrasteTexto >= 4.5,
           `Texto normal (${text}) sobre fundo (${bg}) no tema ${temaId} [${modo}] obteve ${contrasteTexto.toFixed(2)}:1 (exige >= 4.5:1)`
         );
 
-        // 2. Texto Muted sobre Fundo (Mínimo recomendado: >= 4.0:1)
+        if (confModo.tokens.panel) {
+          const contrastePanel = calcularRazaoContraste(text, confModo.tokens.panel);
+          assert.ok(
+            contrastePanel >= 4.5,
+            `Texto normal (${text}) sobre painel (${confModo.tokens.panel}) no tema ${temaId} [${modo}] obteve ${contrastePanel.toFixed(2)}:1 (exige >= 4.5:1)`
+          );
+        }
+
+        if (confModo.tokens.card) {
+          const contrasteCard = calcularRazaoContraste(text, confModo.tokens.card);
+          assert.ok(
+            contrasteCard >= 4.5,
+            `Texto normal (${text}) sobre card (${confModo.tokens.card}) no tema ${temaId} [${modo}] obteve ${contrasteCard.toFixed(2)}:1 (exige >= 4.5:1)`
+          );
+        }
+
+        // 2. Texto Muted sobre Fundo, Painel e Card (Mínimo recomendado: >= 3.5:1)
         const contrasteMuted = calcularRazaoContraste(textMuted, bg);
         assert.ok(
           contrasteMuted >= 3.5,
           `Texto muted (${textMuted}) sobre fundo (${bg}) no tema ${temaId} [${modo}] obteve ${contrasteMuted.toFixed(2)}:1 (exige >= 3.5:1)`
         );
+
+        if (confModo.tokens.panel) {
+          const contrasteMutedPanel = calcularRazaoContraste(textMuted, confModo.tokens.panel);
+          assert.ok(
+            contrasteMutedPanel >= 3.5,
+            `Texto muted (${textMuted}) sobre painel (${confModo.tokens.panel}) no tema ${temaId} [${modo}] obteve ${contrasteMutedPanel.toFixed(2)}:1 (exige >= 3.5:1)`
+          );
+        }
 
         // 3. Texto do Botão sobre Fundo do Botão (Mínimo WCAG AA: 4.5:1)
         const contrasteBtn = calcularRazaoContraste(btnText, btnBg);
@@ -83,4 +107,60 @@ describe('Auditoria de Contraste WCAG 2.2 AA nos 4 Temas (Light e Dark)', () => 
       });
     }
   }
+
+  test('05_Snoopy_Theme.css não deve conter títulos com color: #ffffff fixo que quebrem o modo Light', () => {
+    const fs = require('fs');
+    const path = require('path');
+    const cssPath = path.resolve(__dirname, '../../.obsidian/snippets/05_Snoopy_Theme.css');
+    const css = fs.readFileSync(cssPath, 'utf8');
+
+    const seletoresCriticos = [
+      '.snoopy-section-title',
+      '.snoopy-kpi-val',
+      '.snoopy-date-title',
+      '.snoopy-timer-num',
+      '.snoopy-modal-title',
+      '.snoopy-cal-title'
+    ];
+
+    for (const sel of seletoresCriticos) {
+      const regex = new RegExp(`${sel.replace('.', '\\.')}[^{]*\\{[^}]*color:\\s*#ffffff`, 'i');
+      assert.ok(!regex.test(css), `Seletor ${sel} não deve ter "color: #ffffff" hardcoded no CSS`);
+    }
+  });
+
+  test('ShopStore.aplicarTema sincroniza classes theme-light e theme-dark em doc.body', () => {
+    const mockDoc = {
+      documentElement: {
+        setAttribute: () => {},
+        getAttribute: () => 'light',
+        style: { setProperty: () => {} }
+      },
+      body: {
+        classList: {
+          classes: new Set(['theme-dark']),
+          add(...c) { c.forEach(x => this.classes.add(x)); },
+          remove(...c) { c.forEach(x => this.classes.delete(x)); },
+          contains(c) { return this.classes.has(c); }
+        },
+        setAttribute: () => {},
+        prepend: () => {}
+      },
+      getElementById: () => null,
+      createElement: () => ({
+        setAttribute: () => {},
+        appendChild: () => {}
+      })
+    };
+
+    ShopStore.aplicarTema('theme-preset-rose', mockDoc, 'light');
+    assert.strictEqual(mockDoc.body.classList.contains('theme-light'), true, 'body deve conter theme-light no modo light');
+    assert.strictEqual(mockDoc.body.classList.contains('theme-dark'), false, 'body não deve conter theme-dark no modo light');
+    assert.strictEqual(mockDoc.body.classList.contains('snoopy-scheme-light'), true);
+
+    ShopStore.aplicarTema('theme-preset-rose', mockDoc, 'dark');
+    assert.strictEqual(mockDoc.body.classList.contains('theme-dark'), true, 'body deve conter theme-dark no modo dark');
+    assert.strictEqual(mockDoc.body.classList.contains('theme-light'), false, 'body não deve conter theme-light no modo dark');
+    assert.strictEqual(mockDoc.body.classList.contains('snoopy-scheme-dark'), true);
+  });
 });

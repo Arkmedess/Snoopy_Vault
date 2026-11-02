@@ -324,8 +324,8 @@ describe('ShopStore - Central de Economia, Catálogo & Inventário', () => {
     assert.strictEqual(mockDoc.body.attributes['data-snoopy-theme'], 'theme-preset-cyber');
     assert.ok(mockDoc.body.classList.contains('snoopy-theme-cyber'));
     assert.strictEqual(mockDoc.documentElement.styles['--snoopy-module-accent'], '#38bdf8');
-    assert.strictEqual(mockDoc.documentElement.styles['--snoopy-bg'], '#040711');
-    assert.strictEqual(mockDoc.documentElement.styles['--background-primary'], '#040711');
+    assert.strictEqual(mockDoc.documentElement.styles['--snoopy-bg'], '#071124');
+    assert.strictEqual(mockDoc.documentElement.styles['--background-primary'], '#071124');
     assert.ok(mockDoc.documentElement.styles['--snoopy-pattern-bg'].includes('svg'));
 
     // 2. Tema Solar (Detalhes de sóis geométricos e acolhimento)
@@ -334,7 +334,7 @@ describe('ShopStore - Central de Economia, Catálogo & Inventário', () => {
     assert.strictEqual(mockDoc.documentElement.attributes['data-snoopy-theme'], 'theme-preset-solar');
     assert.ok(mockDoc.body.classList.contains('snoopy-theme-solar'));
     assert.strictEqual(mockDoc.documentElement.styles['--snoopy-module-accent'], '#fbbf24');
-    assert.strictEqual(mockDoc.documentElement.styles['--snoopy-bg'], '#0e0b08');
+    assert.strictEqual(mockDoc.documentElement.styles['--snoopy-bg'], '#1a1208');
     assert.strictEqual(mockDoc.documentElement.styles['--text-normal'], '#fffbeb');
     assert.ok(mockDoc.documentElement.styles['--snoopy-pattern-bg'].includes('%23fbbf24'));
 
@@ -344,7 +344,7 @@ describe('ShopStore - Central de Economia, Catálogo & Inventário', () => {
     assert.strictEqual(mockDoc.documentElement.attributes['data-snoopy-theme'], 'theme-preset-rose');
     assert.ok(mockDoc.body.classList.contains('snoopy-theme-rose'));
     assert.strictEqual(mockDoc.documentElement.styles['--snoopy-module-accent'], '#f472b6');
-    assert.strictEqual(mockDoc.documentElement.styles['--snoopy-bg'], '#0d080b');
+    assert.strictEqual(mockDoc.documentElement.styles['--snoopy-bg'], '#200d1b');
     assert.strictEqual(mockDoc.documentElement.styles['--text-normal'], '#fdf2f8');
     assert.ok(mockDoc.documentElement.styles['--snoopy-pattern-bg'].includes('%23f472b6'));
 
@@ -354,7 +354,7 @@ describe('ShopStore - Central de Economia, Catálogo & Inventário', () => {
     assert.strictEqual(mockDoc.documentElement.attributes['data-snoopy-theme'], 'theme-preset-snoopy');
     assert.ok(mockDoc.body.classList.contains('snoopy-theme-snoopy'));
     assert.strictEqual(mockDoc.documentElement.styles['--snoopy-module-accent'], '#86efac');
-    assert.strictEqual(mockDoc.documentElement.styles['--snoopy-bg'], '#070709');
+    assert.strictEqual(mockDoc.documentElement.styles['--snoopy-bg'], '#0c0e14');
   });
 
   test('alternarColorScheme() e definirAmbientEnabled() controlam e persistem modos light/dark e animações', async () => {
@@ -397,7 +397,7 @@ describe('ShopStore - Central de Economia, Catálogo & Inventário', () => {
     const darkDeVolta = await ShopStore.alternarColorScheme(app, mockDoc);
     assert.strictEqual(darkDeVolta, 'dark');
     assert.strictEqual(mockDoc.documentElement.attributes['data-snoopy-scheme'], 'dark');
-    assert.strictEqual(mockDoc.documentElement.styles['--snoopy-bg'], '#070709');
+    assert.strictEqual(mockDoc.documentElement.styles['--snoopy-bg'], '#0c0e14');
 
     // 4. Habilitar animação ambiente
     const ambientAtivo = await ShopStore.definirAmbientEnabled(app, true, mockDoc);

@@ -23,7 +23,7 @@ const TarefasView = {
       if (!container) return;
       const switcher = container.createEl('div', {
         cls: 'snoopy-view-switcher',
-        attr: { style: 'display: inline-flex; align-items: center; background: #0f0f15; border: 1px solid rgba(255,255,255,0.1); border-radius: 7px; padding: 2px; gap: 3px; margin-right: 4px;' }
+        attr: { style: 'display: inline-flex; align-items: center; background: var(--snoopy-panel); border: 1px solid var(--snoopy-border); border-radius: 7px; padding: 2px; gap: 3px; margin-right: 4px;' }
       });
 
       const btnLista = switcher.createEl('button', {

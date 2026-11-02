@@ -210,47 +210,47 @@ const TEMAS_CONFIG = {
     descricao: 'Minimalismo clássico com acentos esmeralda e constelações serenas.',
     acento: '#86efac',
     acentoHover: '#4ade80',
-    bg: '#070709',
-    panel: '#0f1015',
-    card: '#13141a',
-    cardHover: '#1a1b22',
-    border: 'rgba(255, 255, 255, 0.08)',
-    text: '#f4f4f5',
-    textMuted: '#a1a1aa',
+    bg: '#0c0e14',
+    panel: '#141822',
+    card: '#1a202c',
+    cardHover: '#232b3b',
+    border: 'rgba(134, 239, 172, 0.16)',
+    text: '#f8fafc',
+    textMuted: '#94a3b8',
     btnBg: '#86efac',
-    btnText: '#070709',
+    btnText: '#0c0e14',
     focusRing: '0 0 0 2px rgba(134, 239, 172, 0.55)',
     doneColor: '#86efac',
-    patternBg: `url("data:image/svg+xml,%3Csvg width='90' height='90' viewBox='0 0 90 90' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2386efac' opacity='0.035'%3E%3Ccircle cx='15' cy='15' r='1'/%3E%3Ccircle cx='75' cy='45' r='1.2'/%3E%3Ccircle cx='45' cy='75' r='1'/%3E%3Cline x1='15' y1='15' x2='75' y2='45' stroke='%2386efac' stroke-width='0.5'/%3E%3Cline x1='75' y1='45' x2='45' y2='75' stroke='%2386efac' stroke-width='0.5'/%3E%3C/g%3E%3C/svg%3E")`,
+    patternBg: `url("data:image/svg+xml,%3Csvg width='90' height='90' viewBox='0 0 90 90' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2386efac' opacity='0.04'%3E%3Ccircle cx='15' cy='15' r='1'/%3E%3Ccircle cx='75' cy='45' r='1.2'/%3E%3Ccircle cx='45' cy='75' r='1'/%3E%3Cline x1='15' y1='15' x2='75' y2='45' stroke='%2386efac' stroke-width='0.5'/%3E%3Cline x1='75' y1='45' x2='45' y2='75' stroke='%2386efac' stroke-width='0.5'/%3E%3C/g%3E%3C/svg%3E")`,
     modos: {
       dark: {
         colorScheme: 'dark',
         palette: {
           primary: '#86efac',
           primaryHover: '#4ade80',
-          baseBg: '#070709',
-          surface1: '#0f1015',
-          surface2: '#13141a',
-          surface3: '#1a1b22',
-          textHigh: '#f4f4f5',
-          textMuted: '#a1a1aa'
+          baseBg: '#0c0e14',
+          surface1: '#141822',
+          surface2: '#1a202c',
+          surface3: '#232b3b',
+          textHigh: '#f8fafc',
+          textMuted: '#94a3b8'
         },
         tokens: {
-          bg: '#070709',
-          panel: '#0f1015',
-          card: '#13141a',
-          cardHover: '#1a1b22',
-          border: 'rgba(255, 255, 255, 0.08)',
-          text: '#f4f4f5',
-          textMuted: '#a1a1aa',
+          bg: '#0c0e14',
+          panel: '#141822',
+          card: '#1a202c',
+          cardHover: '#232b3b',
+          border: 'rgba(134, 239, 172, 0.16)',
+          text: '#f8fafc',
+          textMuted: '#94a3b8',
           accent: '#86efac',
           accentHover: '#4ade80',
           btnBg: '#86efac',
-          btnText: '#070709',
+          btnText: '#0c0e14',
           focusRing: '0 0 0 2px rgba(134, 239, 172, 0.55)',
           doneColor: '#86efac',
           shadow: '0 8px 30px rgba(0, 0, 0, 0.7)',
-          patternBg: `url("data:image/svg+xml,%3Csvg width='90' height='90' viewBox='0 0 90 90' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2386efac' opacity='0.035'%3E%3Ccircle cx='15' cy='15' r='1'/%3E%3Ccircle cx='75' cy='45' r='1.2'/%3E%3Ccircle cx='45' cy='75' r='1'/%3E%3Cline x1='15' y1='15' x2='75' y2='45' stroke='%2386efac' stroke-width='0.5'/%3E%3Cline x1='75' y1='45' x2='45' y2='75' stroke='%2386efac' stroke-width='0.5'/%3E%3C/g%3E%3C/svg%3E")`
+          patternBg: `url("data:image/svg+xml,%3Csvg width='90' height='90' viewBox='0 0 90 90' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2386efac' opacity='0.04'%3E%3Ccircle cx='15' cy='15' r='1'/%3E%3Ccircle cx='75' cy='45' r='1.2'/%3E%3Ccircle cx='45' cy='75' r='1'/%3E%3Cline x1='15' y1='15' x2='75' y2='45' stroke='%2386efac' stroke-width='0.5'/%3E%3Cline x1='75' y1='45' x2='45' y2='75' stroke='%2386efac' stroke-width='0.5'/%3E%3C/g%3E%3C/svg%3E")`
         },
         shape: {
           radiusSm: '6px',
@@ -265,7 +265,7 @@ const TEMAS_CONFIG = {
           weightBold: '600'
         },
         scene: [
-          { tipo: 'base', estilo: 'background: radial-gradient(circle at 50% 0%, #10151c 0%, #070709 70%);' },
+          { tipo: 'base', estilo: 'background: radial-gradient(circle at 50% 0%, #172033 0%, #0c0e14 75%);' },
           { tipo: 'ornament', estilo: "background-image: url(\"data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2386efac' opacity='0.08'%3E%3Ccircle cx='20' cy='20' r='1.5'/%3E%3Ccircle cx='80' cy='50' r='2'/%3E%3Ccircle cx='40' cy='90' r='1.5'/%3E%3Ccircle cx='105' cy='15' r='1'/%3E%3Ccircle cx='15' cy='105' r='1.2'/%3E%3Cline x1='20' y1='20' x2='80' y2='50' stroke='%2386efac' stroke-width='0.5' stroke-dasharray='3 3'/%3E%3Cline x1='80' y1='50' x2='40' y2='90' stroke='%2386efac' stroke-width='0.5' stroke-dasharray='3 3'/%3E%3C/g%3E%3C/svg%3E\");" },
           { tipo: 'texture', estilo: 'opacity: 0.02; filter: contrast(120%);' },
           { tipo: 'vignette', estilo: 'background: radial-gradient(circle, transparent 60%, rgba(0, 0, 0, 0.7) 100%);' }
@@ -329,47 +329,47 @@ const TEMAS_CONFIG = {
     descricao: 'Linhas isométricas, malha cirúrgica neon e contraste cibernético.',
     acento: '#38bdf8',
     acentoHover: '#0ea5e9',
-    bg: '#040711',
-    panel: '#0a1020',
-    card: '#0f172a',
-    cardHover: '#152238',
-    border: 'rgba(56, 189, 248, 0.18)',
+    bg: '#071124',
+    panel: '#0d1e3d',
+    card: '#132a52',
+    cardHover: '#193669',
+    border: 'rgba(56, 189, 248, 0.28)',
     text: '#f0f9ff',
     textMuted: '#7dd3fc',
     btnBg: '#38bdf8',
-    btnText: '#040711',
+    btnText: '#071124',
     focusRing: '0 0 0 2px rgba(56, 189, 248, 0.55)',
     doneColor: '#38bdf8',
-    patternBg: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%2338bdf8' stroke-width='0.75' opacity='0.045'%3E%3Crect x='0' y='0' width='80' height='80'/%3E%3Ccircle cx='40' cy='40' r='1.5' fill='%2338bdf8'/%3E%3Cline x1='35' y1='40' x2='45' y2='40'/%3E%3Cline x1='40' y1='35' x2='40' y2='45'/%3E%3Cpath d='M0,0 L8,0 L8,8'/%3E%3Cpath d='M80,80 L72,80 L72,72'/%3E%3C/g%3E%3C/svg%3E")`,
+    patternBg: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%2338bdf8' stroke-width='0.75' opacity='0.05'%3E%3Crect x='0' y='0' width='80' height='80'/%3E%3Ccircle cx='40' cy='40' r='1.5' fill='%2338bdf8'/%3E%3Cline x1='35' y1='40' x2='45' y2='40'/%3E%3Cline x1='40' y1='35' x2='40' y2='45'/%3E%3Cpath d='M0,0 L8,0 L8,8'/%3E%3Cpath d='M80,80 L72,80 L72,72'/%3E%3C/g%3E%3C/svg%3E")`,
     modos: {
       dark: {
         colorScheme: 'dark',
         palette: {
           primary: '#38bdf8',
           primaryHover: '#0ea5e9',
-          baseBg: '#040711',
-          surface1: '#0a1020',
-          surface2: '#0f172a',
-          surface3: '#152238',
+          baseBg: '#071124',
+          surface1: '#0d1e3d',
+          surface2: '#132a52',
+          surface3: '#193669',
           textHigh: '#f0f9ff',
           textMuted: '#7dd3fc'
         },
         tokens: {
-          bg: '#040711',
-          panel: '#0a1020',
-          card: '#0f172a',
-          cardHover: '#152238',
-          border: 'rgba(56, 189, 248, 0.18)',
+          bg: '#071124',
+          panel: '#0d1e3d',
+          card: '#132a52',
+          cardHover: '#193669',
+          border: 'rgba(56, 189, 248, 0.28)',
           text: '#f0f9ff',
           textMuted: '#7dd3fc',
           accent: '#38bdf8',
           accentHover: '#0ea5e9',
           btnBg: '#38bdf8',
-          btnText: '#040711',
+          btnText: '#071124',
           focusRing: '0 0 0 2px rgba(56, 189, 248, 0.55)',
           doneColor: '#38bdf8',
           shadow: '0 8px 30px rgba(4, 7, 17, 0.85)',
-          patternBg: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%2338bdf8' stroke-width='0.75' opacity='0.045'%3E%3Crect x='0' y='0' width='80' height='80'/%3E%3Ccircle cx='40' cy='40' r='1.5' fill='%2338bdf8'/%3E%3Cline x1='35' y1='40' x2='45' y2='40'/%3E%3Cline x1='40' y1='35' x2='40' y2='45'/%3E%3Cpath d='M0,0 L8,0 L8,8'/%3E%3Cpath d='M80,80 L72,80 L72,72'/%3E%3C/g%3E%3C/svg%3E")`
+          patternBg: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%2338bdf8' stroke-width='0.75' opacity='0.05'%3E%3Crect x='0' y='0' width='80' height='80'/%3E%3Ccircle cx='40' cy='40' r='1.5' fill='%2338bdf8'/%3E%3Cline x1='35' y1='40' x2='45' y2='40'/%3E%3Cline x1='40' y1='35' x2='40' y2='45'/%3E%3Cpath d='M0,0 L8,0 L8,8'/%3E%3Cpath d='M80,80 L72,80 L72,72'/%3E%3C/g%3E%3C/svg%3E")`
         },
         shape: {
           radiusSm: '4px',
@@ -384,8 +384,8 @@ const TEMAS_CONFIG = {
           weightBold: '700'
         },
         scene: [
-          { tipo: 'base', estilo: 'background: radial-gradient(circle at 50% 0%, #08162e 0%, #040711 75%);' },
-          { tipo: 'ornament', estilo: "background-image: url(\"data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%2338bdf8' stroke-width='0.7' opacity='0.08'%3E%3Cpath d='M0,20 L40,20 L60,40 L100,40'/%3E%3Cpath d='M10,80 L50,80 L70,60 L90,60'/%3E%3Ccircle cx='60' cy='40' r='2' fill='%2338bdf8'/%3E%3Ccircle cx='70' cy='60' r='2' fill='%2338bdf8'/%3E%3C/g%3E%3C/svg%3E\");" },
+          { tipo: 'base', estilo: 'background: radial-gradient(circle at 50% 0%, #163266 0%, #071124 75%);' },
+          { tipo: 'ornament', estilo: "background-image: url(\"data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%2338bdf8' stroke-width='0.7' opacity='0.1'%3E%3Cpath d='M0,20 L40,20 L60,40 L100,40'/%3E%3Cpath d='M10,80 L50,80 L70,60 L90,60'/%3E%3Ccircle cx='60' cy='40' r='2' fill='%2338bdf8'/%3E%3Ccircle cx='70' cy='60' r='2' fill='%2338bdf8'/%3E%3C/g%3E%3C/svg%3E\");" },
           { tipo: 'texture', estilo: 'opacity: 0.03;' },
           { tipo: 'vignette', estilo: 'background: radial-gradient(circle, transparent 60%, rgba(2, 6, 23, 0.8) 100%);' }
         ],
@@ -394,29 +394,29 @@ const TEMAS_CONFIG = {
       light: {
         colorScheme: 'light',
         palette: {
-          primary: '#0284c7',
-          primaryHover: '#0369a1',
+          primary: '#0369a1',
+          primaryHover: '#075985',
           baseBg: '#f0f7ff',
-          surface1: '#e0f0fe',
+          surface1: '#dbeafe',
           surface2: '#ffffff',
-          surface3: '#dbeafe',
-          textHigh: '#031930',
+          surface3: '#bfdbfe',
+          textHigh: '#05192d',
           textMuted: '#0369a1'
         },
         tokens: {
           bg: '#f0f7ff',
-          panel: '#e0f0fe',
+          panel: '#dbeafe',
           card: '#ffffff',
-          cardHover: '#dbeafe',
-          border: 'rgba(2, 132, 199, 0.2)',
-          text: '#031930',
+          cardHover: '#bfdbfe',
+          border: 'rgba(2, 132, 199, 0.24)',
+          text: '#05192d',
           textMuted: '#0369a1',
           accent: '#0369a1',
           accentHover: '#075985',
           btnBg: '#0369a1',
           btnText: '#ffffff',
           focusRing: '0 0 0 2px rgba(2, 132, 199, 0.45)',
-          doneColor: '#0284c7',
+          doneColor: '#0369a1',
           shadow: '0 4px 15px rgba(2, 132, 199, 0.1)',
           patternBg: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%230284c7' stroke-width='0.75' opacity='0.05'%3E%3Crect x='0' y='0' width='80' height='80'/%3E%3Ccircle cx='40' cy='40' r='1.5' fill='%230284c7'/%3E%3Cline x1='35' y1='40' x2='45' y2='40'/%3E%3Cline x1='40' y1='35' x2='40' y2='45'/%3E%3C/g%3E%3C/svg%3E")`
         },
@@ -433,7 +433,7 @@ const TEMAS_CONFIG = {
           weightBold: '700'
         },
         scene: [
-          { tipo: 'base', estilo: 'background: radial-gradient(circle at 50% 0%, #ffffff 0%, #e0f2fe 100%);' },
+          { tipo: 'base', estilo: 'background: radial-gradient(circle at 50% 0%, #f8fbff 0%, #dbeafe 100%);' },
           { tipo: 'ornament', estilo: "background-image: url(\"data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%230284c7' stroke-width='0.7' opacity='0.07'%3E%3Cpath d='M0,20 L40,20 L60,40 L100,40'/%3E%3Cpath d='M10,80 L50,80 L70,60 L90,60'/%3E%3Ccircle cx='60' cy='40' r='2' fill='%230284c7'/%3E%3C/g%3E%3C/svg%3E\");" },
           { tipo: 'texture', estilo: 'opacity: 0.02;' },
           { tipo: 'vignette', estilo: 'background: radial-gradient(circle, transparent 65%, rgba(2, 132, 199, 0.05) 100%);' }
@@ -448,47 +448,47 @@ const TEMAS_CONFIG = {
     descricao: 'Âmbar cálido, mandalas geométricas e detalhes de sóis dourados radiantes.',
     acento: '#fbbf24',
     acentoHover: '#f59e0b',
-    bg: '#0e0b08',
-    panel: '#17130e',
-    card: '#1f1a13',
-    cardHover: '#282118',
-    border: 'rgba(251, 191, 36, 0.18)',
+    bg: '#1a1208',
+    panel: '#291c0c',
+    card: '#382712',
+    cardHover: '#4a3318',
+    border: 'rgba(251, 191, 36, 0.3)',
     text: '#fffbeb',
-    textMuted: '#d4a373',
+    textMuted: '#fcd34d',
     btnBg: '#fbbf24',
-    btnText: '#0e0b08',
+    btnText: '#1a1208',
     focusRing: '0 0 0 2px rgba(251, 191, 36, 0.55)',
     doneColor: '#fbbf24',
-    patternBg: `url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23fbbf24' stroke-width='1' opacity='0.05'%3E%3Ccircle cx='60' cy='60' r='14'/%3E%3Ccircle cx='60' cy='60' r='6'/%3E%3Cline x1='60' y1='36' x2='60' y2='42'/%3E%3Cline x1='60' y1='78' x2='60' y2='84'/%3E%3Cline x1='36' y1='60' x2='42' y2='60'/%3E%3Cline x1='78' y1='60' x2='84' y2='60'/%3E%3Cline x1='43' y1='43' x2='47' y2='47'/%3E%3Cline x1='73' y1='73' x2='77' y2='77'/%3E%3Cline x1='77' y1='43' x2='73' y2='47'/%3E%3Cline x1='47' y1='73' x2='43' y2='77'/%3E%3C/g%3E%3C/svg%3E")`,
+    patternBg: `url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23fbbf24' stroke-width='1' opacity='0.06'%3E%3Ccircle cx='60' cy='60' r='14'/%3E%3Ccircle cx='60' cy='60' r='6'/%3E%3Cline x1='60' y1='36' x2='60' y2='42'/%3E%3Cline x1='60' y1='78' x2='60' y2='84'/%3E%3Cline x1='36' y1='60' x2='42' y2='60'/%3E%3Cline x1='78' y1='60' x2='84' y2='60'/%3E%3Cline x1='43' y1='43' x2='47' y2='47'/%3E%3Cline x1='73' y1='73' x2='77' y2='77'/%3E%3Cline x1='77' y1='43' x2='73' y2='47'/%3E%3Cline x1='47' y1='73' x2='43' y2='77'/%3E%3C/g%3E%3C/svg%3E")`,
     modos: {
       dark: {
         colorScheme: 'dark',
         palette: {
           primary: '#fbbf24',
           primaryHover: '#f59e0b',
-          baseBg: '#0e0b08',
-          surface1: '#17130e',
-          surface2: '#1f1a13',
-          surface3: '#282118',
+          baseBg: '#1a1208',
+          surface1: '#291c0c',
+          surface2: '#382712',
+          surface3: '#4a3318',
           textHigh: '#fffbeb',
-          textMuted: '#d4a373'
+          textMuted: '#fcd34d'
         },
         tokens: {
-          bg: '#0e0b08',
-          panel: '#17130e',
-          card: '#1f1a13',
-          cardHover: '#282118',
-          border: 'rgba(251, 191, 36, 0.18)',
+          bg: '#1a1208',
+          panel: '#291c0c',
+          card: '#382712',
+          cardHover: '#4a3318',
+          border: 'rgba(251, 191, 36, 0.3)',
           text: '#fffbeb',
-          textMuted: '#d4a373',
+          textMuted: '#fcd34d',
           accent: '#fbbf24',
           accentHover: '#f59e0b',
           btnBg: '#fbbf24',
-          btnText: '#0e0b08',
+          btnText: '#1a1208',
           focusRing: '0 0 0 2px rgba(251, 191, 36, 0.55)',
           doneColor: '#fbbf24',
           shadow: '0 8px 30px rgba(14, 11, 8, 0.8)',
-          patternBg: `url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23fbbf24' stroke-width='1' opacity='0.05'%3E%3Ccircle cx='60' cy='60' r='14'/%3E%3Ccircle cx='60' cy='60' r='6'/%3E%3Cline x1='60' y1='36' x2='60' y2='42'/%3E%3Cline x1='60' y1='78' x2='60' y2='84'/%3E%3Cline x1='36' y1='60' x2='42' y2='60'/%3E%3Cline x1='78' y1='60' x2='84' y2='60'/%3E%3Cline x1='43' y1='43' x2='47' y2='47'/%3E%3Cline x1='73' y1='73' x2='77' y2='77'/%3E%3Cline x1='77' y1='43' x2='73' y2='47'/%3E%3Cline x1='47' y1='73' x2='43' y2='77'/%3E%3C/g%3E%3C/svg%3E")`
+          patternBg: `url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23fbbf24' stroke-width='1' opacity='0.06'%3E%3Ccircle cx='60' cy='60' r='14'/%3E%3Ccircle cx='60' cy='60' r='6'/%3E%3Cline x1='60' y1='36' x2='60' y2='42'/%3E%3Cline x1='60' y1='78' x2='60' y2='84'/%3E%3Cline x1='36' y1='60' x2='42' y2='60'/%3E%3Cline x1='78' y1='60' x2='84' y2='60'/%3E%3Cline x1='43' y1='43' x2='47' y2='47'/%3E%3Cline x1='73' y1='73' x2='77' y2='77'/%3E%3Cline x1='77' y1='43' x2='73' y2='47'/%3E%3Cline x1='47' y1='73' x2='43' y2='77'/%3E%3C/g%3E%3C/svg%3E")`
         },
         shape: {
           radiusSm: '8px',
@@ -503,8 +503,8 @@ const TEMAS_CONFIG = {
           weightBold: '600'
         },
         scene: [
-          { tipo: 'base', estilo: 'background: radial-gradient(circle at 50% 0%, #241708 0%, #0e0b08 75%);' },
-          { tipo: 'ornament', estilo: "background-image: url(\"data:image/svg+xml,%3Csvg width='160' height='160' viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23fbbf24' stroke-width='1.2' opacity='0.09'%3E%3Ccircle cx='80' cy='80' r='24'/%3E%3Ccircle cx='80' cy='80' r='10' fill='%23fbbf24' fill-opacity='0.15'/%3E%3Cline x1='80' y1='40' x2='80' y2='50'/%3E%3Cline x1='80' y1='110' x2='80' y2='120'/%3E%3Cline x1='40' y1='80' x2='50' y2='80'/%3E%3Cline x1='110' y1='80' x2='120' y2='80'/%3E%3Cline x1='52' y1='52' x2='59' y2='59'/%3E%3Cline x1='101' y1='101' x2='108' y2='108'/%3E%3Cline x1='108' y1='52' x2='101' y2='59'/%3E%3Cline x1='59' y1='101' x2='52' y2='108'/%3E%3C/g%3E%3C/svg%3E\");" },
+          { tipo: 'base', estilo: 'background: radial-gradient(circle at 50% 0%, #3d260c 0%, #1a1208 75%);' },
+          { tipo: 'ornament', estilo: "background-image: url(\"data:image/svg+xml,%3Csvg width='160' height='160' viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23fbbf24' stroke-width='1.2' opacity='0.1'%3E%3Ccircle cx='80' cy='80' r='24'/%3E%3Ccircle cx='80' cy='80' r='10' fill='%23fbbf24' fill-opacity='0.15'/%3E%3Cline x1='80' y1='40' x2='80' y2='50'/%3E%3Cline x1='80' y1='110' x2='80' y2='120'/%3E%3Cline x1='40' y1='80' x2='50' y2='80'/%3E%3Cline x1='110' y1='80' x2='120' y2='80'/%3E%3Cline x1='52' y1='52' x2='59' y2='59'/%3E%3Cline x1='101' y1='101' x2='108' y2='108'/%3E%3Cline x1='108' y1='52' x2='101' y2='59'/%3E%3Cline x1='59' y1='101' x2='52' y2='108'/%3E%3C/g%3E%3C/svg%3E\");" },
           { tipo: 'texture', estilo: 'opacity: 0.025;' },
           { tipo: 'vignette', estilo: 'background: radial-gradient(circle, transparent 60%, rgba(0, 0, 0, 0.7) 100%);' }
         ],
@@ -515,20 +515,20 @@ const TEMAS_CONFIG = {
         palette: {
           primary: '#b45309',
           primaryHover: '#92400e',
-          baseBg: '#fef9ee',
-          surface1: '#fef3c7',
+          baseBg: '#fdf8ee',
+          surface1: '#faeed3',
           surface2: '#ffffff',
-          surface3: '#fde68a',
-          textHigh: '#261c14',
+          surface3: '#f5e1b5',
+          textHigh: '#2c1802',
           textMuted: '#78350f'
         },
         tokens: {
-          bg: '#fef9ee',
-          panel: '#fef3c7',
+          bg: '#fdf8ee',
+          panel: '#faeed3',
           card: '#ffffff',
-          cardHover: '#fde68a',
-          border: 'rgba(180, 83, 9, 0.2)',
-          text: '#261c14',
+          cardHover: '#f5e1b5',
+          border: 'rgba(180, 83, 9, 0.24)',
+          text: '#2c1802',
           textMuted: '#78350f',
           accent: '#b45309',
           accentHover: '#92400e',
@@ -552,7 +552,7 @@ const TEMAS_CONFIG = {
           weightBold: '600'
         },
         scene: [
-          { tipo: 'base', estilo: 'background: radial-gradient(circle at 50% 0%, #fffdf7 0%, #fef3c7 100%);' },
+          { tipo: 'base', estilo: 'background: radial-gradient(circle at 50% 0%, #fff7e6 0%, #faeed3 100%);' },
           { tipo: 'ornament', estilo: "background-image: url(\"data:image/svg+xml,%3Csvg width='160' height='160' viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23b45309' stroke-width='1.2' opacity='0.08'%3E%3Ccircle cx='80' cy='80' r='24'/%3E%3Ccircle cx='80' cy='80' r='10' fill='%23b45309' fill-opacity='0.1'/%3E%3Cline x1='80' y1='40' x2='80' y2='50'/%3E%3Cline x1='80' y1='110' x2='80' y2='120'/%3E%3Cline x1='40' y1='80' x2='50' y2='80'/%3E%3Cline x1='110' y1='80' x2='120' y2='80'/%3E%3C/g%3E%3C/svg%3E\");" },
           { tipo: 'texture', estilo: 'opacity: 0.02;' },
           { tipo: 'vignette', estilo: 'background: radial-gradient(circle, transparent 65%, rgba(180, 83, 9, 0.04) 100%);' }
@@ -567,47 +567,47 @@ const TEMAS_CONFIG = {
     descricao: 'Rosa oriental com pétalas e ramos de cerejeira em suave contraste aveludado.',
     acento: '#f472b6',
     acentoHover: '#ec4899',
-    bg: '#0d080b',
-    panel: '#160e13',
-    card: '#1d1319',
-    cardHover: '#261821',
-    border: 'rgba(244, 114, 182, 0.18)',
+    bg: '#200d1b',
+    panel: '#2e1327',
+    card: '#3d1a34',
+    cardHover: '#4e2143',
+    border: 'rgba(244, 114, 182, 0.3)',
     text: '#fdf2f8',
-    textMuted: '#f472b6',
+    textMuted: '#f9a8d4',
     btnBg: '#f472b6',
-    btnText: '#0d080b',
+    btnText: '#200d1b',
     focusRing: '0 0 0 2px rgba(244, 114, 182, 0.55)',
     doneColor: '#f472b6',
-    patternBg: `url("data:image/svg+xml,%3Csvg width='140' height='140' viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23f472b6' stroke-width='1.2' opacity='0.055'%3E%3Cpath d='M70,52 C65,42 55,46 58,58 C62,70 70,76 70,76 C70,76 78,70 82,58 C85,46 75,42 70,52 Z'/%3E%3Ccircle cx='70' cy='62' r='2' fill='%23f472b6'/%3E%3Cpath d='M25,115 C22,108 14,112 16,120 C19,128 25,132 25,132 C25,132 31,128 34,120 C36,112 28,108 25,115 Z' transform='rotate(25 25 120)'/%3E%3C/g%3E%3C/svg%3E")`,
+    patternBg: `url("data:image/svg+xml,%3Csvg width='140' height='140' viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23f472b6' stroke-width='1.2' opacity='0.06'%3E%3Cpath d='M70,52 C65,42 55,46 58,58 C62,70 70,76 70,76 C70,76 78,70 82,58 C85,46 75,42 70,52 Z'/%3E%3Ccircle cx='70' cy='62' r='2' fill='%23f472b6'/%3E%3Cpath d='M25,115 C22,108 14,112 16,120 C19,128 25,132 25,132 C25,132 31,128 34,120 C36,112 28,108 25,115 Z' transform='rotate(25 25 120)'/%3E%3C/g%3E%3C/svg%3E")`,
     modos: {
       dark: {
         colorScheme: 'dark',
         palette: {
           primary: '#f472b6',
           primaryHover: '#ec4899',
-          baseBg: '#0d080b',
-          surface1: '#160e13',
-          surface2: '#1d1319',
-          surface3: '#261821',
+          baseBg: '#200d1b',
+          surface1: '#2e1327',
+          surface2: '#3d1a34',
+          surface3: '#4e2143',
           textHigh: '#fdf2f8',
-          textMuted: '#f472b6'
+          textMuted: '#f9a8d4'
         },
         tokens: {
-          bg: '#0d080b',
-          panel: '#160e13',
-          card: '#1d1319',
-          cardHover: '#261821',
-          border: 'rgba(244, 114, 182, 0.18)',
+          bg: '#200d1b',
+          panel: '#2e1327',
+          card: '#3d1a34',
+          cardHover: '#4e2143',
+          border: 'rgba(244, 114, 182, 0.3)',
           text: '#fdf2f8',
-          textMuted: '#f472b6',
+          textMuted: '#f9a8d4',
           accent: '#f472b6',
           accentHover: '#ec4899',
           btnBg: '#f472b6',
-          btnText: '#0d080b',
+          btnText: '#200d1b',
           focusRing: '0 0 0 2px rgba(244, 114, 182, 0.55)',
           doneColor: '#f472b6',
           shadow: '0 8px 30px rgba(13, 8, 11, 0.85)',
-          patternBg: `url("data:image/svg+xml,%3Csvg width='140' height='140' viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23f472b6' stroke-width='1.2' opacity='0.055'%3E%3Cpath d='M70,52 C65,42 55,46 58,58 C62,70 70,76 70,76 C70,76 78,70 82,58 C85,46 75,42 70,52 Z'/%3E%3Ccircle cx='70' cy='62' r='2' fill='%23f472b6'/%3E%3Cpath d='M25,115 C22,108 14,112 16,120 C19,128 25,132 25,132 C25,132 31,128 34,120 C36,112 28,108 25,115 Z' transform='rotate(25 25 120)'/%3E%3C/g%3E%3C/svg%3E")`
+          patternBg: `url("data:image/svg+xml,%3Csvg width='140' height='140' viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23f472b6' stroke-width='1.2' opacity='0.06'%3E%3Cpath d='M70,52 C65,42 55,46 58,58 C62,70 70,76 70,76 C70,76 78,70 82,58 C85,46 75,42 70,52 Z'/%3E%3Ccircle cx='70' cy='62' r='2' fill='%23f472b6'/%3E%3Cpath d='M25,115 C22,108 14,112 16,120 C19,128 25,132 25,132 C25,132 31,128 34,120 C36,112 28,108 25,115 Z' transform='rotate(25 25 120)'/%3E%3C/g%3E%3C/svg%3E")`
         },
         shape: {
           radiusSm: '8px',
@@ -622,8 +622,8 @@ const TEMAS_CONFIG = {
           weightBold: '600'
         },
         scene: [
-          { tipo: 'base', estilo: 'background: radial-gradient(circle at 50% 0%, #20101a 0%, #0d080b 75%);' },
-          { tipo: 'ornament', estilo: "background-image: url(\"data:image/svg+xml,%3Csvg width='140' height='140' viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23f472b6' opacity='0.09'%3E%3Cpath d='M70,40 C65,30 55,34 58,46 C62,58 70,64 70,64 C70,64 78,58 82,46 C85,34 75,30 70,40 Z'/%3E%3Cpath d='M25,100 C22,93 14,97 16,105 C19,113 25,117 25,117 C25,117 31,113 34,105 C36,97 28,93 25,100 Z' transform='rotate(30 25 105)'/%3E%3Ccircle cx='110' cy='85' r='3'/%3E%3C/g%3E%3C/svg%3E\");" },
+          { tipo: 'base', estilo: 'background: radial-gradient(circle at 50% 0%, #461637 0%, #200d1b 75%);' },
+          { tipo: 'ornament', estilo: "background-image: url(\"data:image/svg+xml,%3Csvg width='140' height='140' viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23f472b6' opacity='0.1'%3E%3Cpath d='M70,40 C65,30 55,34 58,46 C62,58 70,64 70,64 C70,64 78,58 82,46 C85,34 75,30 70,40 Z'/%3E%3Cpath d='M25,100 C22,93 14,97 16,105 C19,113 25,117 25,117 C25,117 31,113 34,105 C36,97 28,93 25,100 Z' transform='rotate(30 25 105)'/%3E%3Ccircle cx='110' cy='85' r='3'/%3E%3C/g%3E%3C/svg%3E\");" },
           { tipo: 'texture', estilo: 'opacity: 0.025;' },
           { tipo: 'vignette', estilo: 'background: radial-gradient(circle, transparent 60%, rgba(0, 0, 0, 0.7) 100%);' }
         ],
@@ -632,31 +632,31 @@ const TEMAS_CONFIG = {
       light: {
         colorScheme: 'light',
         palette: {
-          primary: '#db2777',
-          primaryHover: '#be185d',
-          baseBg: '#faf7f5',
-          surface1: '#fce7f3',
+          primary: '#be185d',
+          primaryHover: '#9d174d',
+          baseBg: '#fdf2f6',
+          surface1: '#fae1ec',
           surface2: '#ffffff',
-          surface3: '#fbcfe8',
-          textHigh: '#2d1b24',
-          textMuted: '#9d174d'
+          surface3: '#f5cedf',
+          textHigh: '#280d1b',
+          textMuted: '#831843'
         },
         tokens: {
-          bg: '#faf7f5',
-          panel: '#fce7f3',
+          bg: '#fdf2f6',
+          panel: '#fae1ec',
           card: '#ffffff',
-          cardHover: '#fbcfe8',
-          border: 'rgba(190, 24, 93, 0.2)',
-          text: '#2d1b24',
-          textMuted: '#9d174d',
-          accent: '#db2777',
-          accentHover: '#be185d',
-          btnBg: '#db2777',
+          cardHover: '#f5cedf',
+          border: 'rgba(190, 24, 93, 0.24)',
+          text: '#280d1b',
+          textMuted: '#831843',
+          accent: '#be185d',
+          accentHover: '#9d174d',
+          btnBg: '#be185d',
           btnText: '#ffffff',
-          focusRing: '0 0 0 2px rgba(219, 39, 119, 0.45)',
-          doneColor: '#db2777',
+          focusRing: '0 0 0 2px rgba(190, 24, 93, 0.45)',
+          doneColor: '#be185d',
           shadow: '0 4px 15px rgba(190, 24, 93, 0.08)',
-          patternBg: `url("data:image/svg+xml,%3Csvg width='140' height='140' viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23db2777' stroke-width='1.2' opacity='0.05'%3E%3Cpath d='M70,52 C65,42 55,46 58,58 C62,70 70,76 70,76 C70,76 78,70 82,58 C85,46 75,42 70,52 Z'/%3E%3C/g%3E%3C/svg%3E")`
+          patternBg: `url("data:image/svg+xml,%3Csvg width='140' height='140' viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23be185d' stroke-width='1.2' opacity='0.05'%3E%3Cpath d='M70,52 C65,42 55,46 58,58 C62,70 70,76 70,76 C70,76 78,70 82,58 C85,46 75,42 70,52 Z'/%3E%3C/g%3E%3C/svg%3E")`
         },
         shape: {
           radiusSm: '8px',
@@ -671,8 +671,8 @@ const TEMAS_CONFIG = {
           weightBold: '600'
         },
         scene: [
-          { tipo: 'base', estilo: 'background: radial-gradient(circle at 50% 0%, #fffbfc 0%, #fce7f3 100%);' },
-          { tipo: 'ornament', estilo: "background-image: url(\"data:image/svg+xml,%3Csvg width='140' height='140' viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23db2777' opacity='0.07'%3E%3Cpath d='M70,40 C65,30 55,34 58,46 C62,58 70,64 70,64 C70,64 78,58 82,46 C85,34 75,30 70,40 Z'/%3E%3C/g%3E%3C/svg%3E\");" },
+          { tipo: 'base', estilo: 'background: radial-gradient(circle at 50% 0%, #fff0f5 0%, #fae1ec 100%);' },
+          { tipo: 'ornament', estilo: "background-image: url(\"data:image/svg+xml,%3Csvg width='140' height='140' viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23be185d' opacity='0.08'%3E%3Cpath d='M70,40 C65,30 55,34 58,46 C62,58 70,64 70,64 C70,64 78,58 82,46 C85,34 75,30 70,40 Z'/%3E%3C/g%3E%3C/svg%3E\");" },
           { tipo: 'texture', estilo: 'opacity: 0.02;' },
           { tipo: 'vignette', estilo: 'background: radial-gradient(circle, transparent 65%, rgba(190, 24, 93, 0.04) 100%);' }
         ],
@@ -1321,41 +1321,60 @@ const ShopStore = {
         doc.body.classList.add(`snoopy-theme-${sufixo}`);
         doc.body.classList.remove('snoopy-scheme-dark', 'snoopy-scheme-light');
         doc.body.classList.add(`snoopy-scheme-${scheme}`);
+        if (scheme === 'light') {
+          doc.body.classList.remove('theme-dark');
+          doc.body.classList.add('theme-light');
+        } else {
+          doc.body.classList.remove('theme-light');
+          doc.body.classList.add('theme-dark');
+        }
       }
 
       const rootStyle = doc.documentElement.style;
+      const bodyStyle = doc.body ? doc.body.style : null;
+      const setVar = (prop, val) => {
+        rootStyle.setProperty(prop, val);
+        if (bodyStyle && typeof bodyStyle.setProperty === 'function') {
+          bodyStyle.setProperty(prop, val);
+        }
+      };
+
       const acento = tokens.accent || cfgBase.acento;
       const acentoHover = tokens.accentHover || cfgBase.acentoHover;
 
       // 1. Tokens Semânticos do Snoopy Vault
-      rootStyle.setProperty('--snoopy-module-accent', acento);
-      rootStyle.setProperty('--snoopy-accent-hover', acentoHover);
-      rootStyle.setProperty('--snoopy-focus-ring', tokens.focusRing);
-      rootStyle.setProperty('--snoopy-green-done', tokens.doneColor);
-      rootStyle.setProperty('--snoopy-green-bright', acento);
-      rootStyle.setProperty('--snoopy-bg', tokens.bg);
-      rootStyle.setProperty('--snoopy-panel', tokens.panel);
-      rootStyle.setProperty('--snoopy-card', tokens.card);
-      rootStyle.setProperty('--snoopy-card-hover', tokens.cardHover);
-      rootStyle.setProperty('--snoopy-border', tokens.border);
-      rootStyle.setProperty('--snoopy-text', tokens.text);
-      rootStyle.setProperty('--snoopy-text-body', tokens.text);
-      rootStyle.setProperty('--snoopy-muted', tokens.textMuted);
-      rootStyle.setProperty('--snoopy-btn-bg', tokens.btnBg);
-      rootStyle.setProperty('--snoopy-btn-text', tokens.btnText);
-      rootStyle.setProperty('--snoopy-pattern-bg', tokens.patternBg);
+      setVar('--snoopy-module-accent', acento);
+      setVar('--snoopy-accent-hover', acentoHover);
+      setVar('--snoopy-focus-ring', tokens.focusRing);
+      setVar('--snoopy-green-done', tokens.doneColor);
+      setVar('--snoopy-green-bright', acento);
+      setVar('--snoopy-bg', tokens.bg);
+      setVar('--snoopy-panel', tokens.panel);
+      setVar('--snoopy-card', tokens.card);
+      setVar('--snoopy-card-hover', tokens.cardHover);
+      setVar('--snoopy-border', tokens.border);
+      setVar('--snoopy-text', tokens.text);
+      setVar('--snoopy-text-body', tokens.text);
+      setVar('--snoopy-muted', tokens.textMuted);
+      setVar('--snoopy-btn-bg', tokens.btnBg);
+      setVar('--snoopy-btn-text', tokens.btnText);
+      setVar('--snoopy-pattern-bg', tokens.patternBg);
+      setVar('--snoopy-input-bg', tokens.panel);
+      setVar('--snoopy-input-border', tokens.border);
 
       // 2. Tokens Nativos do Obsidian (Efeito em TODA a interface global)
-      rootStyle.setProperty('--background-primary', tokens.bg);
-      rootStyle.setProperty('--background-primary-alt', tokens.panel);
-      rootStyle.setProperty('--background-secondary', tokens.panel);
-      rootStyle.setProperty('--background-secondary-alt', tokens.cardHover);
-      rootStyle.setProperty('--background-modifier-border', tokens.border);
-      rootStyle.setProperty('--text-normal', tokens.text);
-      rootStyle.setProperty('--text-muted', tokens.textMuted);
-      rootStyle.setProperty('--text-accent', acento);
-      rootStyle.setProperty('--interactive-accent', acento);
-      rootStyle.setProperty('--interactive-accent-hover', acentoHover);
+      setVar('--background-primary', tokens.bg);
+      setVar('--background-primary-alt', tokens.panel);
+      setVar('--background-secondary', tokens.panel);
+      setVar('--background-secondary-alt', tokens.cardHover);
+      setVar('--background-modifier-border', tokens.border);
+      setVar('--text-normal', tokens.text);
+      setVar('--text-muted', tokens.textMuted);
+      setVar('--text-accent', acento);
+      setVar('--interactive-accent', acento);
+      setVar('--interactive-accent-hover', acentoHover);
+      setVar('--tab-background-active', tokens.card);
+      setVar('--divider-color', tokens.border);
 
       // 3. Montar / Atualizar Elemento de Fundo Artístico de Camadas (#snoopy-theme-scene)
       if (doc.body && typeof doc.getElementById === 'function' && typeof doc.createElement === 'function' && cfgModo && Array.isArray(cfgModo.scene)) {
