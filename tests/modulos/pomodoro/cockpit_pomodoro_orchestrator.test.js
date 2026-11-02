@@ -109,6 +109,12 @@ describe('Módulo 02 - Cockpit Pomodoro Orquestrador (02_snoopy_cockpit_pomodoro
     assert.ok(audioDock.querySelector('.snoopy-audio-track-selector'), 'Seletor de faixas deve existir');
     assert.ok(audioDock.querySelector('.snoopy-volume-slider'), 'Slider de volume deve existir');
 
+    // Verificação dos controles de Link do YouTube (Streaming MPV)
+    const customUrlWrap = colCockpit.querySelector('.snoopy-audio-custom-url-wrap');
+    assert.ok(customUrlWrap, 'Barra de input para link do YouTube deve existir no cockpit');
+    assert.ok(customUrlWrap.querySelector('.snoopy-audio-custom-input'), 'Input de URL do YouTube deve existir');
+    assert.strictEqual(customUrlWrap.style.display, 'flex', 'Barra de link do YouTube deve estar visível');
+
     // Coluna 2: Jardim de Constância
     const colJardim = topGrid.children[1];
     assert.ok(findText(colJardim, 'JARDIM DE CONSTÂNCIA'));

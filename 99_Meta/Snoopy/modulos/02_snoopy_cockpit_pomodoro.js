@@ -311,21 +311,39 @@ return {
             opt.selected = true;
           }
         }
+        const optCustom = trackSelect.createEl('option', {
+          attr: { value: 'custom_url' },
+          text: 'Link do YouTube (Streaming MPV)'
+        });
+        if (estado.currentTrack === 'custom_url') {
+          optCustom.selected = true;
+        }
       } catch (err) {
         console.warn('[Pomodoro Audio] Erro ao carregar faixas disponíveis:', err);
       }
+      if (typeof atualizarVisibilidadeCustom === 'function') atualizarVisibilidadeCustom();
     };
     popularFaixasAudio();
 
     trackSelect.addEventListener('change', async (e) => {
       if (!PomodoroAudio) return;
       const idFaixa = e.target.value;
-      if (PomodoroAudio.obterEstado().isPlaying) {
-        await PomodoroAudio.iniciar();
-        await PomodoroAudio.tocar(idFaixa);
+      if (idFaixa === 'custom_url') {
+        const urlAtual = inputUrl.value.trim() || PomodoroAudio.obterEstado().customUrl;
+        if (urlAtual) {
+          await PomodoroAudio.iniciar();
+          await PomodoroAudio.tocarLinkYoutube(urlAtual);
+        } else {
+          inputUrl.focus();
+        }
       } else {
-        await PomodoroAudio.tocar(idFaixa);
-        PomodoroAudio.pausar();
+        if (PomodoroAudio.obterEstado().isPlaying) {
+          await PomodoroAudio.iniciar();
+          await PomodoroAudio.tocar(idFaixa);
+        } else {
+          await PomodoroAudio.tocar(idFaixa);
+          PomodoroAudio.pausar();
+        }
       }
       atualizarIconeAudio();
       if (typeof atualizarVisibilidadeCustom === 'function') atualizarVisibilidadeCustom();
@@ -334,7 +352,7 @@ return {
     // CONTROLES DE URL PERSONALIZADA E STREAMING DO YOUTUBE (TAREFA 1 & 2)
     const customUrlWrap = audioWrap.createEl('div', {
       cls: 'snoopy-audio-custom-url-wrap',
-      attr: { style: 'display: none; margin-top: 6px; gap: 4px; align-items: center;' }
+      attr: { style: 'display: flex; margin-top: 6px; gap: 4px; align-items: center;' }
     });
 
     const inputUrl = customUrlWrap.createEl('input', {
@@ -419,15 +437,13 @@ return {
     const atualizarVisibilidadeCustom = () => {
       if (!PomodoroAudio) return;
       const estado = PomodoroAudio.obterEstado();
-      const ehCustom = estado.currentTrack === 'custom_url';
-      customUrlWrap.style.display = ehCustom ? 'flex' : 'none';
+      // Sempre visível e pronto para receber links
+      customUrlWrap.style.display = 'flex';
 
-      if (!ehCustom) {
-        limparPreview();
-        return;
+      if (estado.customUrl && !inputUrl.value) {
+        inputUrl.value = estado.customUrl;
       }
 
-      // Se é custom e tem dados válidos no estado
       if (estado.customUrl) {
         const val = PomodoroAudio.validarUrl(estado.customUrl);
         if (val.valido && (estado.customTitle || estado.customThumb)) {
@@ -439,6 +455,17 @@ return {
         limparPreview();
       }
     };
+
+    // Preenche valor inicial salvo se existir
+    if (PomodoroAudio) {
+      const estadoIni = PomodoroAudio.obterEstado();
+      if (estadoIni.customUrl) {
+        inputUrl.value = estadoIni.customUrl;
+        if (estadoIni.customTitle || estadoIni.customThumb) {
+          exibirPreviewSucesso(estadoIni.customTitle, estadoIni.customThumb);
+        }
+      }
+    }
 
     const executarAcaoPlayUrl = async () => {
       if (!PomodoroAudio || isSubmitting) return;
@@ -466,6 +493,7 @@ return {
         if (!res.sucesso) {
           exibirPreviewErro(res.erro || 'Falha ao reproduzir áudio via mpv.');
         } else {
+          if (trackSelect) trackSelect.value = 'custom_url';
           atualizarIconeAudio();
           atualizarVisibilidadeCustom();
         }
