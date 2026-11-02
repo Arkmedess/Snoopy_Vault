@@ -412,9 +412,9 @@ return {
             itemEl.innerHTML = `
               <div style="display: flex; align-items: center; gap: 8px;">
                 <span class="snoopy-chip snoopy-chip-green">[Concluir Tarefa]</span>
-                <span style="font-size: 13px; color: #ffffff;">${termoBusca ? `Marcar como concluída: <strong>"${termoBusca}"</strong>` : 'Digite o nome da tarefa a concluir...'}</span>
+                <span style="font-size: 13px; color: var(--snoopy-text, var(--text-normal));">${termoBusca ? `Marcar como concluída: <strong>"${termoBusca}"</strong>` : 'Digite o nome da tarefa a concluir...'}</span>
               </div>
-              <span class="snoopy-micro" style="color: #86efac; font-weight: 700;">Enter ↵</span>
+              <span class="snoopy-micro" style="color: var(--snoopy-module-accent); font-weight: 700;">Enter ↵</span>
             `;
             itemEl.addEventListener('mousedown', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
             itemEl.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
@@ -429,9 +429,9 @@ return {
             itemEl.innerHTML = `
               <div style="display: flex; align-items: center; gap: 8px;">
                 <span class="snoopy-chip snoopy-chip-green">[Listar Tarefas]</span>
-                <span style="font-size: 13px; color: #ffffff;">Abrir lista de tarefas na nota diária</span>
+                <span style="font-size: 13px; color: var(--snoopy-text, var(--text-normal));">Abrir lista de tarefas na nota diária</span>
               </div>
-              <span class="snoopy-micro" style="color: #86efac; font-weight: 700;">Enter ↵</span>
+              <span class="snoopy-micro" style="color: var(--snoopy-module-accent); font-weight: 700;">Enter ↵</span>
             `;
             itemEl.addEventListener('mousedown', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
             itemEl.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
@@ -453,11 +453,11 @@ return {
             <div style="display: flex; flex-direction: column; gap: 4px;">
               <div style="display: flex; align-items: center; gap: 8px;">
                 <span class="snoopy-chip snoopy-chip-green">[Nova Tarefa]</span>
-                <span style="font-size: 13px; color: #ffffff;">${textoLimpo ? `Adicionar tarefa: <strong>"${textoLimpo}"</strong>` : 'Digite o que precisa ser feito...'}</span>
+                <span style="font-size: 13px; color: var(--snoopy-text, var(--text-normal));">${textoLimpo ? `Adicionar tarefa: <strong>"${textoLimpo}"</strong>` : 'Digite o que precisa ser feito...'}</span>
               </div>
               ${flagsPills ? `<div style="display: flex; gap: 6px; margin-left: 2px;">${flagsPills}</div>` : ''}
             </div>
-            <span class="snoopy-micro" style="color: #86efac; font-weight: 700;">Enter ↵</span>
+            <span class="snoopy-micro" style="color: var(--snoopy-module-accent); font-weight: 700;">Enter ↵</span>
           `;
           itemEl.addEventListener('mousedown', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
           itemEl.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
@@ -473,9 +473,9 @@ return {
           itemEl.innerHTML = `
             <div style="display: flex; align-items: center; gap: 8px;">
               <span class="snoopy-chip snoopy-chip-blue">[Nota Diária]</span>
-              <span style="font-size: 13px; color: #ffffff;">Abrir nota diária de hoje (${dataNumericaBR})</span>
+              <span style="font-size: 13px; color: var(--snoopy-text, var(--text-normal));">Abrir nota diária de hoje (${dataNumericaBR})</span>
             </div>
-            <span class="snoopy-micro" style="color: #93c5fd; font-weight: 700;">Enter ↵</span>
+            <span class="snoopy-micro" style="color: var(--snoopy-module-accent); font-weight: 700;">Enter ↵</span>
           `;
           itemEl.addEventListener('mousedown', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
           itemEl.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
@@ -493,9 +493,9 @@ return {
           itemEl.innerHTML = `
             <div style="display: flex; align-items: center; gap: 8px;">
               <span class="snoopy-chip snoopy-chip-purple">[Novo Livro]</span>
-              <span style="font-size: 13px; color: #ffffff;">${textoLimpo ? `Registrar leitura: <strong>"${textoLimpo}"</strong> em 04_Leituras/Livros` : 'Digite o título do livro...'}</span>
+              <span style="font-size: 13px; color: var(--snoopy-text, var(--text-normal));">${textoLimpo ? `Registrar leitura: <strong>"${textoLimpo}"</strong> em 04_Leituras/Livros` : 'Digite o título do livro...'}</span>
             </div>
-            <span class="snoopy-micro" style="color: #d8b4fe; font-weight: 700;">Enter ↵</span>
+            <span class="snoopy-micro" style="color: var(--snoopy-module-accent); font-weight: 700;">Enter ↵</span>
           `;
           itemEl.addEventListener('mousedown', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
           itemEl.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
@@ -514,9 +514,9 @@ return {
           itemEl.innerHTML = `
             <div style="display: flex; align-items: center; gap: 8px;">
               <span class="snoopy-chip snoopy-chip-blue">[Nova Nota]</span>
-              <span style="font-size: 13px; color: #ffffff;">${textoLimpo ? `Criar nota: <strong>"${textoLimpo}"</strong> em ${pastaDestino}` : 'Digite o título da nota...'}</span>
+              <span style="font-size: 13px; color: var(--snoopy-text, var(--text-normal));">${textoLimpo ? `Criar nota: <strong>"${textoLimpo}"</strong> em ${pastaDestino}` : 'Digite o título da nota...'}</span>
             </div>
-            <span class="snoopy-micro" style="color: #93c5fd; font-weight: 700;">Enter ↵</span>
+            <span class="snoopy-micro" style="color: var(--snoopy-module-accent); font-weight: 700;">Enter ↵</span>
           `;
           itemEl.addEventListener('mousedown', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
           itemEl.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
@@ -534,9 +534,9 @@ return {
           itemEl.innerHTML = `
             <div style="display: flex; align-items: center; gap: 8px;">
               <span class="snoopy-chip snoopy-chip-purple">[Novo Projeto]</span>
-              <span style="font-size: 13px; color: #ffffff;">${textoLimpo ? `Criar projeto: <strong>"${textoLimpo}"</strong> em 02_Projetos` : 'Digite o nome do projeto...'}</span>
+              <span style="font-size: 13px; color: var(--snoopy-text, var(--text-normal));">${textoLimpo ? `Criar projeto: <strong>"${textoLimpo}"</strong> em 02_Projetos` : 'Digite o nome do projeto...'}</span>
             </div>
-            <span class="snoopy-micro" style="color: #d8b4fe; font-weight: 700;">Enter ↵</span>
+            <span class="snoopy-micro" style="color: var(--snoopy-module-accent); font-weight: 700;">Enter ↵</span>
           `;
           itemEl.addEventListener('mousedown', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
           itemEl.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
@@ -554,9 +554,9 @@ return {
           itemEl.innerHTML = `
             <div style="display: flex; align-items: center; gap: 8px;">
               <span class="snoopy-chip snoopy-chip-blue">[Novo Estudo]</span>
-              <span style="font-size: 13px; color: #ffffff;">${nomeEstudo ? `Criar matéria: <strong>"${nomeEstudo}"</strong> em 03_Estudos` : 'Digite o nome da matéria...'}</span>
+              <span style="font-size: 13px; color: var(--snoopy-text, var(--text-normal));">${nomeEstudo ? `Criar matéria: <strong>"${nomeEstudo}"</strong> em 03_Estudos` : 'Digite o nome da matéria...'}</span>
             </div>
-            <span class="snoopy-micro" style="color: #93c5fd; font-weight: 700;">Enter ↵</span>
+            <span class="snoopy-micro" style="color: var(--snoopy-module-accent); font-weight: 700;">Enter ↵</span>
           `;
           itemEl.addEventListener('mousedown', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
           itemEl.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
@@ -576,9 +576,9 @@ return {
           itemEl.innerHTML = `
             <div style="display: flex; align-items: center; gap: 8px;">
               <span class="snoopy-chip snoopy-chip-orange">[Pomodoro Timer]</span>
-              <span style="font-size: 13px; color: #ffffff;">Executar comando do timer: <strong>${acao.toUpperCase()}</strong></span>
+              <span style="font-size: 13px; color: var(--snoopy-text, var(--text-normal));">Executar comando do timer: <strong>${acao.toUpperCase()}</strong></span>
             </div>
-            <span class="snoopy-micro" style="color: #fdba74; font-weight: 700;">Enter ↵</span>
+            <span class="snoopy-micro" style="color: var(--snoopy-module-accent); font-weight: 700;">Enter ↵</span>
           `;
           itemEl.addEventListener('mousedown', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
           itemEl.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
@@ -598,9 +598,9 @@ return {
           itemEl.innerHTML = `
             <div style="display: flex; align-items: center; gap: 8px;">
               <span class="snoopy-chip snoopy-chip-orange">[${isFila ? 'Fila do Pomodoro' : 'Foco Direto'}]</span>
-              <span style="font-size: 13px; color: #ffffff;">${alvo ? `${isFila ? 'Adicionar à playlist:' : 'Definir foco imediato:'} <strong>"${alvo}"</strong>` : 'Digite o alvo da sessão...'}</span>
+              <span style="font-size: 13px; color: var(--snoopy-text, var(--text-normal));">${alvo ? `${isFila ? 'Adicionar à playlist:' : 'Definir foco imediato:'} <strong>"${alvo}"</strong>` : 'Digite o alvo da sessão...'}</span>
             </div>
-            <span class="snoopy-micro" style="color: #fdba74; font-weight: 700;">Enter ↵</span>
+            <span class="snoopy-micro" style="color: var(--snoopy-module-accent); font-weight: 700;">Enter ↵</span>
           `;
           itemEl.addEventListener('mousedown', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
           itemEl.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
@@ -616,9 +616,9 @@ return {
           itemEl.innerHTML = `
             <div style="display: flex; align-items: center; gap: 8px;">
               <span class="snoopy-chip snoopy-chip-purple">[Kanban]</span>
-              <span style="font-size: 13px; color: #ffffff;">Navegar até o Quadro Kanban Interativo</span>
+              <span style="font-size: 13px; color: var(--snoopy-text, var(--text-normal));">Navegar até o Quadro Kanban Interativo</span>
             </div>
-            <span class="snoopy-micro" style="color: #d8b4fe; font-weight: 700;">Enter ↵</span>
+            <span class="snoopy-micro" style="color: var(--snoopy-module-accent); font-weight: 700;">Enter ↵</span>
           `;
           itemEl.addEventListener('mousedown', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
           itemEl.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
@@ -634,9 +634,9 @@ return {
           itemEl.innerHTML = `
             <div style="display: flex; align-items: center; gap: 8px;">
               <span class="snoopy-chip snoopy-chip-gray">[Configurações]</span>
-              <span style="font-size: 13px; color: #ffffff;">Abrir configurações do Snoopy Vault</span>
+              <span style="font-size: 13px; color: var(--snoopy-text, var(--text-normal));">Abrir configurações do Snoopy Vault</span>
             </div>
-            <span class="snoopy-micro" style="color: #d4d4d8; font-weight: 700;">Enter ↵</span>
+            <span class="snoopy-micro" style="color: var(--snoopy-muted, var(--text-muted)); font-weight: 700;">Enter ↵</span>
           `;
           itemEl.addEventListener('mousedown', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
           itemEl.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); executarAcaoAtual(); });
@@ -677,7 +677,7 @@ return {
             itemEl.innerHTML = `
               <div style="display: flex; align-items: center; gap: 8px;">
                 <span class="snoopy-chip ${op.badge}">${op.label}</span>
-                <span class="snoopy-meta" style="color: #d4d4d8;">${op.desc}</span>
+                <span class="snoopy-meta" style="color: var(--snoopy-muted, var(--text-muted));">${op.desc}</span>
               </div>
               <span class="snoopy-micro" style="color: var(--snoopy-muted); font-family: var(--font-monospace, monospace);">${op.cmd}</span>
             `;
@@ -717,7 +717,7 @@ return {
           const itemEl = previewBox.createEl('div', { cls: `snoopy-omni-item ${idx === 0 ? 'active' : ''}` });
           itemEl.innerHTML = `
             <div style="display: flex; flex-direction: column; gap: 2px; overflow: hidden;">
-              <span style="font-size: 13.5px; font-weight: 600; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${res.basename}</span>
+              <span style="font-size: 13.5px; font-weight: 600; color: var(--snoopy-text, var(--text-normal)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${res.basename}</span>
               <span class="snoopy-meta" style="font-size: 10.5px;">${res.path}</span>
             </div>
             <span class="snoopy-micro" style="color: var(--interactive-accent, #60a5fa);">${idx === 0 ? 'Enter ↵' : 'Abrir ↗'}</span>
@@ -888,5 +888,67 @@ return {
 
     moduloItems.forEach(item => renderItemBtn(item, modulosGroup));
     acaoItems.forEach(item => renderItemBtn(item, acoesGroup));
+
+    // 3. Botão Minimalista de Inversão de Modo Claro / Escuro (Design Tokens)
+    const ShopStore = ctx.ShopStore || (await (async () => {
+      try {
+        const ml = app.vault.getAbstractFileByPath ? app.vault.getAbstractFileByPath("99_Meta/Snoopy/core/shop_store.js") : null;
+        if (ml && app.vault.read) return (new Function(await app.vault.read(ml)))();
+      } catch (e) {}
+      return null;
+    })());
+
+    if (ShopStore && typeof ShopStore.alternarColorScheme === 'function') {
+      // Divisor visual para o botão de modo
+      navPillsRow.createEl('div', {
+        attr: { style: 'width: 1px; height: 18px; background: rgba(255,255,255,0.12); margin: 0 1px;' }
+      });
+
+      const modeGroup = navPillsRow.createEl('div', {
+        cls: 'snoopy-nav-group-theme-mode',
+        attr: { style: 'display: inline-flex; align-items: center;' }
+      });
+
+      const btnThemeMode = modeGroup.createEl('button', {
+        cls: 'snoopy-theme-mode-toggle snoopy-nav-pill-btn snoopy-btn-sm',
+        attr: {
+          style: 'padding: 4px 8px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;',
+          title: 'Alternar entre Modo Claro e Escuro'
+        }
+      });
+
+      const atualizarIconeModo = async () => {
+        let scheme = 'dark';
+        if (typeof ShopStore.obterColorScheme === 'function') {
+          scheme = await ShopStore.obterColorScheme(app);
+        } else if (typeof document !== 'undefined' && document.documentElement && document.documentElement.getAttribute) {
+          scheme = document.documentElement.getAttribute('data-snoopy-scheme') || 'dark';
+        }
+        btnThemeMode.innerHTML = '';
+        if (scheme === 'light') {
+          btnThemeMode.setAttribute('title', 'Alternar para Modo Escuro (Dark)');
+          btnThemeMode.innerHTML = '<span style="font-size: 12px; line-height: 1;">🌙</span> <span style="font-size: 11px; font-weight: 600;">DARK</span>';
+        } else {
+          btnThemeMode.setAttribute('title', 'Alternar para Modo Claro (Light)');
+          btnThemeMode.innerHTML = '<span style="font-size: 12px; line-height: 1;">☀️</span> <span style="font-size: 11px; font-weight: 600;">LIGHT</span>';
+        }
+      };
+
+      await atualizarIconeModo();
+
+      btnThemeMode.addEventListener('click', async (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+        if (e && e.stopPropagation) e.stopPropagation();
+        try {
+          const novoModo = await ShopStore.alternarColorScheme(app);
+          await atualizarIconeModo();
+          if (typeof Notice !== 'undefined') {
+            new Notice(`[Snoopy] Modo ${novoModo === 'light' ? 'Claro' : 'Escuro'} ativado`);
+          }
+        } catch (err) {
+          console.warn('[Snoopy] Erro ao alternar modo claro/escuro:', err);
+        }
+      });
+    }
   }
 };

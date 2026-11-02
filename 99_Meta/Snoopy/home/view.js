@@ -92,6 +92,24 @@ let TaskParser = await ModuleLoader.carregar(app, "99_Meta/Snoopy/core/task_pars
 let Lifecycle = await ModuleLoader.carregar(app, "99_Meta/Snoopy/core/lifecycle.js");
 let UIKit = await ModuleLoader.carregar(app, "99_Meta/Snoopy/core/ui_kit.js");
 let TaskTemplates = await ModuleLoader.carregar(app, "99_Meta/Snoopy/core/task_templates.js");
+let ShopStore = await ModuleLoader.carregar(app, "99_Meta/Snoopy/core/shop_store.js");
+
+// Aplicação do tema equipado a partir dos design tokens
+if (ShopStore && typeof ShopStore.carregar === 'function') {
+  try {
+    const estadoShop = await ShopStore.carregar(app);
+    const temaId = (estadoShop.equipados && estadoShop.equipados.cosmetic) || 'theme-preset-snoopy';
+    const scheme = estadoShop.colorScheme || 'dark';
+    if (typeof ShopStore.aplicarTema === 'function') {
+      ShopStore.aplicarTema(temaId, null, scheme);
+    }
+    if (typeof ShopStore.definirAmbientEnabled === 'function') {
+      ShopStore.definirAmbientEnabled(app, estadoShop.ambientEnabled === true);
+    }
+  } catch (err) {
+    console.warn('[Snoopy Home] Falha ao carregar tema inicial:', err);
+  }
+}
 
 if (!Lifecycle) {
   Lifecycle = class {
@@ -254,6 +272,7 @@ const ctx = {
   completedCyclesToday,
   // Barramento e Serviços Centrais
   events: (typeof window !== 'undefined' ? (window._snoopyEvents || (window._snoopyEvents = new SnoopyEventBus())) : new SnoopyEventBus()),
+  ShopStore,
   DateUtils,
   VaultStore,
   ModalFactory,
@@ -263,6 +282,14 @@ const ctx = {
   UIKit,
   ModuleLoader
 };
+
+if (ctx.events && typeof ctx.events.on === 'function') {
+  ctx.events.on('theme:changed', (dados) => {
+    if (dados && dados.themeId && ShopStore && typeof ShopStore.aplicarTema === 'function') {
+      ShopStore.aplicarTema(dados.themeId);
+    }
+  });
+}
 
 // Configurações
 let config = {

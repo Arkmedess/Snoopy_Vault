@@ -15,10 +15,11 @@ class PomodoroTimer {
    * @param {object} config - Opções de configuração e callbacks.
    * @param {number} [config.focusMin=25] - Tempo de foco em minutos.
    * @param {number} [config.breakMin=5] - Tempo de pausa em minutos.
+   * @param {string} [config.initialState='idle'] - Estado inicial ('idle'|'running'|'paused'|'finished').
    * @param {Function} [config.onTick] - Callback a cada tick com { remaining, total, timeStr, offset }.
    * @param {Function} [config.onComplete] - Callback ao finalizar o tempo de foco ou pausa.
    * @param {Function} [config.onModeChange] - Callback ao alternar modo { mode, totalSeconds }.
-   * @param {Function} [config.onRunningChange] - Callback ao pausar/iniciar { isRunning }.
+   * @param {Function} [config.onRunningChange] - Callback ao pausar/iniciar { isRunning, state }.
    */
   constructor(config = {}) {
     this.focusMin = Number(config.focusMin) || 25;
@@ -31,9 +32,20 @@ class PomodoroTimer {
     this.currentMode = config.initialMode === 'pausa' ? 'pausa' : 'foco'; // 'foco' | 'pausa'
     this.totalSeconds = (this.currentMode === 'foco' ? this.focusMin : this.breakMin) * 60;
     this.remainingSeconds = typeof config.initialRemaining === 'number' ? config.initialRemaining : this.totalSeconds;
+    this.remainingMs = typeof config.remainingMs === 'number'
+      ? config.remainingMs
+      : (this.remainingSeconds * 1000);
+
     this.timerInterval = null;
+    this.completeTimeout = null;
     this.alvoAtual = config.initialAlvo || null;
     this.endAt = config.endAt || null;
+
+    // Máquina de estados explícita: 'idle' | 'running' | 'paused' | 'finished'
+    this.state = config.initialState || 'idle';
+    if (this.endAt && !config.initialState) {
+      this.state = this.endAt > Date.now() ? 'running' : 'finished';
+    }
   }
 
   /**
@@ -73,8 +85,14 @@ class PomodoroTimer {
     if (novoFoco) this.focusMin = Number(novoFoco) || 25;
     if (novaPausa) this.breakMin = Number(novaPausa) || 5;
 
-    if (!this.timerInterval) {
-      this.setMode(this.currentMode);
+    this.totalSeconds = (this.currentMode === 'foco' ? this.focusMin : this.breakMin) * 60;
+
+    if (this.state === 'idle') {
+      this.remainingSeconds = this.totalSeconds;
+      this.remainingMs = this.totalSeconds * 1000;
+      this._notificarTick();
+    } else if (this.state === 'paused') {
+      this._notificarTick();
     }
   }
 
@@ -84,11 +102,15 @@ class PomodoroTimer {
    * @param {'foco'|'pausa'} mode - Modo desejado.
    */
   setMode(mode) {
-    this.pause();
+    this._limparAgendamentos();
+    this.endAt = null;
     this.currentMode = mode === 'pausa' ? 'pausa' : 'foco';
     this.totalSeconds = (this.currentMode === 'foco' ? this.focusMin : this.breakMin) * 60;
     this.remainingSeconds = this.totalSeconds;
+    this.remainingMs = this.totalSeconds * 1000;
+    this.state = 'idle';
 
+    this.onRunningChange({ isRunning: false, state: this.state });
     this.onModeChange({ mode: this.currentMode, totalSeconds: this.totalSeconds });
     this._notificarTick();
   }
@@ -99,7 +121,7 @@ class PomodoroTimer {
    * @returns {boolean} Retorna true se agora está em execução, false se pausado.
    */
   toggle() {
-    if (this.timerInterval) {
+    if (this.state === 'running') {
       this.pause();
       return false;
     }
@@ -111,62 +133,94 @@ class PomodoroTimer {
    * Inicia a contagem regressiva.
    */
   start() {
-    if (this.timerInterval) return;
+    if (this.state === 'running') return;
 
-    if (!this.endAt) {
-      this.endAt = Date.now() + (this.remainingSeconds * 1000);
-    } else {
-      const diffMs = this.endAt - Date.now();
-      this.remainingSeconds = Math.max(0, Math.ceil(diffMs / 1000));
+    this._limparAgendamentos();
+
+    // Se estiver hidratando ou recuperando com endAt anterior
+    if (this.endAt) {
+      this.remainingMs = Math.max(0, this.endAt - Date.now());
+      this.remainingSeconds = Math.max(0, Math.ceil(this.remainingMs / 1000));
     }
 
-    if (this.remainingSeconds <= 0) {
-      this.pause();
-      this.endAt = null;
-      this._notificarTick();
-      const modoFinalizado = this.currentMode;
-      this.onComplete({ mode: modoFinalizado, alvo: this.alvoAtual });
+    if (this.remainingMs <= 0) {
+      this._finalizar();
       return;
     }
 
-    this.onRunningChange({ isRunning: true });
-    this.timerInterval = setInterval(() => {
-      if (this.endAt) {
-        const diffMs = this.endAt - Date.now();
-        this.remainingSeconds = Math.max(0, Math.ceil(diffMs / 1000));
-      } else if (this.remainingSeconds > 0) {
-        this.remainingSeconds--;
-      }
+    this.state = 'running';
+    this.endAt = Date.now() + this.remainingMs;
+    this.onRunningChange({ isRunning: true, state: this.state });
 
-      if (this.remainingSeconds > 0) {
+    // Timeout de término exato no milissegundo de término
+    this.completeTimeout = setTimeout(() => {
+      if (this.state !== 'running') return;
+      this._finalizar();
+    }, this.remainingMs);
+
+    // Intervalo de pulso a cada 1000ms para atualizar visual e listeners
+    this.timerInterval = setInterval(() => {
+      // Guard estrito: ignora qualquer tick caso o timer não esteja em running
+      if (this.state !== 'running') return;
+
+      const diffMs = this.endAt - Date.now();
+      this.remainingMs = Math.max(0, diffMs);
+      this.remainingSeconds = Math.max(0, Math.ceil(this.remainingMs / 1000));
+
+      if (this.remainingMs > 0) {
         this._notificarTick();
       } else {
-        this.pause();
-        this.endAt = null;
-        this._notificarTick();
-        const modoFinalizado = this.currentMode;
-        this.onComplete({ mode: modoFinalizado, alvo: this.alvoAtual });
+        this._finalizar();
       }
     }, 1000);
+  }
+
+  /**
+   * Finaliza o ciclo atual disparando os callbacks correspondentes.
+   *
+   * @private
+   */
+  _finalizar() {
+    this._limparAgendamentos();
+    this.state = 'finished';
+    this.endAt = null;
+    this.remainingSeconds = 0;
+    this.remainingMs = 0;
+    this._notificarTick();
+    this.onRunningChange({ isRunning: false, state: this.state });
+    const modoFinalizado = this.currentMode;
+    this.onComplete({ mode: modoFinalizado, alvo: this.alvoAtual });
   }
 
   /**
    * Pausa a contagem regressiva.
    */
   pause() {
-    if (this.timerInterval) {
-      clearInterval(this.timerInterval);
-      this.timerInterval = null;
-      this.endAt = null;
-      this.onRunningChange({ isRunning: false });
+    if (this.state !== 'running') return;
+
+    if (this.endAt) {
+      this.remainingMs = Math.max(0, this.endAt - Date.now());
+      this.remainingSeconds = Math.max(0, Math.ceil(this.remainingMs / 1000));
     }
+    this._limparAgendamentos();
+    this.endAt = null;
+    this.state = 'paused';
+    this.onRunningChange({ isRunning: false, state: this.state });
   }
 
   /**
    * Reinicia o tempo restante para o total do modo ativo.
    */
   reset() {
-    this.setMode(this.currentMode);
+    this._limparAgendamentos();
+    this.endAt = null;
+    this.totalSeconds = (this.currentMode === 'foco' ? this.focusMin : this.breakMin) * 60;
+    this.remainingSeconds = this.totalSeconds;
+    this.remainingMs = this.totalSeconds * 1000;
+    this.state = 'idle';
+    this.onRunningChange({ isRunning: false, state: this.state });
+    this.onModeChange({ mode: this.currentMode, totalSeconds: this.totalSeconds });
+    this._notificarTick();
   }
 
   /**
@@ -195,12 +249,29 @@ class PomodoroTimer {
   }
 
   /**
-   * Destrói o timer limpando qualquer intervalo pendente na memória.
+   * Limpa referências ativas de intervalos e timeouts de forma atômica e centralizada.
+   *
+   * @private
    */
-  destroy() {
+  _limparAgendamentos() {
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
       this.timerInterval = null;
+    }
+    if (this.completeTimeout) {
+      clearTimeout(this.completeTimeout);
+      this.completeTimeout = null;
+    }
+  }
+
+  /**
+   * Destrói o timer limpando qualquer intervalo pendente na memória.
+   */
+  destroy() {
+    this._limparAgendamentos();
+    this.endAt = null;
+    if (this.state === 'running') {
+      this.state = 'paused';
     }
   }
 }

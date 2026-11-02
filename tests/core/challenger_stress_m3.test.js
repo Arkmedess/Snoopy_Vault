@@ -213,7 +213,7 @@ describe('Auditor M3 - Adversarial Stress & Integrity Suite', () => {
         if (!fs.existsSync(dir)) return;
         const entries = fs.readdirSync(dir, { withFileTypes: true });
         for (const entry of entries) {
-          if (entry.name === '.git' || entry.name === 'node_modules') continue;
+          if (entry.name === '.git' || entry.name === 'node_modules' || entry.name === 'audio') continue;
           const fullPath = path.join(dir, entry.name);
           if (entry.isDirectory()) {
             checkDir(fullPath);

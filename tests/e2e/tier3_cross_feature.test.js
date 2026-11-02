@@ -65,23 +65,23 @@ describe('Tier 3: Cross-Feature Interactions', () => {
 
     // Verify track is initially locked
     const faixasAntes = await PomodoroAudio.obterFaixasDisponiveis(mockApp);
-    assert.strictEqual(faixasAntes.some(f => f.id === 'audio-brown-noise'), false);
+    assert.strictEqual(faixasAntes.some(f => f.id === 'audio-pink-noise'), false);
 
-    // Purchase brown noise track (80 coins)
-    const compra = await ShopStore.comprarItem(mockApp, 'audio-brown-noise');
+    // Purchase pink noise track (40 coins)
+    const compra = await ShopStore.comprarItem(mockApp, 'audio-pink-noise');
     assert.strictEqual(compra.sucesso, true);
-    assert.strictEqual(ShopStore.obterSaldo(mockApp), 70);
+    assert.strictEqual(ShopStore.obterSaldo(mockApp), 110);
 
     // Query unlocked tracks now
     const faixasDepois = await PomodoroAudio.obterFaixasDisponiveis(mockApp);
-    assert.ok(faixasDepois.some(f => f.id === 'audio-brown-noise'));
+    assert.ok(faixasDepois.some(f => f.id === 'audio-pink-noise'));
 
     // Play the newly unlocked track
     if (typeof PomodoroAudio.conectarContexto === 'function') {
       PomodoroAudio.conectarContexto(mockCtx);
     }
     await PomodoroAudio.iniciar();
-    assert.doesNotThrow(() => PomodoroAudio.tocarFaixa('audio-brown-noise'));
+    assert.doesNotThrow(() => PomodoroAudio.tocarFaixa('audio-pink-noise'));
   });
 
   // =========================================================================

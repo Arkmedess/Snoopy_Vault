@@ -119,6 +119,15 @@ class ShopModal {
         <button class="snoopy-btn-tab ${this.categoriaAtiva === 'cosmetic' ? 'active' : ''}" data-cat="cosmetic" role="tab" aria-selected="${this.categoriaAtiva === 'cosmetic'}">Cosméticos</button>
       </div>
 
+      <!-- Barra de Configurações Visuais da Loja -->
+      <div class="snoopy-shop-visual-bar" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding: 6px 12px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--snoopy-border, rgba(255, 255, 255, 0.08)); border-radius: 6px; font-size: 12px;">
+        <label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer; user-select: none;">
+          <input type="checkbox" id="snoopy-shop-toggle-ambient" ${storeData.ambientEnabled ? 'checked' : ''} style="cursor: pointer;" />
+          <span style="color: var(--snoopy-text, var(--text-normal)); font-weight: 500;">Habilitar Animações de Fundo (Ambiente)</span>
+        </label>
+        <span class="snoopy-meta" style="font-size: 11px; opacity: 0.7;">Desativado por padrão para economizar RAM/CPU</span>
+      </div>
+
       <!-- Container Dinâmico da Grade de Itens -->
       <div id="snoopy-shop-grid-container" class="snoopy-shop-grid-wrap" role="tabpanel" tabindex="0">
         <div id="snoopy-shop-grid" class="snoopy-shop-grid"></div>
@@ -185,6 +194,20 @@ class ShopModal {
       };
     });
 
+    const ambientToggle = modalBox.querySelector('#snoopy-shop-toggle-ambient');
+    if (ambientToggle) {
+      ambientToggle.onchange = async () => {
+        const ativo = ambientToggle.checked;
+        if (this.ShopStore && typeof this.ShopStore.definirAmbientEnabled === 'function') {
+          await this.ShopStore.definirAmbientEnabled(this.app, ativo);
+          storeData.ambientEnabled = ativo;
+          if (typeof Notice !== 'undefined') {
+            new Notice(`[Snoopy] Animações de fundo ${ativo ? 'ativadas' : 'desativadas'}.`);
+          }
+        }
+      };
+    }
+
     atualizarGrid();
   }
 
@@ -211,23 +234,49 @@ class ShopModal {
       card.classList.add('is-locked');
     }
 
+    let temaPreviewHtml = '';
+    if (item.categoria === 'cosmetic' && this.ShopStore && typeof this.ShopStore.obterConfigTema === 'function') {
+      const scheme = storeData.colorScheme || 'dark';
+      const cfgTema = this.ShopStore.obterConfigTema(item.id, scheme);
+      const tokens = (cfgTema && cfgTema.modos && cfgTema.modos[scheme]) ? cfgTema.modos[scheme].tokens : (cfgTema ? (cfgTema.tokens || cfgTema) : null);
+      if (tokens) {
+        temaPreviewHtml = `
+          <div class="snoopy-shop-theme-preview" style="margin-top: 8px; padding: 6px 8px; border-radius: 6px; background: ${tokens.bg}; border: 1px solid ${tokens.border}; display: flex; flex-direction: column; gap: 5px;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <span style="font-size: 11px; font-weight: 600; color: ${tokens.text};">Prévia (${scheme === 'light' ? 'Light' : 'Dark'})</span>
+              <div style="display: flex; gap: 4px; align-items: center;">
+                <span style="width: 10px; height: 10px; border-radius: 50%; background: ${tokens.accent}; display: inline-block;" title="Acento"></span>
+                <span style="width: 10px; height: 10px; border-radius: 50%; background: ${tokens.panel}; display: inline-block; border: 1px solid rgba(128,128,128,0.3);" title="Painel"></span>
+                <span style="width: 10px; height: 10px; border-radius: 50%; background: ${tokens.card}; display: inline-block; border: 1px solid rgba(128,128,128,0.3);" title="Card"></span>
+              </div>
+            </div>
+            <div style="padding: 4px 6px; border-radius: 4px; background: ${tokens.card}; border: 1px solid ${tokens.border}; display: flex; align-items: center; justify-content: space-between;">
+              <span style="font-size: 10px; color: ${tokens.textMuted};">Texto legível</span>
+              <span style="font-size: 9.5px; font-weight: 600; padding: 2px 6px; border-radius: 3px; background: ${tokens.btnBg}; color: ${tokens.btnText};">Botão</span>
+            </div>
+          </div>
+        `;
+      }
+    }
+
     card.innerHTML = `
       <div class="snoopy-shop-card-header">
-        <div class="snoopy-shop-item-icon" data-icon="${item.iconName || 'sparkles'}" data-color="${item.cor || '#86efac'}" style="color: ${item.cor || '#86efac'}; border-color: ${item.cor || '#86efac'};" aria-hidden="true"></div>
+        <div class="snoopy-shop-item-icon" data-icon="${item.iconName || 'sparkles'}" data-color="${item.cor || 'var(--snoopy-module-accent)'}" style="color: ${item.cor || 'var(--snoopy-module-accent)'}; border-color: ${item.cor || 'var(--snoopy-module-accent)'};" aria-hidden="true"></div>
         <div class="snoopy-shop-card-body">
           <div class="snoopy-shop-title-row">
             <span class="snoopy-shop-title" title="${item.nome}">${item.nome}</span>
-            <span class="snoopy-shop-category-tag" style="color: ${item.cor || '#86efac'};">${this._formatarCategoriaLabel(item.categoria)}</span>
+            <span class="snoopy-shop-category-tag" style="color: ${item.cor || 'var(--snoopy-module-accent)'};">${this._formatarCategoriaLabel(item.categoria)}</span>
           </div>
           <div class="snoopy-shop-benefit">${item.beneficio || ''}</div>
           <p class="snoopy-shop-lore" title="${item.lore || ''}">"${item.lore || ''}"</p>
+          ${temaPreviewHtml}
         </div>
       </div>
 
       <div class="snoopy-shop-card-footer">
         <div class="snoopy-shop-price">
           ${desbloqueado
-            ? `<span style="color: #86efac; font-weight: 700; font-size: 11.5px; display: inline-flex; align-items: center; gap: 4px;"><span class="snoopy-shop-coin-icon" data-icon="check" data-color="#86efac"></span> Adquirido</span>`
+            ? `<span style="color: var(--snoopy-module-accent); font-weight: 700; font-size: 11.5px; display: inline-flex; align-items: center; gap: 4px;"><span class="snoopy-shop-coin-icon" data-icon="check" data-color="var(--snoopy-module-accent)"></span> Adquirido</span>`
             : `<span class="snoopy-shop-coin-icon" data-icon="coins" data-color="#facc15"></span> <span>${item.preco} moedas</span>`
           }
         </div>
@@ -240,7 +289,7 @@ class ShopModal {
     if (equipado) {
       const badge = document.createElement('span');
       badge.className = 'snoopy-shop-badge-equipped';
-      badge.innerHTML = `<span class="snoopy-shop-action-icon" data-icon="check" data-color="#86efac"></span> Equipado`;
+      badge.innerHTML = `<span class="snoopy-shop-action-icon" data-icon="check" data-color="var(--snoopy-module-accent)"></span> Equipado`;
       actionBox.appendChild(badge);
     } else if (desbloqueado) {
       const btnEquipar = document.createElement('button');
@@ -251,9 +300,13 @@ class ShopModal {
         this.isProcessing = true;
         try {
           if (this.ShopStore && typeof this.ShopStore.equiparItem === 'function') {
-            const res = await this.ShopStore.equiparItem(this.app, item.id);
+            const bus = this.eventBus || (typeof window !== 'undefined' ? window._snoopyEvents : null);
+            const res = await this.ShopStore.equiparItem(this.app, item.id, bus);
             if (res.sucesso) {
               storeData.equipados = res.estado.equipados;
+              if (item.categoria === 'cosmetic') {
+                this.ShopStore.aplicarTema(item.id, null, storeData.colorScheme || 'dark');
+              }
               if (typeof Notice !== 'undefined') new Notice(`Item '${item.nome}' equipado com sucesso!`);
               if (typeof this.onAtualizar === 'function') await this.onAtualizar(res.estado);
               atualizarGrid();
@@ -281,11 +334,16 @@ class ShopModal {
 
         try {
           if (this.ShopStore && typeof this.ShopStore.comprarItem === 'function') {
-            const res = await this.ShopStore.comprarItem(this.app, item.id);
+            const bus = this.eventBus || (typeof window !== 'undefined' ? window._snoopyEvents : null);
+            const res = await this.ShopStore.comprarItem(this.app, item.id, bus);
             if (res.sucesso) {
               storeData.saldo = res.estado.saldo;
               storeData.desbloqueados = res.estado.desbloqueados;
               storeData.equipados = res.estado.equipados;
+
+              if (item.categoria === 'cosmetic') {
+                this.ShopStore.aplicarTema(item.id, null, storeData.colorScheme || 'dark');
+              }
 
               const balanceEl = modalBox.querySelector('#snoopy-shop-kpi-balance-num');
               if (balanceEl) balanceEl.textContent = String(storeData.saldo);

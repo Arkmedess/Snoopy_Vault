@@ -130,7 +130,7 @@ const HabitosView = {
             </div>
             <div id="habit-dias" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;">
               ${['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(dia => `
-                <button type="button" class="chip-h-d" data-dia="${dia}" style="background: ${diasSelecionados.includes(dia) ? 'rgba(134,239,172,0.12)' : 'rgba(255,255,255,0.03)'}; color: ${diasSelecionados.includes(dia) ? '#86efac' : '#71717a'}; border: 1px solid ${diasSelecionados.includes(dia) ? 'rgba(134,239,172,0.35)' : 'rgba(255,255,255,0.07)'}; border-radius: 4px; padding: 4px 0; font-size: 10px; font-weight: 600; cursor: pointer;">${dia}</button>
+                <button type="button" class="chip-h-d" data-dia="${dia}" style="background: ${diasSelecionados.includes(dia) ? 'rgba(134,239,172,0.12)' : 'rgba(255,255,255,0.03)'}; color: ${diasSelecionados.includes(dia) ? 'var(--snoopy-module-accent)' : '#71717a'}; border: 1px solid ${diasSelecionados.includes(dia) ? 'rgba(134,239,172,0.35)' : 'rgba(255,255,255,0.07)'}; border-radius: 4px; padding: 4px 0; font-size: 10px; font-weight: 600; cursor: pointer;">${dia}</button>
               `).join('')}
             </div>
           </div>
@@ -138,8 +138,8 @@ const HabitosView = {
           <div>
             <div class="snoopy-modal-label" style="margin-bottom: 5px;">Escopo:</div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-              <div id="scope-persistente" style="background: rgba(134,239,172,0.08); border: 1px solid #86efac; border-radius: 6px; padding: 6px 8px; cursor: pointer;">
-                <div style="font-size: 11px; font-weight: 700; color: #86efac;">● Persistente</div>
+              <div id="scope-persistente" style="background: rgba(134,239,172,0.08); border: 1px solid var(--snoopy-module-accent); border-radius: 6px; padding: 6px 8px; cursor: pointer;">
+                <div style="font-size: 11px; font-weight: 700; color: var(--snoopy-module-accent);">● Persistente</div>
                 <div class="snoopy-micro" style="color: #71717a;">Salva no Template Diário</div>
               </div>
               <div id="scope-hoje" style="background: #14141c; border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 6px 8px; cursor: pointer;">
@@ -158,7 +158,7 @@ const HabitosView = {
         <div>
           <div class="snoopy-modal-label" style="font-weight: 700; margin-bottom: 6px; display: flex; justify-content: space-between;">
             <span>Hábitos Configurados</span>
-            <span id="modal-habits-count" class="snoopy-meta" style="color: #86efac;">0</span>
+            <span id="modal-habits-count" class="snoopy-meta" style="color: var(--snoopy-module-accent);">0</span>
           </div>
           <div id="modal-habits-list" style="display: flex; flex-direction: column; gap: 5px; max-height: 180px; overflow-y: auto;"></div>
         </div>
@@ -201,7 +201,7 @@ const HabitosView = {
             chipsD.forEach(b => {
               const ativo = diasSelecionados.includes(b.dataset.dia);
               b.style.background = ativo ? 'rgba(134,239,172,0.12)' : 'rgba(255,255,255,0.03)';
-              b.style.color = ativo ? '#86efac' : '#71717a';
+              b.style.color = ativo ? 'var(--snoopy-module-accent)' : '#71717a';
               b.style.borderColor = ativo ? 'rgba(134,239,172,0.35)' : 'rgba(255,255,255,0.07)';
             });
           };
@@ -222,14 +222,14 @@ const HabitosView = {
           const sHoj = box.querySelector('#scope-hoje');
           sPer.onclick = () => {
             escopoSelecionado = 'persistente';
-            sPer.style.borderColor = '#86efac';
+            sPer.style.borderColor = 'var(--snoopy-module-accent)';
             sPer.style.background = 'rgba(134,239,172,0.08)';
             sHoj.style.borderColor = 'rgba(255,255,255,0.08)';
             sHoj.style.background = '#14141c';
           };
           sHoj.onclick = () => {
             escopoSelecionado = 'hoje';
-            sHoj.style.borderColor = '#86efac';
+            sHoj.style.borderColor = 'var(--snoopy-module-accent)';
             sHoj.style.background = 'rgba(134,239,172,0.08)';
             sPer.style.borderColor = 'rgba(255,255,255,0.08)';
             sPer.style.background = '#14141c';
@@ -299,7 +299,7 @@ const HabitosView = {
               if (item.freqTag) {
                 leftCol.createEl('span', {
                   text: item.freqTag,
-                  attr: { style: 'font-size: 9.5px; padding: 1px 4px; border-radius: 3px; background: rgba(134,239,172,0.1); color: #86efac; flex-shrink: 0;' }
+                  attr: { style: 'font-size: 9.5px; padding: 1px 4px; border-radius: 3px; background: rgba(134,239,172,0.1); color: var(--snoopy-module-accent); flex-shrink: 0;' }
                 });
               }
 
@@ -447,7 +447,7 @@ const HabitosView = {
 
         left.createEl('span', { 
           text: h.cleanName,
-          attr: { style: `font-size: 12px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; ${h.checked ? 'color: #86efac; font-weight: 600;' : 'color: #e4e4e7;'}` }
+          attr: { style: `font-size: 12px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; ${h.checked ? 'color: var(--snoopy-module-accent); font-weight: 600;' : 'color: #e4e4e7;'}` }
         });
 
         const right = pill.createEl('div', { attr: { style: 'display: flex; align-items: center; gap: 4px; flex-shrink: 0;' } });

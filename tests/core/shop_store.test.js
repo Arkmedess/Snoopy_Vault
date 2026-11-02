@@ -294,5 +294,120 @@ describe('ShopStore - Central de Economia, Catálogo & Inventário', () => {
 
     ShopStore.limparCacheMemoria();
   });
+
+  test('aplicarTema() e obterTemaEquipado() manipulam tokens globais e patterns artísticos sem recarregar', async () => {
+    const mockDoc = {
+      documentElement: {
+        attributes: {},
+        styles: {},
+        setAttribute(k, v) { this.attributes[k] = v; },
+        style: {
+          setProperty(k, v) { mockDoc.documentElement.styles[k] = v; }
+        }
+      },
+      body: {
+        attributes: {},
+        classList: {
+          classes: new Set(),
+          add(c) { this.classes.add(c); },
+          remove(c) { this.classes.delete(c); },
+          contains(c) { return this.classes.has(c); }
+        },
+        setAttribute(k, v) { this.attributes[k] = v; }
+      }
+    };
+
+    // 1. Tema Cyber
+    let res = ShopStore.aplicarTema('theme-preset-cyber', mockDoc);
+    assert.strictEqual(res, true);
+    assert.strictEqual(mockDoc.documentElement.attributes['data-snoopy-theme'], 'theme-preset-cyber');
+    assert.strictEqual(mockDoc.body.attributes['data-snoopy-theme'], 'theme-preset-cyber');
+    assert.ok(mockDoc.body.classList.contains('snoopy-theme-cyber'));
+    assert.strictEqual(mockDoc.documentElement.styles['--snoopy-module-accent'], '#38bdf8');
+    assert.strictEqual(mockDoc.documentElement.styles['--snoopy-bg'], '#040711');
+    assert.strictEqual(mockDoc.documentElement.styles['--background-primary'], '#040711');
+    assert.ok(mockDoc.documentElement.styles['--snoopy-pattern-bg'].includes('svg'));
+
+    // 2. Tema Solar (Detalhes de sóis geométricos e acolhimento)
+    res = ShopStore.aplicarTema('theme-preset-solar', mockDoc);
+    assert.strictEqual(res, true);
+    assert.strictEqual(mockDoc.documentElement.attributes['data-snoopy-theme'], 'theme-preset-solar');
+    assert.ok(mockDoc.body.classList.contains('snoopy-theme-solar'));
+    assert.strictEqual(mockDoc.documentElement.styles['--snoopy-module-accent'], '#fbbf24');
+    assert.strictEqual(mockDoc.documentElement.styles['--snoopy-bg'], '#0e0b08');
+    assert.strictEqual(mockDoc.documentElement.styles['--text-normal'], '#fffbeb');
+    assert.ok(mockDoc.documentElement.styles['--snoopy-pattern-bg'].includes('%23fbbf24'));
+
+    // 3. Tema Velvet Sakura (Detalhes de sakura/pétalas)
+    res = ShopStore.aplicarTema('theme-preset-rose', mockDoc);
+    assert.strictEqual(res, true);
+    assert.strictEqual(mockDoc.documentElement.attributes['data-snoopy-theme'], 'theme-preset-rose');
+    assert.ok(mockDoc.body.classList.contains('snoopy-theme-rose'));
+    assert.strictEqual(mockDoc.documentElement.styles['--snoopy-module-accent'], '#f472b6');
+    assert.strictEqual(mockDoc.documentElement.styles['--snoopy-bg'], '#0d080b');
+    assert.strictEqual(mockDoc.documentElement.styles['--text-normal'], '#fdf2f8');
+    assert.ok(mockDoc.documentElement.styles['--snoopy-pattern-bg'].includes('%23f472b6'));
+
+    // 4. Tema Padrão Snoopy Classic Dark
+    res = ShopStore.aplicarTema('theme-preset-snoopy', mockDoc);
+    assert.strictEqual(res, true);
+    assert.strictEqual(mockDoc.documentElement.attributes['data-snoopy-theme'], 'theme-preset-snoopy');
+    assert.ok(mockDoc.body.classList.contains('snoopy-theme-snoopy'));
+    assert.strictEqual(mockDoc.documentElement.styles['--snoopy-module-accent'], '#86efac');
+    assert.strictEqual(mockDoc.documentElement.styles['--snoopy-bg'], '#070709');
+  });
+
+  test('alternarColorScheme() e definirAmbientEnabled() controlam e persistem modos light/dark e animações', async () => {
+    const app = criarMockApp();
+    const mockDoc = {
+      documentElement: {
+        attributes: {},
+        styles: {},
+        setAttribute(k, v) { this.attributes[k] = v; },
+        getAttribute(k) { return this.attributes[k] || null; },
+        style: {
+          setProperty(k, v) { mockDoc.documentElement.styles[k] = v; }
+        }
+      },
+      body: {
+        attributes: {},
+        classList: {
+          classes: new Set(),
+          add(c) { this.classes.add(c); },
+          remove(c) { this.classes.delete(c); },
+          contains(c) { return this.classes.has(c); }
+        },
+        setAttribute(k, v) { this.attributes[k] = v; }
+      }
+    };
+
+    // 1. Estado inicial é dark e ambient false
+    const schemeIni = await ShopStore.obterColorScheme(app);
+    assert.strictEqual(schemeIni, 'dark');
+    const ambientIni = await ShopStore.obterAmbientEnabled(app);
+    assert.strictEqual(ambientIni, false);
+
+    // 2. Alternar para light
+    const novoScheme = await ShopStore.alternarColorScheme(app, mockDoc);
+    assert.strictEqual(novoScheme, 'light');
+    assert.strictEqual(mockDoc.documentElement.attributes['data-snoopy-scheme'], 'light');
+    assert.strictEqual(mockDoc.documentElement.styles['--snoopy-bg'], '#f8fafc'); // Snoopy light bg
+
+    // 3. Alternar de volta para dark
+    const darkDeVolta = await ShopStore.alternarColorScheme(app, mockDoc);
+    assert.strictEqual(darkDeVolta, 'dark');
+    assert.strictEqual(mockDoc.documentElement.attributes['data-snoopy-scheme'], 'dark');
+    assert.strictEqual(mockDoc.documentElement.styles['--snoopy-bg'], '#070709');
+
+    // 4. Habilitar animação ambiente
+    const ambientAtivo = await ShopStore.definirAmbientEnabled(app, true, mockDoc);
+    assert.strictEqual(ambientAtivo, true);
+    assert.ok(mockDoc.body.classList.contains('snoopy-ambient-active'));
+
+    // 5. Desabilitar animação ambiente
+    const ambientDesativo = await ShopStore.definirAmbientEnabled(app, false, mockDoc);
+    assert.strictEqual(ambientDesativo, false);
+    assert.strictEqual(mockDoc.body.classList.contains('snoopy-ambient-active'), false);
+  });
 });
 

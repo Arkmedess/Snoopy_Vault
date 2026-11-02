@@ -441,7 +441,7 @@ const TarefasView = {
             cls: 'snoopy-btn-task-focus snoopy-btn-sm',
             attr: { title: 'Carregar no Cockpit Pomodoro' }
           });
-          if (ctx.renderIcon) ctx.renderIcon(btnFoco, 'play', { size: 10, color: '#86efac' });
+          if (ctx.renderIcon) ctx.renderIcon(btnFoco, 'play', { size: 10, color: 'var(--snoopy-module-accent)' });
           btnFoco.createEl('span', { text: 'Foco' });
 
           btnFoco.onclick = (e) => {
@@ -488,7 +488,7 @@ const TarefasView = {
         } else {
           badgesCol.createEl('span', {
             cls: 'snoopy-micro',
-            attr: { style: 'color: #86efac; font-weight: bold;' },
+            attr: { style: 'color: var(--snoopy-module-accent); font-weight: bold;' },
             text: 'Concluída'
           });
         }
@@ -693,7 +693,7 @@ const TarefasView = {
           cls: 'snoopy-btn-task-focus snoopy-btn-sm',
           attr: { title: 'Carregar no Cockpit Pomodoro', style: 'padding: 2px 8px; font-size: 11px;' }
         });
-        if (ctx.renderIcon) ctx.renderIcon(btnFoco, 'play', { size: 10, color: '#86efac' });
+        if (ctx.renderIcon) ctx.renderIcon(btnFoco, 'play', { size: 10, color: 'var(--snoopy-module-accent)' });
         btnFoco.createEl('span', { text: 'Foco' });
 
         btnFoco.onclick = (e) => {
@@ -740,7 +740,7 @@ const TarefasView = {
       } else {
         footerRow.createEl('span', {
           cls: 'snoopy-micro',
-          attr: { style: 'color: #86efac; font-weight: bold; font-size: 11px;' },
+          attr: { style: 'color: var(--snoopy-module-accent); font-weight: bold; font-size: 11px;' },
           text: 'Concluída'
         });
       }

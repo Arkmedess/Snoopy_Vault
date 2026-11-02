@@ -563,9 +563,9 @@ const TarefasModal = {
         if (tpl.vinculos?.estudos?.adicionar_ao_ciclo) {
           const bCiclo = badgesRow.createEl('span', {
             cls: 'snoopy-meta',
-            attr: { style: 'font-size: 9px; color: #86efac; background: rgba(134,239,172,0.1); padding: 1px 4px; border-radius: 3px; display: inline-flex; align-items: center; gap: 3px;' }
+            attr: { style: 'font-size: 9px; color: var(--snoopy-module-accent); background: rgba(134,239,172,0.1); padding: 1px 4px; border-radius: 3px; display: inline-flex; align-items: center; gap: 3px;' }
           });
-          renderIcon(bCiclo, 'refresh-cw', { size: 9, color: '#86efac' });
+          renderIcon(bCiclo, 'refresh-cw', { size: 9, color: 'var(--snoopy-module-accent)' });
           bCiclo.createEl('span', { text: 'Ciclo' });
         }
         if (tpl.vinculos?.bookshelf?.vincular_leitura) {

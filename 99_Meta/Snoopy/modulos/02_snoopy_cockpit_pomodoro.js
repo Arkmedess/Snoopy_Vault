@@ -124,12 +124,12 @@ return {
       <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
         <span id="snoopy-target-icon-box" style="display: inline-flex; align-items: center;"></span>
         <div style="overflow: hidden;">
-          <div class="snoopy-micro" style="font-weight: 700; color: #86efac; letter-spacing: 0.05em;">FOCO ATIVO (TOCANDO AGORA):</div>
-          <div id="snoopy-target-name" style="font-size: 12px; font-weight: 700; color: #ffffff; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">-</div>
+          <div class="snoopy-micro" style="font-weight: 700; color: var(--snoopy-module-accent); letter-spacing: 0.05em;">FOCO ATIVO (TOCANDO AGORA):</div>
+          <div id="snoopy-target-name" style="font-size: 12px; font-weight: 700; color: var(--text-normal); white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">-</div>
         </div>
       </div>
       <div class="snoopy-toolbar">
-        <button id="snoopy-btn-target-done" class="snoopy-btn-action snoopy-btn-sm" style="color: #86efac;">Feito</button>
+        <button id="snoopy-btn-target-done" class="snoopy-btn-action snoopy-btn-sm" style="color: var(--snoopy-module-accent);">Feito</button>
         <button id="snoopy-btn-target-clear" class="snoopy-btn-icon" title="Liberar foco"></button>
       </div>
     `;
@@ -137,8 +137,8 @@ return {
     const tDoneBtn = targetBanner.querySelector('#snoopy-btn-target-done');
     const tClearBtn = targetBanner.querySelector('#snoopy-btn-target-clear');
     if (renderIconFn) {
-      renderIconFn(tIconBox, 'target', { size: 14, color: '#86efac' });
-      renderIconFn(tDoneBtn, 'check', { size: 12, color: '#86efac' });
+      renderIconFn(tIconBox, 'target', { size: 14, color: 'var(--snoopy-module-accent)' });
+      renderIconFn(tDoneBtn, 'check', { size: 12, color: 'var(--snoopy-module-accent)' });
       renderIconFn(tClearBtn, 'x', { size: 12 });
     }
 
@@ -148,9 +148,9 @@ return {
       attr: { style: 'display: grid; grid-template-columns: minmax(200px, 1.15fr) 1.35fr; gap: 14px; align-items: center; padding: 2px 0;' }
     });
 
-    const ringWrapper = pomoCenter.createEl('div', { 
+    const ringWrapper = pomoCenter.createEl('div', {
       cls: 'snoopy-ring-wrapper',
-      attr: { style: 'display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;' } 
+      attr: { style: 'display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;' }
     });
     const svgBox = ringWrapper.createEl('div', {
       cls: 'snoopy-circle-box',
@@ -162,8 +162,8 @@ return {
         <circle id="snoopy-circle-bar" class="circle-progress-bar" cx="85" cy="85" r="74" fill="none" stroke-width="7" stroke-dasharray="464.96" stroke-dashoffset="0" />
       </svg>
       <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; pointer-events: none; user-select: none;">
-        <span id="snoopy-timer-display" class="snoopy-timer-num" style="font-size: 42px; font-weight: 800; color: #ffffff; letter-spacing: 0.04em; line-height: 1; font-family: var(--font-monospace, monospace);">${String(focusMin).padStart(2, '0')}:00</span>
-        <span id="snoopy-cycle-label" class="snoopy-meta" style="font-size: 12px; font-weight: 700; color: #86efac; margin-top: 6px; letter-spacing: 0.05em; text-transform: uppercase;">Ciclo 1 de ${dailyGoal}</span>
+        <span id="snoopy-timer-display" class="snoopy-timer-num" style="font-size: 42px; font-weight: 800; color: var(--text-normal); letter-spacing: 0.04em; line-height: 1; font-family: var(--font-monospace, monospace);">${String(focusMin).padStart(2, '0')}:00</span>
+        <span id="snoopy-cycle-label" class="snoopy-meta" style="font-size: 12px; font-weight: 700; color: var(--snoopy-module-accent); margin-top: 6px; letter-spacing: 0.05em; text-transform: uppercase;">Ciclo 1 de ${dailyGoal}</span>
       </div>
     `;
 
@@ -174,12 +174,12 @@ return {
     });
     const pctMetaHoje = dailyGoal > 0 ? Math.min(100, Math.round((completedCyclesToday / dailyGoal) * 100)) : 0;
     dailyPomoTracker.innerHTML = `
-      <div style="display: flex; justify-content: space-between; width: 100%; font-size: 12px; color: #a1a1aa;">
+      <div style="display: flex; justify-content: space-between; width: 100%; font-size: 12px; color: var(--text-muted);">
         <span style="font-weight: 600;">Meta Diária:</span>
-        <span id="snoopy-pomo-meta-txt" style="font-weight: 800; color: #86efac; font-size: 13px;">${completedCyclesToday}/${dailyGoal} ciclos</span>
+        <span id="snoopy-pomo-meta-txt" style="font-weight: 800; color: var(--snoopy-module-accent); font-size: 13px;">${completedCyclesToday}/${dailyGoal} ciclos</span>
       </div>
       <div class="snoopy-prog-track" style="height: 8px; width: 100%; border-radius: 4px;">
-        <div id="snoopy-pomo-meta-fill" class="snoopy-prog-fill" style="width: ${pctMetaHoje}%; background: #4ade80; border-radius: 4px;"></div>
+        <div id="snoopy-pomo-meta-fill" class="snoopy-prog-fill" style="width: ${pctMetaHoje}%; background: var(--snoopy-module-accent); border-radius: 4px;"></div>
       </div>
     `;
 
@@ -209,7 +209,7 @@ return {
       cls: 'snoopy-player-btn-main',
       attr: { title: 'Iniciar / Pausar foco' }
     });
-    if (renderIconFn) renderIconFn(btnMainPlay, 'play', { size: 16, color: '#070709' });
+    if (renderIconFn) renderIconFn(btnMainPlay, 'play', { size: 16, color: 'var(--snoopy-btn-text, #070709)' });
 
     // Botão Próximo Ciclo/Faixa
     const btnNext = playerDock.createEl('button', {
@@ -322,13 +322,219 @@ return {
       const idFaixa = e.target.value;
       if (PomodoroAudio.obterEstado().isPlaying) {
         await PomodoroAudio.iniciar();
-        PomodoroAudio.tocar(idFaixa);
+        await PomodoroAudio.tocar(idFaixa);
       } else {
-        PomodoroAudio.tocar(idFaixa);
+        await PomodoroAudio.tocar(idFaixa);
         PomodoroAudio.pausar();
       }
       atualizarIconeAudio();
+      if (typeof atualizarVisibilidadeCustom === 'function') atualizarVisibilidadeCustom();
     });
+
+    // CONTROLES DE URL PERSONALIZADA E STREAMING DO YOUTUBE (TAREFA 1 & 2)
+    const customUrlWrap = audioWrap.createEl('div', {
+      cls: 'snoopy-audio-custom-url-wrap',
+      attr: { style: 'display: none; margin-top: 6px; gap: 4px; align-items: center;' }
+    });
+
+    const inputUrl = customUrlWrap.createEl('input', {
+      cls: 'snoopy-audio-custom-input',
+      attr: {
+        type: 'text',
+        placeholder: 'Cole a URL do YouTube...',
+        style: 'flex: 1; font-size: 11px; padding: 3px 6px; border-radius: 4px; border: 1px solid var(--background-modifier-border); background: var(--background-primary); color: var(--text-normal);'
+      }
+    });
+
+    const btnSalvarUrl = customUrlWrap.createEl('button', {
+      cls: 'snoopy-player-btn-icon',
+      text: '▶',
+      attr: { title: 'Tocar este link via streaming (Enter)', type: 'button', style: 'padding: 2px 8px; font-size: 11px;' }
+    });
+
+    // Card de Preview (Estados: Carregando, Sucesso, Erro, Vazio)
+    const metaCard = audioWrap.createEl('div', {
+      cls: 'snoopy-audio-meta-card',
+      attr: { style: 'display: none; margin-top: 6px; font-size: 10px; color: var(--text-muted); align-items: center; gap: 6px; padding: 4px 6px; border-radius: 4px; background: var(--background-secondary-alt);' }
+    });
+
+    const metaThumb = metaCard.createEl('img', {
+      attr: { style: 'width: 32px; height: 32px; border-radius: 4px; object-fit: cover; display: none;', alt: 'Miniatura do vídeo' }
+    });
+
+    const metaStatusIcon = metaCard.createEl('span', {
+      cls: 'snoopy-audio-meta-status',
+      attr: { style: 'display: none; font-size: 12px;' }
+    });
+
+    const metaTitle = metaCard.createEl('span', {
+      attr: { style: 'white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 170px;' }
+    });
+
+    let previewDebounceTimer = null;
+    let isSubmitting = false;
+
+    const limparPreview = () => {
+      metaCard.style.display = 'none';
+      metaThumb.style.display = 'none';
+      metaThumb.src = '';
+      metaStatusIcon.style.display = 'none';
+      metaTitle.textContent = '';
+      metaTitle.style.color = 'var(--text-muted)';
+    };
+
+    const exibirPreviewCarregando = () => {
+      metaCard.style.display = 'flex';
+      metaThumb.style.display = 'none';
+      metaStatusIcon.style.display = 'inline-block';
+      metaStatusIcon.textContent = '⏳';
+      metaTitle.textContent = 'Obtendo informações do vídeo...';
+      metaTitle.style.color = 'var(--text-muted)';
+    };
+
+    const exibirPreviewErro = (mensagem) => {
+      metaCard.style.display = 'flex';
+      metaThumb.style.display = 'none';
+      metaStatusIcon.style.display = 'inline-block';
+      metaStatusIcon.textContent = '⚠️';
+      metaTitle.textContent = mensagem;
+      metaTitle.style.color = 'var(--text-error, #f87171)';
+      metaTitle.title = mensagem;
+    };
+
+    const exibirPreviewSucesso = (titulo, miniatura) => {
+      metaCard.style.display = 'flex';
+      metaStatusIcon.style.display = 'none';
+      if (miniatura) {
+        metaThumb.src = miniatura;
+        metaThumb.style.display = 'block';
+      } else {
+        metaThumb.style.display = 'none';
+      }
+      metaTitle.textContent = titulo || 'Vídeo do YouTube';
+      metaTitle.title = titulo || 'Vídeo do YouTube';
+      metaTitle.style.color = 'var(--text-normal)';
+    };
+
+    const atualizarVisibilidadeCustom = () => {
+      if (!PomodoroAudio) return;
+      const estado = PomodoroAudio.obterEstado();
+      const ehCustom = estado.currentTrack === 'custom_url';
+      customUrlWrap.style.display = ehCustom ? 'flex' : 'none';
+
+      if (!ehCustom) {
+        limparPreview();
+        return;
+      }
+
+      // Se é custom e tem dados válidos no estado
+      if (estado.customUrl) {
+        const val = PomodoroAudio.validarUrl(estado.customUrl);
+        if (val.valido && (estado.customTitle || estado.customThumb)) {
+          exibirPreviewSucesso(estado.customTitle, estado.customThumb);
+        } else if (!val.valido) {
+          limparPreview();
+        }
+      } else {
+        limparPreview();
+      }
+    };
+
+    const executarAcaoPlayUrl = async () => {
+      if (!PomodoroAudio || isSubmitting) return;
+      const url = inputUrl.value.trim();
+      if (!url) {
+        if (typeof Notice !== 'undefined') new Notice('Insira uma URL do YouTube antes de tocar.');
+        return;
+      }
+
+      const validacao = PomodoroAudio.validarUrl(url);
+      if (!validacao.valido) {
+        exibirPreviewErro(validacao.erro);
+        if (typeof Notice !== 'undefined') new Notice(validacao.erro);
+        return;
+      }
+
+      isSubmitting = true;
+      btnSalvarUrl.disabled = true;
+      inputUrl.disabled = true;
+      btnSalvarUrl.textContent = '...';
+
+      try {
+        await PomodoroAudio.iniciar();
+        const res = await PomodoroAudio.tocarLinkYoutube(validacao.url);
+        if (!res.sucesso) {
+          exibirPreviewErro(res.erro || 'Falha ao reproduzir áudio via mpv.');
+        } else {
+          atualizarIconeAudio();
+          atualizarVisibilidadeCustom();
+        }
+      } catch (err) {
+        exibirPreviewErro('Erro inesperado ao iniciar streaming.');
+      } finally {
+        isSubmitting = false;
+        btnSalvarUrl.disabled = false;
+        inputUrl.disabled = false;
+        btnSalvarUrl.textContent = '▶';
+      }
+    };
+
+    // Ação ao clicar no botão ▶
+    btnSalvarUrl.onclick = executarAcaoPlayUrl;
+
+    // Ação ao pressionar Enter no input
+    inputUrl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        executarAcaoPlayUrl();
+      }
+    });
+
+    // Debounce no input para preview
+    inputUrl.addEventListener('input', () => {
+      if (previewDebounceTimer) clearTimeout(previewDebounceTimer);
+      const url = inputUrl.value.trim();
+
+      // Limpa imediatamente ao alterar
+      limparPreview();
+
+      if (!url) return;
+
+      const validacao = PomodoroAudio ? PomodoroAudio.validarUrl(url) : { valido: false };
+      if (!validacao.valido) {
+        if (url.length >= 8) {
+          exibirPreviewErro('Aceita apenas links do youtube.com, youtu.be ou music.youtube.com');
+        }
+        return;
+      }
+
+      exibirPreviewCarregando();
+
+      previewDebounceTimer = setTimeout(async () => {
+        try {
+          const res = await PomodoroAudio.obterPreviewMetadados(validacao.url);
+          // Verifica se o valor do input ainda é o mesmo
+          if (inputUrl.value.trim() !== validacao.url) return;
+
+          if (res.sucesso) {
+            exibirPreviewSucesso(res.titulo, res.miniatura);
+          } else {
+            exibirPreviewErro(res.erro || 'Vídeo indisponível.');
+          }
+        } catch (e) {
+          exibirPreviewErro('Erro ao obter metadados.');
+        }
+      }, 350);
+    });
+
+    trackSelect.addEventListener('change', () => {
+      atualizarVisibilidadeCustom();
+    });
+
+    // Carrega estado salvo inicial
+    const customSalvo = PomodoroAudio.obterUrlPersonalizada();
+    if (customSalvo.url) inputUrl.value = customSalvo.url;
+    atualizarVisibilidadeCustom();
 
     // Slider de Volume (0 a 100)
     const initialVol = PomodoroAudio ? Math.round(PomodoroAudio.obterEstado().volume * 100) : 50;
@@ -399,12 +605,12 @@ return {
     const playlistHeader = playlistWrap.createEl('div', { cls: 'snoopy-playlist-header' });
     playlistHeader.innerHTML = `
       <div style="display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-        <span class="snoopy-micro" style="font-weight: 700; color: #a1a1aa; letter-spacing: 0.05em; white-space: nowrap;">FILA DE FOCO (PLAYLIST)</span>
-        <span id="snoopy-playlist-count" class="snoopy-micro" style="color: #60a5fa; font-weight: bold; white-space: nowrap; flex-shrink: 0;">0 faixas</span>
+        <span class="snoopy-micro" style="font-weight: 700; color: var(--snoopy-muted, var(--text-muted)); letter-spacing: 0.05em; white-space: nowrap;">FILA DE FOCO (PLAYLIST)</span>
+        <span id="snoopy-playlist-count" class="snoopy-micro" style="color: var(--snoopy-module-accent, var(--interactive-accent)); font-weight: bold; white-space: nowrap; flex-shrink: 0;">0 faixas</span>
       </div>
       <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
         <button id="snoopy-playlist-btn-add" class="snoopy-playlist-btn-edit" title="Adicionar nova tarefa na fila">+ Fila</button>
-        <button id="snoopy-playlist-clear" class="snoopy-micro" style="background: transparent; border: none; color: #71717a; cursor: pointer; padding: 2px 4px;">Limpar</button>
+        <button id="snoopy-playlist-clear" class="snoopy-micro" style="background: transparent; border: none; color: var(--snoopy-muted, var(--text-muted)); cursor: pointer; padding: 2px 4px;">Limpar</button>
       </div>
     `;
 
@@ -461,11 +667,11 @@ return {
       });
       headerActions.createEl('span', {
         cls: 'snoopy-meta',
-        attr: { id: 'snoopy-today-stats', style: 'color: #86efac; font-weight: 800; font-size: 12px; white-space: nowrap;' },
+        attr: { id: 'snoopy-today-stats', style: 'color: var(--snoopy-module-accent); font-weight: 800; font-size: 12px; white-space: nowrap;' },
         text: '0 ciclos hoje (0 min)'
       });
     } else {
-      const historyHeader = historyBox.createEl('div', { 
+      const historyHeader = historyBox.createEl('div', {
         cls: 'snoopy-card-header',
         attr: { style: 'display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px;' }
       });
@@ -482,14 +688,14 @@ return {
             <span id="snoopy-moedas-val" style="font-weight: 700;">0</span>
             <span style="font-size: 9.5px; opacity: 0.8; font-weight: 500;">(+1/5m)</span>
           </div>
-          <span id="snoopy-today-stats" class="snoopy-meta" style="color: #86efac; font-weight: 800; font-size: 12px; white-space: nowrap;">0 ciclos hoje (0 min)</span>
+          <span id="snoopy-today-stats" class="snoopy-meta" style="color: var(--snoopy-module-accent); font-weight: 800; font-size: 12px; white-space: nowrap;">0 ciclos hoje (0 min)</span>
         </div>
       `;
     }
 
     const plantCard = historyBox.createEl('div', {
       cls: 'snoopy-preview-hub-card',
-      attr: { 
+      attr: {
         id: 'snoopy-plant-preview-card',
         title: 'Clique para abrir o Santuário Botânico, Bosque e Loja de Árvores'
       }
@@ -499,17 +705,17 @@ return {
       <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 5px;">
         <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
           <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
-            <span id="snoopy-stage-title" style="font-size: 14px; font-weight: 800; color: #ffffff; white-space: nowrap; letter-spacing: -0.01em;">Semente Plantada</span>
-            <span id="snoopy-stage-badge" class="snoopy-micro" style="padding: 2px 7px; border-radius: 4px; background: rgba(74, 222, 128, 0.15); color: #86efac; font-weight: 800; font-size: 10px;">NÍVEL 1</span>
+            <span id="snoopy-stage-title" style="font-size: 14px; font-weight: 800; color: var(--snoopy-text, var(--text-normal)); white-space: nowrap; letter-spacing: -0.01em;">Semente Plantada</span>
+            <span id="snoopy-stage-badge" class="snoopy-micro" style="padding: 2px 7px; border-radius: 4px; background: rgba(74, 222, 128, 0.15); color: var(--snoopy-module-accent); font-weight: 800; font-size: 10px;">NÍVEL 1</span>
           </div>
-          <div id="snoopy-stage-next-chip" class="snoopy-micro" style="color: #a1a1aa; font-size: 11px; white-space: nowrap;">
-            Próximo: <strong style="color: #86efac;">Plântula Ativa</strong> (+1 foco)
+          <div id="snoopy-stage-next-chip" class="snoopy-micro" style="color: var(--snoopy-muted, var(--text-muted)); font-size: 11px; white-space: nowrap;">
+            Próximo: <strong style="color: var(--snoopy-module-accent);">Plântula Ativa</strong> (+1 foco)
           </div>
         </div>
         <div class="snoopy-prog-track" style="height: 4px; width: 100%; border-radius: 2px; margin: 1px 0; background: rgba(255, 255, 255, 0.08); overflow: hidden;">
-          <div id="snoopy-plant-bar" class="snoopy-prog-fill" style="width: 0%; height: 100%; background: #4ade80; border-radius: 2px; transition: width 0.3s ease;"></div>
+          <div id="snoopy-plant-bar" class="snoopy-prog-fill" style="width: 0%; height: 100%; background: var(--snoopy-module-accent, var(--interactive-accent)); border-radius: 2px; transition: width 0.3s ease;"></div>
         </div>
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 11px; color: #a1a1aa;">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 11px; color: var(--snoopy-muted, var(--text-muted));">
           <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
             <span style="color: #facc15; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
               <span class="snoopy-icon-coins-subcard"></span>
@@ -971,7 +1177,7 @@ return {
           osc.start(t);
           osc.stop(t + 0.85);
         });
-      } catch(e) {
+      } catch (e) {
         console.warn('[Pomodoro Audio] Erro ao sintetizar chime:', e);
       }
     };
@@ -1025,7 +1231,7 @@ return {
         </div>
 
         <div style="text-align: center; max-width: 650px;">
-          <div style="display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; font-weight: 800; color: #86efac; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 8px;">
+          <div style="display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; font-weight: 800; color: var(--snoopy-module-accent); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 8px;">
             <span id="snoopy-imm-target-icon"></span>
             <span>FOCO ATIVO SEM DISTRAÇÕES</span>
           </div>
@@ -1035,11 +1241,11 @@ return {
         <div style="position: relative; width: 260px; height: 260px; display: flex; align-items: center; justify-content: center;">
           <svg style="width: 260px; height: 260px;" viewBox="0 0 170 170">
             <circle cx="85" cy="85" r="74" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="6" />
-            <circle id="snoopy-imm-circle-bar" cx="85" cy="85" r="74" fill="none" stroke="#4ade80" stroke-width="6" stroke-dasharray="464.96" stroke-dashoffset="${offsetAtual}" />
+            <circle id="snoopy-imm-circle-bar" cx="85" cy="85" r="74" fill="none" stroke="var(--snoopy-module-accent)" stroke-width="6" stroke-dasharray="464.96" stroke-dashoffset="${offsetAtual}" />
           </svg>
           <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; user-select: none;">
             <span id="snoopy-imm-display" style="font-size: 54px; font-weight: 900; color: #ffffff; letter-spacing: 0.05em; line-height: 1; font-family: monospace;">${tempoAtualStr}</span>
-            <span id="snoopy-imm-cycle" style="font-size: 13px; font-weight: 700; color: #86efac; margin-top: 10px; text-transform: uppercase; letter-spacing: 0.08em;">${modeBadge ? modeBadge.textContent : 'FOCO ATIVO'}</span>
+            <span id="snoopy-imm-cycle" style="font-size: 13px; font-weight: 700; color: var(--snoopy-module-accent); margin-top: 10px; text-transform: uppercase; letter-spacing: 0.08em;">${modeBadge ? modeBadge.textContent : 'FOCO ATIVO'}</span>
           </div>
         </div>
 
@@ -1047,7 +1253,7 @@ return {
           <button id="snoopy-imm-play-btn" class="snoopy-btn-primary snoopy-btn-md">
             ${isRodando ? 'Pausar' : 'Iniciar Foco'}
           </button>
-          <button id="snoopy-imm-done-btn" class="snoopy-btn-action snoopy-btn-md" style="color: #86efac;">
+          <button id="snoopy-imm-done-btn" class="snoopy-btn-action snoopy-btn-md" style="color: var(--snoopy-module-accent);">
             Concluir Alvo
           </button>
         </div>
@@ -1055,8 +1261,8 @@ return {
 
       if (renderIconFn) {
         renderIconFn(focusOverlay.querySelector('#snoopy-imm-close'), 'x', { size: 12 });
-        renderIconFn(focusOverlay.querySelector('#snoopy-imm-target-icon'), 'target', { size: 14, color: '#86efac' });
-        renderIconFn(focusOverlay.querySelector('#snoopy-imm-done-btn'), 'check', { size: 14, color: '#86efac' });
+        renderIconFn(focusOverlay.querySelector('#snoopy-imm-target-icon'), 'target', { size: 14, color: 'var(--snoopy-module-accent)' });
+        renderIconFn(focusOverlay.querySelector('#snoopy-imm-done-btn'), 'check', { size: 14, color: 'var(--snoopy-module-accent)' });
       }
 
       document.body.appendChild(focusOverlay);
@@ -1095,15 +1301,19 @@ return {
     const globalState = typeof window !== 'undefined' ? window.__snoopyPomodoroState : null;
     const initialMode = globalState ? globalState.currentMode : 'foco';
     const initialRemaining = globalState ? globalState.remainingSeconds : (focusMin * 60);
+    const initialRemainingMs = globalState ? globalState.remainingMs : (initialRemaining * 1000);
     const initialAlvo = globalState ? globalState.alvoAtual : null;
     const endAt = globalState ? globalState.endAt : null;
+    const initialState = globalState ? (globalState.state || (globalState.isRunning ? 'running' : 'paused')) : 'idle';
 
     const timer = PomodoroTimerClass ? new PomodoroTimerClass({
       focusMin,
       breakMin,
       initialMode,
       initialRemaining,
+      remainingMs: initialRemainingMs,
       initialAlvo,
+      initialState,
       endAt,
       onTick: ({ timeStr, offset }) => {
         if (timerDisplay) timerDisplay.textContent = timeStr;
@@ -1116,9 +1326,11 @@ return {
         }
         if (typeof window !== 'undefined') {
           window.__snoopyPomodoroState = {
-            isRunning: Boolean(timer && timer.timerInterval),
+            isRunning: timer ? timer.state === 'running' : false,
+            state: timer ? timer.state : 'idle',
             endAt: timer ? timer.endAt : null,
             remainingSeconds: timer ? timer.remainingSeconds : 0,
+            remainingMs: timer ? timer.remainingMs : 0,
             currentMode: timer ? timer.currentMode : 'foco',
             alvoAtual: timer ? timer.alvoAtual : null
           };
@@ -1156,27 +1368,29 @@ return {
       onModeChange: ({ mode }) => {
         const isFoco = mode === 'foco';
         if (circleBar) {
-          circleBar.style.stroke = isFoco ? '#4ade80' : '#60a5fa';
+          circleBar.style.stroke = isFoco ? 'var(--snoopy-module-accent)' : '#60a5fa';
           if (typeof circleBar.classList?.toggle === 'function') {
             circleBar.classList.toggle('is-break', !isFoco);
           }
         }
         if (cycleLabel) {
           cycleLabel.textContent = isFoco ? `Ciclo ${completedCyclesToday + 1} de ${dailyGoal}` : 'PAUSA';
-          cycleLabel.style.color = isFoco ? '#86efac' : '#93c5fd';
+          cycleLabel.style.color = isFoco ? 'var(--snoopy-module-accent)' : '#93c5fd';
         }
         if (modeBadge) {
           modeBadge.textContent = isFoco ? 'FOCO ATIVO' : 'PAUSA ATIVA';
-          modeBadge.style.color = isFoco ? '#86efac' : '#93c5fd';
+          modeBadge.style.color = isFoco ? 'var(--snoopy-module-accent)' : '#93c5fd';
           modeBadge.style.background = isFoco ? 'rgba(74, 222, 128, 0.15)' : 'rgba(96, 165, 250, 0.15)';
         }
       },
-      onRunningChange: ({ isRunning }) => {
+      onRunningChange: ({ isRunning, state }) => {
         if (typeof window !== 'undefined' && timer) {
           window.__snoopyPomodoroState = {
             isRunning,
+            state: state || timer.state,
             endAt: timer.endAt,
             remainingSeconds: timer.remainingSeconds,
+            remainingMs: timer.remainingMs,
             currentMode: timer.currentMode,
             alvoAtual: timer.alvoAtual
           };
@@ -1184,14 +1398,14 @@ return {
         if (btnMainPlay) {
           btnMainPlay.innerHTML = '';
           const iconName = isRunning ? 'pause' : 'play';
-          if (renderIconFn) renderIconFn(btnMainPlay, iconName, { size: 16, color: '#070709' });
+          if (renderIconFn) renderIconFn(btnMainPlay, iconName, { size: 16, color: 'var(--snoopy-btn-text, #070709)' });
         }
         if (PomodoroAudio && PomodoroAudio.obterAutoSync()) {
           if (isRunning && timer && timer.currentMode === 'foco') {
             PomodoroAudio.iniciar().then(() => {
               PomodoroAudio.tocar();
               if (typeof atualizarIconeAudio === 'function') atualizarIconeAudio();
-            }).catch(() => {});
+            }).catch(() => { });
           } else {
             PomodoroAudio.pausar();
             if (typeof atualizarIconeAudio === 'function') atualizarIconeAudio();
@@ -1212,26 +1426,27 @@ return {
     if (timer) {
       const isFoco = timer.currentMode === 'foco';
       if (circleBar) {
-        circleBar.style.stroke = isFoco ? '#4ade80' : '#60a5fa';
+        circleBar.style.stroke = isFoco ? 'var(--snoopy-module-accent)' : '#60a5fa';
         if (typeof circleBar.classList?.toggle === 'function') {
           circleBar.classList.toggle('is-break', !isFoco);
         }
       }
       if (cycleLabel) {
         cycleLabel.textContent = isFoco ? `Ciclo ${completedCyclesToday + 1} de ${dailyGoal}` : 'PAUSA';
-        cycleLabel.style.color = isFoco ? '#86efac' : '#93c5fd';
+        cycleLabel.style.color = isFoco ? 'var(--snoopy-module-accent)' : '#93c5fd';
       }
       const initStr = timer.formatarTempo(timer.remainingSeconds);
       if (timerDisplay) timerDisplay.textContent = initStr;
       const initOffset = timer.calcularStrokeOffset(timer.remainingSeconds, timer.totalSeconds);
       if (circleBar) circleBar.style.strokeDashoffset = initOffset;
 
-      if (globalState && globalState.isRunning && globalState.endAt) {
+      if (globalState && globalState.isRunning && globalState.state === 'running' && globalState.endAt) {
         if (globalState.endAt > Date.now()) {
           timer.start();
         } else {
           // Tempo finalizado durante estado inativo / segundo plano
           timer.remainingSeconds = 0;
+          timer.remainingMs = 0;
           timer.onTick({ remaining: 0, total: timer.totalSeconds, timeStr: '00:00', offset: 0 });
           timer.onComplete({ mode: timer.currentMode, alvo: timer.alvoAtual });
         }
@@ -1363,7 +1578,7 @@ return {
 
     // Ações do Player Dock
     if (btnMainPlay) btnMainPlay.onclick = () => { if (timer) timer.toggle(); };
-    if (btnReset) btnReset.onclick = () => { 
+    if (btnReset) btnReset.onclick = () => {
       if (typeof window !== 'undefined') window.__snoopyPomodoroCombo = 0;
       if (timer) timer.reset();
       if (PomodoroAudio && PomodoroAudio.obterAutoSync()) {

@@ -43,7 +43,7 @@ return {
     };
 
     // Helper puro de renderização de Mini Gráfico de Barras SVG (7 Dias)
-    const renderMiniGraficoBarras = ({ dias, meta, unidade, corAtiva = '#60a5fa', corMeta = '#86efac', corVazia = '#262633' }) => {
+    const renderMiniGraficoBarras = ({ dias, meta, unidade, corAtiva = 'var(--interactive-accent, #60a5fa)', corMeta = 'var(--snoopy-module-accent)', corVazia = '#262633' }) => {
       const maxVal = Math.max(meta, ...dias.map(d => d.valor || 0), 1);
       const chartH = 28;
       const barW = 13;
@@ -257,7 +257,7 @@ return {
           </span>
           <span class="snoopy-micro" style="font-weight: 700; color: #60a5fa;">${minutosSemanaTxt}</span>
         </div>
-        ${renderMiniGraficoBarras({ dias: ultimos7Estudos, meta: metaMinutos, unidade: 'min', corAtiva: '#60a5fa', corMeta: '#86efac' })}
+        ${renderMiniGraficoBarras({ dias: ultimos7Estudos, meta: metaMinutos, unidade: 'min', corAtiva: '#60a5fa', corMeta: 'var(--snoopy-module-accent)' })}
         <div style="display: flex; justify-content: space-between; align-items: center; font-size: 10.5px; color: #71717a; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 3px;">
           <span>Foco Hoje: <strong style="color: var(--text-normal);">${minutosHojeTxt}</strong></span>
           <span>Meta: ${metaMinutos}m</span>
@@ -282,10 +282,10 @@ return {
                 <span class="snoopy-icon-ritmo-ciclo"></span>
                 <span>Ritmo do Ciclo</span>
               </span>
-              <span class="snoopy-micro" style="font-weight: 700; color: #86efac;">${questoesHoje} questões</span>
+              <span class="snoopy-micro" style="font-weight: 700; color: var(--snoopy-module-accent);">${questoesHoje} questões</span>
             </div>
             <div class="snoopy-prog-track" style="height: 4px; width: 100%;">
-              <div class="snoopy-prog-fill" style="width: ${pctMetaFoco}%; background: ${minutosHoje >= metaMinutos ? '#86efac' : 'var(--interactive-accent, #60a5fa)'};"></div>
+              <div class="snoopy-prog-fill" style="width: ${pctMetaFoco}%; background: ${minutosHoje >= metaMinutos ? 'var(--snoopy-module-accent)' : 'var(--interactive-accent, #60a5fa)'};"></div>
             </div>
           </div>
           <div style="display: flex; flex-direction: column; gap: 3px; margin-top: 2px;">
@@ -318,10 +318,10 @@ return {
                 <span class="snoopy-icon-ritmo-ciclo"></span>
                 <span>Ritmo do Ciclo</span>
               </span>
-              <span class="snoopy-micro" style="font-weight: 700; color: ${minutosHoje >= metaMinutos ? '#86efac' : '#a1a1aa'};">${minutosHoje}/${metaMinutos}m</span>
+              <span class="snoopy-micro" style="font-weight: 700; color: ${minutosHoje >= metaMinutos ? 'var(--snoopy-module-accent)' : '#a1a1aa'};">${minutosHoje}/${metaMinutos}m</span>
             </div>
             <div class="snoopy-prog-track" style="height: 4px; width: 100%;">
-              <div class="snoopy-prog-fill" style="width: ${pctMetaFoco}%; background: ${minutosHoje >= metaMinutos ? '#86efac' : 'var(--interactive-accent, #60a5fa)'};"></div>
+              <div class="snoopy-prog-fill" style="width: ${pctMetaFoco}%; background: ${minutosHoje >= metaMinutos ? 'var(--snoopy-module-accent)' : 'var(--interactive-accent, #60a5fa)'};"></div>
             </div>
           </div>
           <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; margin-top: 2px;">
@@ -396,7 +396,7 @@ return {
             ESTANTE
             ${ctx.UIKit && ctx.UIKit.ICONS && ctx.UIKit.ICONS['arrow-up-right'] ? `<span class="snoopy-icon" style="width: 13px; height: 13px; opacity: 0.6;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13">${ctx.UIKit.ICONS['arrow-up-right']}</svg></span>` : ''}
           </a>
-          ${streakLeitura > 0 ? `<span class="snoopy-micro" style="padding: 1px 6px; border-radius: 4px; background: rgba(134, 239, 172, 0.1); color: #86efac; border: 1px solid rgba(134, 239, 172, 0.2); font-weight: 600;" title="${pagsHoje} págs lidas hoje">${streakLeitura}d ofensiva</span>` : ''}
+          ${streakLeitura > 0 ? `<span class="snoopy-micro" style="padding: 1px 6px; border-radius: 4px; background: rgba(134, 239, 172, 0.1); color: var(--snoopy-module-accent); border: 1px solid rgba(134, 239, 172, 0.2); font-weight: 600;" title="${pagsHoje} págs lidas hoje">${streakLeitura}d ofensiva</span>` : ''}
         </div>
         <span class="snoopy-card-subtitle">Leituras ativas e biblioteca</span>
       </div>
@@ -571,9 +571,9 @@ return {
             <span class="snoopy-icon-chart-leituras"></span>
             <span>Páginas na Semana</span>
           </span>
-          <span class="snoopy-micro" style="font-weight: 700; color: #86efac;">${pagsSemana} págs</span>
+          <span class="snoopy-micro" style="font-weight: 700; color: var(--snoopy-module-accent);">${pagsSemana} págs</span>
         </div>
-        ${renderMiniGraficoBarras({ dias: ultimos7Leituras, meta: metaDiariaLeitura, unidade: 'págs', corAtiva: '#60a5fa', corMeta: '#86efac' })}
+        ${renderMiniGraficoBarras({ dias: ultimos7Leituras, meta: metaDiariaLeitura, unidade: 'págs', corAtiva: '#60a5fa', corMeta: 'var(--snoopy-module-accent)' })}
         <div style="display: flex; justify-content: space-between; align-items: center; font-size: 10.5px; color: #71717a; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 3px;">
           <span>Lidas Hoje: <strong style="color: var(--text-normal);">${pagsHoje} págs</strong></span>
           <span>Meta: ${metaDiariaLeitura}p</span>
@@ -581,7 +581,7 @@ return {
       `;
 
       const iconChartLeituras = chartLeiturasCard.querySelector('.snoopy-icon-chart-leituras');
-      if (iconChartLeituras && ctx.renderIcon) ctx.renderIcon(iconChartLeituras, 'bar-chart-3', { size: 12, color: '#86efac' });
+      if (iconChartLeituras && ctx.renderIcon) ctx.renderIcon(iconChartLeituras, 'bar-chart-3', { size: 12, color: 'var(--snoopy-module-accent)' });
 
       // 2. Card de Ritmo Diário & Fila do Acervo
       const outrosLivros = listaLivros.filter(l => l.file.path !== livroLendo.file.path).slice(0, 3);
@@ -598,10 +598,10 @@ return {
                 <span class="snoopy-icon-meta-target"></span>
                 <span>Ritmo Diário</span>
               </span>
-              <span class="snoopy-micro" style="font-weight: 700; color: ${pagsHoje >= metaDiariaLeitura ? '#86efac' : '#a1a1aa'};">${pagsHoje}/${metaDiariaLeitura} págs</span>
+              <span class="snoopy-micro" style="font-weight: 700; color: ${pagsHoje >= metaDiariaLeitura ? 'var(--snoopy-module-accent)' : '#a1a1aa'};">${pagsHoje}/${metaDiariaLeitura} págs</span>
             </div>
             <div class="snoopy-prog-track" style="height: 4px; width: 100%;">
-              <div class="snoopy-prog-fill" style="width: ${pctMetaDiaria}%; background: ${pagsHoje >= metaDiariaLeitura ? '#86efac' : 'var(--interactive-accent, #60a5fa)'};"></div>
+              <div class="snoopy-prog-fill" style="width: ${pctMetaDiaria}%; background: ${pagsHoje >= metaDiariaLeitura ? 'var(--snoopy-module-accent)' : 'var(--interactive-accent, #60a5fa)'};"></div>
             </div>
           </div>
           <div style="display: flex; flex-direction: column; gap: 3px; margin-top: 2px;">
@@ -634,10 +634,10 @@ return {
                 <span class="snoopy-icon-meta-target"></span>
                 <span>Ritmo Diário</span>
               </span>
-              <span class="snoopy-micro" style="font-weight: 700; color: ${pagsHoje >= metaDiariaLeitura ? '#86efac' : '#a1a1aa'};">${pagsHoje}/${metaDiariaLeitura} págs</span>
+              <span class="snoopy-micro" style="font-weight: 700; color: ${pagsHoje >= metaDiariaLeitura ? 'var(--snoopy-module-accent)' : '#a1a1aa'};">${pagsHoje}/${metaDiariaLeitura} págs</span>
             </div>
             <div class="snoopy-prog-track" style="height: 4px; width: 100%;">
-              <div class="snoopy-prog-fill" style="width: ${pctMetaDiaria}%; background: ${pagsHoje >= metaDiariaLeitura ? '#86efac' : 'var(--interactive-accent, #60a5fa)'};"></div>
+              <div class="snoopy-prog-fill" style="width: ${pctMetaDiaria}%; background: ${pagsHoje >= metaDiariaLeitura ? 'var(--snoopy-module-accent)' : 'var(--interactive-accent, #60a5fa)'};"></div>
             </div>
           </div>
           <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; margin-top: 2px;">

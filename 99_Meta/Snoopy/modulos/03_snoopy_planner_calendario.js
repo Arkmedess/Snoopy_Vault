@@ -349,7 +349,7 @@ return {
               <span class="snoopy-micro" style="padding: 2px 7px; border-radius: 4px; background: rgba(96, 165, 250, 0.12); color: #93c5fd; border: 1px solid rgba(96, 165, 250, 0.2);">${totalBlocosMes} bloco(s)</span>
               <span class="snoopy-micro" style="padding: 2px 7px; border-radius: 4px; background: rgba(168, 85, 247, 0.12); color: #d8b4fe; border: 1px solid rgba(168, 85, 247, 0.2);">${revisoesNoMes} revisão(ões)</span>
               <span class="snoopy-micro" style="padding: 2px 7px; border-radius: 4px; background: rgba(248, 113, 113, 0.12); color: #fca5a5; border: 1px solid rgba(248, 113, 113, 0.2);">${tarefasNoMes} tarefa(s) pendente(s)</span>
-              <span class="snoopy-micro" style="padding: 2px 7px; border-radius: 4px; background: rgba(134, 239, 172, 0.12); color: #86efac; border: 1px solid rgba(134, 239, 172, 0.2);">${diasComFocoMes} dia(s) com foco</span>
+              <span class="snoopy-micro" style="padding: 2px 7px; border-radius: 4px; background: rgba(134, 239, 172, 0.12); color: var(--snoopy-module-accent); border: 1px solid rgba(134, 239, 172, 0.2);">${diasComFocoMes} dia(s) com foco</span>
             </div>
           </div>
 
@@ -517,7 +517,7 @@ return {
 
         // Badge superior: HOJE ou Foco Realizado
         const focoBadge = minFeitos > 0
-          ? `<span class="snoopy-micro" style="font-size: 8px; padding: 1px 4px; border-radius: 2px; background: rgba(134, 239, 172, 0.16); color: #86efac; font-weight: 700;">${minFeitos >= 60 ? `${Math.floor(minFeitos / 60)}h` : `${minFeitos}m`}</span>`
+          ? `<span class="snoopy-micro" style="font-size: 8px; padding: 1px 4px; border-radius: 2px; background: rgba(134, 239, 172, 0.16); color: var(--snoopy-module-accent); font-weight: 700;">${minFeitos >= 60 ? `${Math.floor(minFeitos / 60)}h` : `${minFeitos}m`}</span>`
           : (isHoje ? `<span class="snoopy-micro" style="font-size: 7.5px; padding: 1px 4px; border-radius: 2px; background: var(--interactive-accent, #60a5fa); color: #000000; font-weight: 800;">HOJE</span>` : '<span></span>');
 
         // Tags dentro da célula do calendário (sem emojis literais)
@@ -541,8 +541,8 @@ return {
             `);
           } else if (dadosTarefa.concluidas > 0) {
             tagsDoDia.push(`
-              <div class="snoopy-micro" style="padding: 2px 4px; border-radius: 3px; background: rgba(134, 239, 172, 0.12); border-left: 2px solid #86efac; color: #86efac; font-size: 8px; line-height: 1.2; display: flex; align-items: center; gap: 3px;" title="${dadosTarefa.concluidas} tarefa(s) concluídas">
-                ${getSvgIcon('check', 8, '#86efac')}
+              <div class="snoopy-micro" style="padding: 2px 4px; border-radius: 3px; background: rgba(134, 239, 172, 0.12); border-left: 2px solid var(--snoopy-module-accent); color: var(--snoopy-module-accent); font-size: 8px; line-height: 1.2; display: flex; align-items: center; gap: 3px;" title="${dadosTarefa.concluidas} tarefa(s) concluídas">
+                ${getSvgIcon('check', 8, 'var(--snoopy-module-accent)')}
                 <span>Concluídas</span>
               </div>
             `);
@@ -833,7 +833,7 @@ return {
           let extraHtml = '';
 
           if (item.categoria === 'tarefa') {
-            bordaCor = item.statusPrazo === 'atrasada' ? '#f87171' : (item.completed ? '#86efac' : '#fb923c');
+            bordaCor = item.statusPrazo === 'atrasada' ? '#f87171' : (item.completed ? 'var(--snoopy-module-accent)' : '#fb923c');
             badgeCatHtml = item.statusPrazo === 'atrasada'
               ? `<span class="snoopy-micro" style="padding: 1px 6px; border-radius: 3px; font-weight: 700; font-size: 8px; background: rgba(248, 113, 113, 0.15); border: 1px solid rgba(248, 113, 113, 0.3); color: #fca5a5; display: inline-flex; align-items: center; gap: 3px;">${getSvgIcon('check-circle', 9, '#f87171')} TAREFA ATRASADA</span>`
               : `<span class="snoopy-micro" style="padding: 1px 6px; border-radius: 3px; font-weight: 700; font-size: 8px; background: rgba(251, 146, 60, 0.12); border: 1px solid rgba(251, 146, 60, 0.25); color: #fdba74; display: inline-flex; align-items: center; gap: 3px;">${getSvgIcon('check-circle', 9, '#fb923c')} TAREFA</span>`;
@@ -841,7 +841,7 @@ return {
             dataBadgeHtml = `<span class="snoopy-meta" style="font-size: 9.5px; font-weight: 600; color: ${item.statusPrazo === 'atrasada' ? '#f87171' : (item.dataStr === todayStr ? '#60a5fa' : 'var(--text-muted)')};">${item.statusPrazo === 'atrasada' ? 'Atrasada' : (item.dataStr === todayStr ? 'Hoje' : formatarDataBR(item.dataStr).slice(0, 5))}</span>`;
 
             actionsHtml = `
-              <button class="snoopy-btn-action btn-act-foco" style="font-size: 9.5px; padding: 2px 6px; height: 20px; display: inline-flex; align-items: center; gap: 3px;" title="Iniciar Foco no Pomodoro">${getSvgIcon('play', 9, '#86efac')} <span>Foco</span></button>
+              <button class="snoopy-btn-action btn-act-foco" style="font-size: 9.5px; padding: 2px 6px; height: 20px; display: inline-flex; align-items: center; gap: 3px;" title="Iniciar Foco no Pomodoro">${getSvgIcon('play', 9, 'var(--snoopy-module-accent)')} <span>Foco</span></button>
             `;
           } else if (item.categoria === 'estudo') {
             bordaCor = '#60a5fa';
@@ -849,7 +849,7 @@ return {
             dataBadgeHtml = `<span class="snoopy-meta" style="font-size: 9.5px; font-weight: 600; color: ${item.dataStr === todayStr ? '#60a5fa' : 'var(--text-muted)'};">${item.dataStr === todayStr ? 'Hoje' : formatarDataBR(item.dataStr).slice(0, 5)}</span>`;
 
             actionsHtml = `
-              <button class="snoopy-btn-action btn-act-foco" style="font-size: 9.5px; padding: 2px 6px; height: 20px; display: inline-flex; align-items: center; gap: 3px;" title="Iniciar Foco no Pomodoro">${getSvgIcon('play', 9, '#86efac')} <span>Foco</span></button>
+              <button class="snoopy-btn-action btn-act-foco" style="font-size: 9.5px; padding: 2px 6px; height: 20px; display: inline-flex; align-items: center; gap: 3px;" title="Iniciar Foco no Pomodoro">${getSvgIcon('play', 9, 'var(--snoopy-module-accent)')} <span>Foco</span></button>
               <button class="snoopy-btn-action btn-act-del" data-dia="${item.dataStr}" data-idx="${item.idx}" style="font-size: 9.5px; padding: 2px 5px; height: 20px;" title="Remover agendamento">${getSvgIcon('x', 9, 'var(--text-muted)')}</button>
             `;
           } else if (item.categoria === 'revisao') {
@@ -861,9 +861,9 @@ return {
               <button class="snoopy-btn-action btn-act-foco" style="font-size: 9.5px; padding: 2px 6px; height: 20px; display: inline-flex; align-items: center; gap: 3px;" title="Revisar no Pomodoro">${getSvgIcon('play', 9, '#c084fc')} <span>Revisar</span></button>
             `;
           } else if (item.categoria === 'leitura') {
-            bordaCor = '#86efac';
-            badgeCatHtml = `<span class="snoopy-micro" style="padding: 1px 6px; border-radius: 3px; font-weight: 700; font-size: 8px; background: rgba(134, 239, 172, 0.12); border: 1px solid rgba(134, 239, 172, 0.25); color: #86efac; display: inline-flex; align-items: center; gap: 3px;">${getSvgIcon('book', 9, '#86efac')} LEITURA</span>`;
-            dataBadgeHtml = `<span class="snoopy-meta" style="font-size: 9.5px; font-weight: 600; color: #86efac;">Meta Diária</span>`;
+            bordaCor = 'var(--snoopy-module-accent)';
+            badgeCatHtml = `<span class="snoopy-micro" style="padding: 1px 6px; border-radius: 3px; font-weight: 700; font-size: 8px; background: rgba(134, 239, 172, 0.12); border: 1px solid rgba(134, 239, 172, 0.25); color: var(--snoopy-module-accent); display: inline-flex; align-items: center; gap: 3px;">${getSvgIcon('book', 9, 'var(--snoopy-module-accent)')} LEITURA</span>`;
+            dataBadgeHtml = `<span class="snoopy-meta" style="font-size: 9.5px; font-weight: 600; color: var(--snoopy-module-accent);">Meta Diária</span>`;
 
             actionsHtml = `
               <button class="snoopy-btn-action btn-pag-5" data-path="${item.path}" style="font-size: 9px; padding: 2px 5px; height: 20px;" title="Registrar +5 páginas">+5p</button>
@@ -872,7 +872,7 @@ return {
 
             extraHtml = `
               <div style="width: 100%; height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; margin-top: 3px;">
-                <div style="width: ${item.percent}%; height: 100%; background: #86efac; border-radius: 2px;"></div>
+                <div style="width: ${item.percent}%; height: 100%; background: var(--snoopy-module-accent); border-radius: 2px;"></div>
               </div>
             `;
           }
