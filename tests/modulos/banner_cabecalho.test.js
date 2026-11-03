@@ -81,7 +81,7 @@ describe('Módulo 01 - Banner e Cabeçalho (01_snoopy_banner_cabecalho)', () => 
     const navPills = root.querySelector('.snoopy-nav-pills');
     assert.ok(navPills);
     const botoes = navPills.querySelectorAll('button');
-    assert.strictEqual(botoes.length, 7);
+    assert.strictEqual(botoes.length, 8);
 
     // Disparar clique em HOJE
     const btnHoje = botoes[0];

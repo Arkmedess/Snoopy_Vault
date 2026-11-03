@@ -52,7 +52,7 @@ const HabitosView = {
 
     const habitsFooter = habitsCard.createEl('div', { 
       cls: 'snoopy-micro',
-      attr: { style: 'display: flex; justify-content: space-between; align-items: center; color: #71717a; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.06);' } 
+      attr: { style: 'display: flex; justify-content: space-between; align-items: center; color: var(--snoopy-muted); padding-top: 6px; border-top: 1px solid var(--snoopy-border);' } 
     });
     habitsFooter.innerHTML = `
       <span id="snoopy-open-daily-link" class="snoopy-meta" style="cursor: pointer;" title="Abrir nota diária de hoje">01_Inbox/Diário</span>
@@ -112,10 +112,10 @@ const HabitosView = {
           <div>
             <div class="snoopy-modal-label" style="margin-bottom: 5px;">Período do Dia:</div>
             <div id="habit-periodos" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;">
-              <button type="button" class="chip-h-p" data-val="manha" style="background: rgba(255,255,255,0.04); color: #a1a1aa; border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; padding: 4px; font-size: 10.5px; cursor: pointer;">Manhã</button>
-              <button type="button" class="chip-h-p" data-val="tarde" style="background: rgba(255,255,255,0.04); color: #a1a1aa; border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; padding: 4px; font-size: 10.5px; cursor: pointer;">Tarde</button>
-              <button type="button" class="chip-h-p" data-val="noite" style="background: rgba(255,255,255,0.04); color: #a1a1aa; border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; padding: 4px; font-size: 10.5px; cursor: pointer;">Noite</button>
-              <button type="button" class="chip-h-p active" data-val="qualquer" style="background: rgba(255,255,255,0.12); color: #ffffff; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; padding: 4px; font-size: 10.5px; cursor: pointer;">Livre</button>
+              <button type="button" class="chip-h-p" data-val="manha" style="background: var(--snoopy-panel); color: var(--snoopy-muted); border: 1px solid var(--snoopy-border); border-radius: 4px; padding: 4px; font-size: 10.5px; cursor: pointer;">Manhã</button>
+              <button type="button" class="chip-h-p" data-val="tarde" style="background: var(--snoopy-panel); color: var(--snoopy-muted); border: 1px solid var(--snoopy-border); border-radius: 4px; padding: 4px; font-size: 10.5px; cursor: pointer;">Tarde</button>
+              <button type="button" class="chip-h-p" data-val="noite" style="background: var(--snoopy-panel); color: var(--snoopy-muted); border: 1px solid var(--snoopy-border); border-radius: 4px; padding: 4px; font-size: 10.5px; cursor: pointer;">Noite</button>
+              <button type="button" class="chip-h-p active" data-val="qualquer" style="background: var(--snoopy-card-hover); color: var(--snoopy-text); border: 1px solid var(--snoopy-module-accent); border-radius: 4px; padding: 4px; font-size: 10.5px; cursor: pointer; font-weight: 600;">Livre</button>
             </div>
           </div>
 
@@ -123,14 +123,14 @@ const HabitosView = {
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
               <span class="snoopy-modal-label">Frequência & Dias:</span>
               <div style="display: flex; gap: 4px;">
-                <button type="button" id="btn-pre-todos" style="background: none; border: none; font-size: 10px; color: #60a5fa; cursor: pointer; text-decoration: underline;">Todos</button>
-                <button type="button" id="btn-pre-uteis" style="background: none; border: none; font-size: 10px; color: #60a5fa; cursor: pointer; text-decoration: underline;">Seg-Sex</button>
-                <button type="button" id="btn-pre-fds" style="background: none; border: none; font-size: 10px; color: #60a5fa; cursor: pointer; text-decoration: underline;">FDS</button>
+                <button type="button" id="btn-pre-todos" style="background: none; border: none; font-size: 10px; color: var(--snoopy-module-accent); cursor: pointer; text-decoration: underline;">Todos</button>
+                <button type="button" id="btn-pre-uteis" style="background: none; border: none; font-size: 10px; color: var(--snoopy-module-accent); cursor: pointer; text-decoration: underline;">Seg-Sex</button>
+                <button type="button" id="btn-pre-fds" style="background: none; border: none; font-size: 10px; color: var(--snoopy-module-accent); cursor: pointer; text-decoration: underline;">FDS</button>
               </div>
             </div>
             <div id="habit-dias" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;">
               ${['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(dia => `
-                <button type="button" class="chip-h-d" data-dia="${dia}" style="background: ${diasSelecionados.includes(dia) ? 'rgba(134,239,172,0.12)' : 'rgba(255,255,255,0.03)'}; color: ${diasSelecionados.includes(dia) ? 'var(--snoopy-module-accent)' : '#71717a'}; border: 1px solid ${diasSelecionados.includes(dia) ? 'rgba(134,239,172,0.35)' : 'rgba(255,255,255,0.07)'}; border-radius: 4px; padding: 4px 0; font-size: 10px; font-weight: 600; cursor: pointer;">${dia}</button>
+                <button type="button" class="chip-h-d" data-dia="${dia}" style="background: ${diasSelecionados.includes(dia) ? 'rgba(134,239,172,0.15)' : 'var(--snoopy-panel)'}; color: ${diasSelecionados.includes(dia) ? 'var(--snoopy-module-accent)' : 'var(--snoopy-muted)'}; border: 1px solid ${diasSelecionados.includes(dia) ? 'var(--snoopy-module-accent)' : 'var(--snoopy-border)'}; border-radius: 4px; padding: 4px 0; font-size: 10px; font-weight: 600; cursor: pointer;">${dia}</button>
               `).join('')}
             </div>
           </div>
@@ -138,13 +138,13 @@ const HabitosView = {
           <div>
             <div class="snoopy-modal-label" style="margin-bottom: 5px;">Escopo:</div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-              <div id="scope-persistente" style="background: rgba(134,239,172,0.08); border: 1px solid var(--snoopy-module-accent); border-radius: 6px; padding: 6px 8px; cursor: pointer;">
+              <div id="scope-persistente" style="background: rgba(134,239,172,0.1); border: 1px solid var(--snoopy-module-accent); border-radius: 6px; padding: 6px 8px; cursor: pointer;">
                 <div style="font-size: 11px; font-weight: 700; color: var(--snoopy-module-accent);">● Persistente</div>
-                <div class="snoopy-micro" style="color: #71717a;">Salva no Template Diário</div>
+                <div class="snoopy-micro" style="color: var(--snoopy-muted);">Salva no Template Diário</div>
               </div>
-              <div id="scope-hoje" style="background: #14141c; border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 6px 8px; cursor: pointer;">
-                <div style="font-size: 11px; font-weight: 700; color: #d4d4d8;">○ Apenas Hoje</div>
-                <div class="snoopy-micro" style="color: #71717a;">Salva só na nota de hoje</div>
+              <div id="scope-hoje" style="background: var(--snoopy-card); border: 1px solid var(--snoopy-border); border-radius: 6px; padding: 6px 8px; cursor: pointer;">
+                <div style="font-size: 11px; font-weight: 700; color: var(--snoopy-text);">○ Apenas Hoje</div>
+                <div class="snoopy-micro" style="color: var(--snoopy-muted);">Salva só na nota de hoje</div>
               </div>
             </div>
           </div>
@@ -269,12 +269,12 @@ const HabitosView = {
 
             items.forEach(item => {
               const row = document.createElement('div');
-              row.style.cssText = 'background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 5px; padding: 6px 8px; display: flex; align-items: center; justify-content: space-between; gap: 6px;';
+              row.style.cssText = 'background: var(--snoopy-panel); border: 1px solid var(--snoopy-border); border-radius: 5px; padding: 6px 8px; display: flex; align-items: center; justify-content: space-between; gap: 6px;';
               
               const leftCol = row.createEl('div', { attr: { style: 'display: flex; align-items: center; gap: 6px; overflow: hidden; flex: 1; min-width: 0;' } });
               leftCol.createEl('span', {
                 text: item.cleanName,
-                attr: { style: 'font-size: 12px; font-weight: 500; color: #ffffff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;' }
+                attr: { style: 'font-size: 12px; font-weight: 500; color: var(--snoopy-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;' }
               });
               if (item.periodoIcon) {
                 const isManha = /manh|🌅/i.test(item.periodoIcon);
@@ -282,7 +282,7 @@ const HabitosView = {
                 const isNoite = /noit|🌙/i.test(item.periodoIcon);
                 const pSpan = leftCol.createEl('span', {
                   attr: {
-                    style: 'font-size: 9.5px; padding: 1px 4px; border-radius: 3px; background: rgba(255,255,255,0.06); display: inline-flex; align-items: center; gap: 3px; flex-shrink: 0;',
+                    style: 'font-size: 9.5px; padding: 1px 4px; border-radius: 3px; background: var(--snoopy-card); border: 1px solid var(--snoopy-border); display: inline-flex; align-items: center; gap: 3px; flex-shrink: 0;',
                     title: `Período: ${isManha ? 'Manhã' : isTarde ? 'Tarde' : 'Noite'}`
                   }
                 });
@@ -293,7 +293,7 @@ const HabitosView = {
                 }
                 pSpan.createEl('span', {
                   text: isManha ? 'Manhã' : isTarde ? 'Tarde' : 'Noite',
-                  attr: { style: 'color: #d4d4d8;' }
+                  attr: { style: 'color: var(--snoopy-muted);' }
                 });
               }
               if (item.freqTag) {
@@ -410,7 +410,7 @@ const HabitosView = {
         const pill = habitsPillsBox.createEl('div', { 
           cls: 'snoopy-habit-pill',
           attr: { 
-            style: `display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 4px 8px; border-radius: 6px; border: 1px solid ${h.checked ? 'rgba(134, 239, 172, 0.35)' : 'rgba(255,255,255,0.08)'}; ${h.checked ? 'background: rgba(134, 239, 172, 0.1);' : 'background: rgba(255,255,255,0.03);'}` 
+            style: `display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 5px 10px; border-radius: 6px; border: 1px solid ${h.checked ? 'var(--snoopy-module-accent)' : 'var(--snoopy-border)'}; ${h.checked ? 'background: var(--snoopy-card-hover);' : 'background: var(--snoopy-panel);'}` 
           }
         });
 
@@ -447,7 +447,7 @@ const HabitosView = {
 
         left.createEl('span', { 
           text: h.cleanName,
-          attr: { style: `font-size: 12px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; ${h.checked ? 'color: var(--snoopy-module-accent); font-weight: 600;' : 'color: #e4e4e7;'}` }
+          attr: { style: `font-size: 12px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; ${h.checked ? 'color: var(--snoopy-module-accent); font-weight: 600; text-decoration: line-through; opacity: 0.85;' : 'color: var(--snoopy-text); font-weight: 500;'}` }
         });
 
         const right = pill.createEl('div', { attr: { style: 'display: flex; align-items: center; gap: 4px; flex-shrink: 0;' } });
@@ -455,13 +455,13 @@ const HabitosView = {
           right.createEl('span', {
             cls: 'snoopy-micro',
             text: h.freqTag,
-            attr: { style: 'color: #71717a; padding: 1px 4px; border-radius: 3px; background: rgba(255,255,255,0.04);' }
+            attr: { style: 'color: var(--snoopy-muted); padding: 1px 5px; border-radius: 4px; background: var(--snoopy-card); border: 1px solid var(--snoopy-border);' }
           });
         }
 
         const btnOpt = right.createEl('button', {
           cls: 'snoopy-btn-icon snoopy-btn-sm',
-          attr: { title: 'Modificar hábito', type: 'button', style: 'width: 22px; height: 22px; min-width: 22px; padding: 0;' }
+          attr: { title: 'Modificar hábito', type: 'button', style: 'width: 22px; height: 22px; min-width: 22px; padding: 0; color: var(--snoopy-muted);' }
         });
         if (renderIcon) renderIcon(btnOpt, 'more-vertical', { size: 12 });
         else btnOpt.textContent = '⋮';

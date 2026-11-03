@@ -401,7 +401,7 @@ const PomodoroJardim = {
             celula.classList.add('is-selected');
 
             const info = this.obterDetalhesDiaHeatmap(mapaFoco, d.dataStr, focusMin, dailyGoal);
-            const statusCor = info.ciclos > 0 ? '#86efac' : '#71717a';
+            const statusCor = info.ciclos > 0 ? 'var(--snoopy-module-accent)' : 'var(--snoopy-muted)';
             const prefixo = d.dataStr === todayStr ? `Hoje (${info.dataFormatada})` : info.dataFormatada;
             const metaTxt = info.atingiuMeta ? ' • Meta Diária' : '';
             inspectionEl.innerHTML = `<span style="color: ${statusCor}; font-weight: 600;">${prefixo} • ${info.ciclos} ciclos (${info.minutos} min)${metaTxt}</span>`;
@@ -410,7 +410,7 @@ const PomodoroJardim = {
           celula.onclick = ativarInspecao;
           celula.onmouseenter = () => {
             const info = this.obterDetalhesDiaHeatmap(mapaFoco, d.dataStr, focusMin, dailyGoal);
-            const statusCor = info.ciclos > 0 ? '#86efac' : '#71717a';
+            const statusCor = info.ciclos > 0 ? 'var(--snoopy-module-accent)' : 'var(--snoopy-muted)';
             const prefixo = d.dataStr === todayStr ? `Hoje (${info.dataFormatada})` : info.dataFormatada;
             const metaTxt = info.atingiuMeta ? ' • Meta Diária' : '';
             inspectionEl.innerHTML = `<span style="color: ${statusCor}; font-weight: 600;">${prefixo} • ${info.ciclos} ciclos (${info.minutos} min)${metaTxt}</span>`;
@@ -429,7 +429,7 @@ const PomodoroJardim = {
         const sel = pomoHeatGrid.querySelector('.snoopy-heat-cell.is-selected');
         const dataAlvo = (sel && typeof sel.getAttribute === 'function' ? sel.getAttribute('data-date') : null) || todayStr;
         const info = this.obterDetalhesDiaHeatmap(mapaFoco, dataAlvo, focusMin, dailyGoal);
-        const statusCor = info.ciclos > 0 ? '#86efac' : '#71717a';
+        const statusCor = info.ciclos > 0 ? 'var(--snoopy-module-accent)' : 'var(--snoopy-muted)';
         const prefixo = dataAlvo === todayStr ? `Hoje (${info.dataFormatada})` : info.dataFormatada;
         const metaTxt = info.atingiuMeta ? ' • Meta Diária' : '';
         inspectionEl.innerHTML = `<span style="color: ${statusCor}; font-weight: 600;">${prefixo} • ${info.ciclos} ciclos (${info.minutos} min)${metaTxt}</span>`;
@@ -438,7 +438,7 @@ const PomodoroJardim = {
 
     if (inspectionEl) {
       const infoHoje = this.obterDetalhesDiaHeatmap(mapaFoco, todayStr, focusMin, dailyGoal);
-      const statusCor = infoHoje.ciclos > 0 ? '#86efac' : '#71717a';
+      const statusCor = infoHoje.ciclos > 0 ? 'var(--snoopy-module-accent)' : 'var(--snoopy-muted)';
       const metaTxt = infoHoje.atingiuMeta ? ' • Meta Diária' : '';
       inspectionEl.innerHTML = `<span style="color: ${statusCor}; font-weight: 600;">Hoje (${infoHoje.dataFormatada}) • ${infoHoje.ciclos} ciclos (${infoHoje.minutos} min)${metaTxt}</span>`;
     }

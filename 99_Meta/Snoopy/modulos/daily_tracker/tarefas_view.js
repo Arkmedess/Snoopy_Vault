@@ -86,6 +86,11 @@ const TarefasView = {
         icon: 'list-checks',
         subtitle: 'O que precisa sair hoje'
       });
+      if (headerEls.actionsBox) {
+        headerEls.actionsBox.style.marginLeft = 'auto';
+        headerEls.actionsBox.style.display = 'flex';
+        headerEls.actionsBox.style.justifyContent = 'flex-end';
+      }
       montarViewSwitcher(headerEls.actionsBox);
       if (typeof abrirModalTemplateTarefa === 'function') {
         addTplBtn = ctx.UIKit.criarBotao(headerEls.actionsBox, {
@@ -109,7 +114,7 @@ const TarefasView = {
           <span class="snoopy-card-subtitle">O que precisa sair hoje</span>
         </div>
       `;
-      const actionsBox = todoHeader.createEl('div', { cls: 'snoopy-toolbar' });
+      const actionsBox = todoHeader.createEl('div', { cls: 'snoopy-toolbar', attr: { style: 'margin-left: auto; display: flex; justify-content: flex-end;' } });
       montarViewSwitcher(actionsBox);
       if (typeof abrirModalTemplateTarefa === 'function') {
         addTplBtn = actionsBox.createEl('button', {

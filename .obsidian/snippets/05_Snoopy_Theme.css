@@ -1069,8 +1069,7 @@ body[data-snoopy-theme] {
    -------------------------------------------------------------------------- */
 .snoopy-header-row {
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
   padding-bottom: 16px;
@@ -1083,11 +1082,12 @@ body[data-snoopy-theme] {
   flex-direction: column;
   gap: 3px;
   min-width: 240px;
+  flex-shrink: 0;
 }
 
 .snoopy-date-title {
   font-family: var(--snoopy-font-display);
-  font-size: 2rem;
+  font-size: 1.85rem;
   font-weight: 700;
   color: var(--snoopy-text);
   letter-spacing: -0.01em;
@@ -1096,9 +1096,36 @@ body[data-snoopy-theme] {
 
 .snoopy-nav-pills {
   display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.snoopy-nav-pills-top-row,
+.snoopy-nav-pills-bottom-row {
+  display: flex;
   align-items: center;
+  gap: 6px;
   flex-wrap: wrap;
-  gap: 8px;
+  justify-content: flex-end;
+}
+
+@media (max-width: 860px) {
+  .snoopy-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .snoopy-nav-pills {
+    align-items: flex-start !important;
+    margin-left: 0 !important;
+    width: 100%;
+  }
+  .snoopy-nav-pills-top-row,
+  .snoopy-nav-pills-bottom-row {
+    justify-content: flex-start !important;
+  }
 }
 
 /* Botões de Ação Rápida Monocromáticos (Clean, Minimalista, Flat) */
@@ -1249,12 +1276,12 @@ button.snoopy-nav-pill-btn:active,
 
 .snoopy-heat-inspection {
   margin-top: 8px !important;
-  padding: 5px 10px !important;
+  padding: 6px 12px !important;
   border-radius: 6px !important;
-  background: rgba(255, 255, 255, 0.02) !important;
-  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  background: var(--snoopy-card) !important;
+  border: 1px solid var(--snoopy-border) !important;
   font-size: 11.5px !important;
-  color: #a1a1aa !important;
+  color: var(--snoopy-text) !important;
   font-family: var(--snoopy-font-sans, inherit) !important;
   text-align: center !important;
   letter-spacing: 0.01em !important;
@@ -1271,11 +1298,11 @@ button.snoopy-nav-pill-btn:active,
 
 /* Terrário do Jardim de Constância (Estilo Minimalista e Sóbrio) */
 .snoopy-planter-pot {
-  width: 40px !important;
-  height: 40px !important;
+  width: 42px !important;
+  height: 42px !important;
   border-radius: 50% !important;
-  background: #14141f !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background: var(--snoopy-panel) !important;
+  border: 1.5px solid var(--snoopy-border) !important;
   box-shadow: none !important;
   display: flex !important;
   align-items: center !important;
@@ -1288,8 +1315,8 @@ button.snoopy-nav-pill-btn:active,
 
 .snoopy-planter-pot:hover {
   transform: none !important;
-  border-color: rgba(255, 255, 255, 0.25) !important;
-  background: #191926 !important;
+  border-color: var(--snoopy-module-accent) !important;
+  background: var(--snoopy-card-hover) !important;
   box-shadow: none !important;
 }
 
@@ -1297,8 +1324,8 @@ button.snoopy-nav-pill-btn:active,
   width: 22px !important;
   height: 22px !important;
   border-radius: 6px !important;
-  background: rgba(20, 20, 28, 0.8) !important;
-  border: 1px solid rgba(74, 222, 128, 0.3) !important;
+  background: var(--snoopy-card) !important;
+  border: 1px solid var(--snoopy-border) !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -1308,15 +1335,15 @@ button.snoopy-nav-pill-btn:active,
 }
 
 .snoopy-grove-tree:hover {
-  border-color: #86efac !important;
-  background: rgba(74, 222, 128, 0.15) !important;
+  border-color: var(--snoopy-module-accent) !important;
+  background: var(--snoopy-card-hover) !important;
 }
 
-.heat-lvl-0 { background-color: var(--heat-empty); border: 1px solid rgba(255, 255, 255, 0.04); }
-.heat-lvl-1 { background-color: #164e32; }
-.heat-lvl-2 { background-color: #1e7e48; }
-.heat-lvl-3 { background-color: #22c55e; }
-.heat-lvl-4 { background-color: var(--snoopy-green-bright); }
+.heat-lvl-0 { background-color: var(--snoopy-card) !important; border: 1px solid var(--snoopy-border) !important; }
+.heat-lvl-1 { background-color: #166534 !important; border: 1px solid rgba(22, 101, 52, 0.4) !important; }
+.heat-lvl-2 { background-color: #15803d !important; border: 1px solid rgba(21, 128, 61, 0.5) !important; }
+.heat-lvl-3 { background-color: #16a34a !important; border: 1px solid rgba(22, 163, 74, 0.6) !important; }
+.heat-lvl-4 { background-color: #22c55e !important; border: 1px solid #4ade80 !important; }
 
 /* Botões Padronizados Flat & Minimalistas (Compatíveis com Dark/Light) */
 .snoopy-container .snoopy-btn-action,
@@ -1543,6 +1570,11 @@ button.snoopy-btn-danger:hover {
   margin-bottom: 12px !important;
   gap: 10px !important;
   flex-wrap: wrap !important;
+}
+
+.snoopy-card-header > .snoopy-toolbar:last-child {
+  margin-left: auto !important;
+  justify-content: flex-end !important;
 }
 
 .snoopy-toolbar {
@@ -1994,11 +2026,11 @@ button.snoopy-btn-danger:hover {
   align-items: center !important;
   gap: 7px !important;
   padding: 5px 12px !important;
-  background: rgba(255, 255, 255, 0.04) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 20px !important;
+  background: var(--snoopy-panel) !important;
+  border: 1px solid var(--snoopy-border) !important;
+  border-radius: 8px !important;
   font-size: var(--snoopy-fs-small, 12px) !important;
-  color: #d4d4d8 !important;
+  color: var(--snoopy-text) !important;
   cursor: pointer !important;
   transition: all 0.12s ease !important;
   user-select: none !important;
@@ -2006,8 +2038,45 @@ button.snoopy-btn-danger:hover {
 
 .snoopy-habit-pill:hover {
   background: var(--snoopy-card-hover) !important;
-  border-color: var(--snoopy-border) !important;
+  border-color: var(--snoopy-module-accent) !important;
   color: var(--snoopy-text) !important;
+}
+
+/* Checkbox Circular Snoopy */
+input[type="checkbox"].snoopy-circle-check {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  width: 15px !important;
+  height: 15px !important;
+  border-radius: 50% !important;
+  border: 1.5px solid var(--snoopy-border) !important;
+  background: var(--snoopy-card) !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.15s ease !important;
+  margin: 0 !important;
+  flex-shrink: 0 !important;
+  position: relative !important;
+}
+
+input[type="checkbox"].snoopy-circle-check:checked {
+  background: var(--snoopy-module-accent) !important;
+  border-color: var(--snoopy-module-accent) !important;
+}
+
+input[type="checkbox"].snoopy-circle-check:checked::after {
+  content: '' !important;
+  position: absolute !important;
+  top: 2px !important;
+  left: 4.5px !important;
+  width: 3.5px !important;
+  height: 6.5px !important;
+  border: solid #ffffff !important;
+  border-width: 0 1.8px 1.8px 0 !important;
+  transform: rotate(45deg) !important;
+  display: block !important;
 }
 
 /* --------------------------------------------------------------------------
@@ -2981,19 +3050,20 @@ button.snoopy-btn-danger:hover {
   display: flex !important;
   align-items: center !important;
   gap: 12px !important;
-  padding: 8px 12px !important;
-  background: #13131c !important;
+  padding: 10px 14px !important;
+  background: var(--snoopy-card) !important;
   border-radius: 8px !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  margin: 4px 0 8px 0 !important;
+  border: 1px solid var(--snoopy-border) !important;
+  margin: 4px 0 10px 0 !important;
   cursor: pointer !important;
   transition: border-color 0.15s ease, background 0.15s ease !important;
   box-shadow: none !important;
+  color: var(--snoopy-text) !important;
 }
 
 .snoopy-preview-hub-card:hover {
-  border-color: rgba(255, 255, 255, 0.18) !important;
-  background: #171723 !important;
+  border-color: var(--snoopy-module-accent) !important;
+  background: var(--snoopy-card-hover) !important;
   box-shadow: none !important;
 }
 

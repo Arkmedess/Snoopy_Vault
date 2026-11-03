@@ -86,33 +86,8 @@ return {
           <input id="cfg-break" class="snoopy-time-chip-input" type="number" value="${breakMin}" min="1" max="30" aria-label="Tempo de pausa em minutos">
           <span class="snoopy-time-chip-unit">m</span>
         </label>
-        <button id="snoopy-btn-header-shop" class="snoopy-shop-trigger-btn" title="Central de Customizações & Loja" aria-label="Abrir Loja de Customizações" type="button">
-          <span class="snoopy-icon-header-shop"></span>
-        </button>
       </div>
     `;
-
-    const btnHeaderShop = pomoHeader.querySelector('#snoopy-btn-header-shop');
-    if (btnHeaderShop) {
-      if (renderIconFn) {
-        const iconSpan = btnHeaderShop.querySelector('.snoopy-icon-header-shop');
-        renderIconFn(iconSpan, 'shopping-bag', { size: 14, color: '#facc15' });
-      }
-      btnHeaderShop.onclick = async () => {
-        if (ShopModal && typeof ShopModal.abrir === 'function') {
-          await ShopModal.abrir(app, {
-            ModalFactory,
-            ShopStore,
-            PomodoroAudio,
-            renderIcon: renderIconFn,
-            onAtualizar: async () => {
-              await atualizarTelasJardim();
-              if (typeof popularFaixasAudio === 'function') await popularFaixasAudio();
-            }
-          });
-        }
-      };
-    }
 
 
     // Banner de Alvo de Foco Selecionado
@@ -252,29 +227,6 @@ return {
       cls: 'snoopy-player-btn-icon snoopy-audio-toggle',
       attr: { title: 'Tocar / Pausar áudio de foco', type: 'button' }
     });
-
-    // Botão de atalho para a Loja na categoria Áudios
-    const btnAudioShop = audioDock.createEl('button', {
-      cls: 'snoopy-player-btn-icon snoopy-audio-shop-btn',
-      attr: { title: 'Desbloquear novas faixas de som na Loja', type: 'button', 'aria-label': 'Abrir loja na categoria de áudio' }
-    });
-    if (renderIconFn) renderIconFn(btnAudioShop, 'shopping-bag', { size: 13, color: '#facc15' });
-    btnAudioShop.onclick = async () => {
-      if (ShopModal && typeof ShopModal.abrir === 'function') {
-        await ShopModal.abrir(app, {
-          ModalFactory,
-          ShopStore,
-          PomodoroAudio,
-          categoriaInicial: 'audio',
-          renderIcon: renderIconFn,
-          onAtualizar: async () => {
-            if (typeof popularFaixasAudio === 'function') await popularFaixasAudio();
-            await atualizarTelasJardim();
-          }
-        });
-      }
-    };
-
 
     const atualizarIconeAudio = () => {
       if (!btnAudioToggle) return;
@@ -673,26 +625,6 @@ return {
         subtitle: 'Histórico e ciclos acumulados'
       });
       const headerActions = historyHeaderEls.actionsBox;
-      const moedasBadge = headerActions.createEl('div', {
-        cls: 'snoopy-moedas-badge',
-        attr: { id: 'snoopy-jardim-moedas', title: 'Ganhe 1 moeda de seiva a cada 5m de foco' }
-      });
-      if (renderIconFn) {
-        renderIconFn(moedasBadge, 'coins', { size: 12, color: '#facc15' });
-      } else {
-        moedasBadge.createEl('span', {
-          cls: 'snoopy-icon',
-          attr: { style: 'width: 12px; height: 12px; display: inline-flex; align-items: center;' }
-        }).innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></svg>';
-      }
-      moedasBadge.createEl('span', {
-        attr: { id: 'snoopy-moedas-val', style: 'font-weight: 700;' },
-        text: '0'
-      });
-      moedasBadge.createEl('span', {
-        attr: { style: 'font-size: 9.5px; opacity: 0.8; font-weight: 500;' },
-        text: '(+1/5m)'
-      });
       headerActions.createEl('span', {
         cls: 'snoopy-meta',
         attr: { id: 'snoopy-today-stats', style: 'color: var(--snoopy-module-accent); font-weight: 800; font-size: 12px; white-space: nowrap;' },
@@ -711,11 +643,6 @@ return {
           <span class="snoopy-card-subtitle">Histórico e ciclos acumulados</span>
         </div>
         <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
-          <div id="snoopy-jardim-moedas" class="snoopy-moedas-badge" title="Ganhe 1 moeda de seiva a cada 5m de foco">
-            <span class="snoopy-icon" style="width: 12px; height: 12px; display: inline-flex; align-items: center;"><svg viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></svg></span>
-            <span id="snoopy-moedas-val" style="font-weight: 700;">0</span>
-            <span style="font-size: 9.5px; opacity: 0.8; font-weight: 500;">(+1/5m)</span>
-          </div>
           <span id="snoopy-today-stats" class="snoopy-meta" style="color: var(--snoopy-module-accent); font-weight: 800; font-size: 12px; white-space: nowrap;">0 ciclos hoje (0 min)</span>
         </div>
       `;
@@ -725,7 +652,7 @@ return {
       cls: 'snoopy-preview-hub-card',
       attr: {
         id: 'snoopy-plant-preview-card',
-        title: 'Clique para abrir o Santuário Botânico, Bosque e Loja de Árvores'
+        title: 'Clique para abrir o Bosque de árvores cultivadas no foco'
       }
     });
     plantCard.innerHTML = `
@@ -740,30 +667,23 @@ return {
             Próximo: <strong style="color: var(--snoopy-module-accent);">Plântula Ativa</strong> (+1 foco)
           </div>
         </div>
-        <div class="snoopy-prog-track" style="height: 4px; width: 100%; border-radius: 2px; margin: 1px 0; background: rgba(255, 255, 255, 0.08); overflow: hidden;">
+        <div class="snoopy-prog-track" style="height: 4px; width: 100%; border-radius: 2px; margin: 1px 0; background: var(--snoopy-border); overflow: hidden;">
           <div id="snoopy-plant-bar" class="snoopy-prog-fill" style="width: 0%; height: 100%; background: var(--snoopy-module-accent, var(--interactive-accent)); border-radius: 2px; transition: width 0.3s ease;"></div>
         </div>
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 11px; color: var(--snoopy-muted, var(--text-muted));">
           <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
-            <span style="color: #facc15; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
-              <span class="snoopy-icon-coins-subcard"></span>
-              <span>+1 seiva a cada 5m</span>
-            </span>
             <span id="snoopy-combo-chip" style="display: none; color: #fb923c; font-weight: 700; font-size: 10.5px; background: rgba(251, 146, 60, 0.12); padding: 1px 6px; border-radius: 4px; border: 1px solid rgba(251, 146, 60, 0.25); align-items: center; gap: 4px;"></span>
           </div>
-          <button id="snoopy-btn-open-jardim" class="snoopy-btn-action snoopy-btn-sm" title="Abrir Santuário Botânico & Loja de Espécies" style="font-size: 11px; padding: 2px 8px; display: inline-flex; align-items: center; gap: 5px;">
+          <button id="snoopy-btn-open-jardim" class="snoopy-btn-action snoopy-btn-sm" title="Ver bosque com as árvores cultivadas no foco" style="font-size: 11px; padding: 3px 10px; display: inline-flex; align-items: center; gap: 5px; margin-left: auto;">
             <span class="snoopy-estufa-btn-icon"></span>
-            <span>Bosque & Loja</span>
+            <span>Bosque</span>
           </button>
         </div>
       </div>
     `;
 
-    const iconCoinsSubcard = plantCard.querySelector('.snoopy-icon-coins-subcard');
-    if (iconCoinsSubcard && renderIconFn) renderIconFn(iconCoinsSubcard, 'coins', { size: 12, color: '#facc15' });
-
     const estufaBtnIcon = plantCard.querySelector('.snoopy-estufa-btn-icon');
-    if (estufaBtnIcon && renderIconFn) renderIconFn(estufaBtnIcon, 'trees', { size: 12, color: '#86efac' });
+    if (estufaBtnIcon && renderIconFn) renderIconFn(estufaBtnIcon, 'trees', { size: 12, color: 'var(--snoopy-module-accent)' });
 
     const abrirEstufa = () => {
       if (PomodoroJardim && typeof PomodoroJardim.abrirModalEstufa === 'function') {
@@ -787,7 +707,6 @@ return {
 
     const plantAvatarEl = plantCard.querySelector('#snoopy-plant-avatar');
     const btnOpenJardim = plantCard.querySelector('#snoopy-btn-open-jardim');
-    const moedasBadgeEl = historyBox.querySelector('#snoopy-jardim-moedas');
     if (plantAvatarEl) plantAvatarEl.onclick = abrirEstufa;
     if (btnOpenJardim) btnOpenJardim.onclick = abrirEstufa;
     if (plantCard) {
@@ -797,33 +716,15 @@ return {
         }
       };
     }
-    if (moedasBadgeEl) {
-      moedasBadgeEl.onclick = async () => {
-        if (ShopModal && typeof ShopModal.abrir === 'function') {
-          await ShopModal.abrir(app, {
-            ModalFactory,
-            ShopStore,
-            PomodoroAudio,
-            renderIcon: renderIconFn,
-            onAtualizar: async () => {
-              await atualizarTelasJardim();
-              if (typeof popularFaixasAudio === 'function') await popularFaixasAudio();
-            }
-          });
-        } else {
-          abrirEstufa();
-        }
-      };
-    }
 
-    const historySplit = historyBox.createEl('div', { attr: { style: 'padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.08);' } });
+    const historySplit = historyBox.createEl('div', { attr: { style: 'padding-top: 6px; border-top: 1px solid var(--snoopy-border);' } });
     historySplit.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
         <div style="display: flex; align-items: baseline; gap: 6px;">
-          <span class="snoopy-sub-title" style="font-size: 11px;">HISTÓRICO 30 DIAS</span>
-          <span class="snoopy-micro" style="color: #71717a;">(<strong id="metric-total" style="color: #e4e4e7; font-weight: 700;">0 ciclos</strong> total)</span>
+          <span class="snoopy-sub-title" style="font-size: 11px; font-weight: 700; color: var(--snoopy-text);">HISTÓRICO 30 DIAS</span>
+          <span class="snoopy-micro" style="color: var(--snoopy-muted);">(<strong id="metric-total" style="color: var(--snoopy-text); font-weight: 700;">0 ciclos</strong> total)</span>
         </div>
-        <div class="snoopy-micro" style="display: flex; align-items: center; gap: 4px; color: #a1a1aa;">
+        <div class="snoopy-micro" style="display: flex; align-items: center; gap: 4px; color: var(--snoopy-muted);">
           <span>0</span>
           <div class="snoopy-heat-cell heat-lvl-0" style="width: 10px; height: 10px; border-radius: 2px;"></div>
           <div class="snoopy-heat-cell heat-lvl-2" style="width: 10px; height: 10px; border-radius: 2px;"></div>
@@ -842,29 +743,29 @@ return {
 
     const metricsSide = gridMetricsRow.createEl('div', {
       cls: 'snoopy-meta',
-      attr: { style: 'background: rgba(255, 255, 255, 0.025); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 7px 12px; display: flex; flex-direction: column; justify-content: space-between; height: 66px; box-sizing: border-box;' }
+      attr: { style: 'background: var(--snoopy-card); border: 1px solid var(--snoopy-border); border-radius: 8px; padding: 7px 12px; display: flex; flex-direction: column; justify-content: space-between; height: 66px; box-sizing: border-box;' }
     });
     metricsSide.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span style="color: #a1a1aa; font-size: 11px; display: inline-flex; align-items: center; gap: 5px; font-weight: 500;">
+        <span style="color: var(--snoopy-muted); font-size: 11px; display: inline-flex; align-items: center; gap: 5px; font-weight: 500;">
           <span class="snoopy-icon-metric-week"></span>
           <span>Na semana</span>
         </span>
-        <span id="metric-week" style="font-weight: 700; color: #ffffff; font-size: 12px;">0m</span>
+        <span id="metric-week" style="font-weight: 700; color: var(--snoopy-text); font-size: 12px;">0m</span>
       </div>
-      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 2px; border-top: 1px solid rgba(255,255,255,0.05);">
-        <span style="color: #a1a1aa; font-size: 11px; display: inline-flex; align-items: center; gap: 5px; font-weight: 500;">
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 2px; border-top: 1px solid var(--snoopy-border);">
+        <span style="color: var(--snoopy-muted); font-size: 11px; display: inline-flex; align-items: center; gap: 5px; font-weight: 500;">
           <span class="snoopy-icon-metric-peak"></span>
           <span>Maior foco</span>
         </span>
-        <span id="metric-peak" style="font-weight: 700; color: #ffffff; font-size: 12px;">0m</span>
+        <span id="metric-peak" style="font-weight: 700; color: var(--snoopy-text); font-size: 12px;">0m</span>
       </div>
-      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 2px; border-top: 1px solid rgba(255,255,255,0.05);">
-        <span style="color: #a1a1aa; font-size: 11px; display: inline-flex; align-items: center; gap: 5px; font-weight: 500;">
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 2px; border-top: 1px solid var(--snoopy-border);">
+        <span style="color: var(--snoopy-muted); font-size: 11px; display: inline-flex; align-items: center; gap: 5px; font-weight: 500;">
           <span class="snoopy-icon-metric-streak"></span>
           <span>Sequência</span>
         </span>
-        <span id="metric-streak" style="font-weight: 700; color: #86efac; font-size: 12px;">0 dias</span>
+        <span id="metric-streak" style="font-weight: 700; color: var(--snoopy-module-accent); font-size: 12px;">0 dias</span>
       </div>
     `;
 
@@ -872,9 +773,9 @@ return {
     const iconPeak = metricsSide.querySelector('.snoopy-icon-metric-peak');
     const iconStreak = metricsSide.querySelector('.snoopy-icon-metric-streak');
     if (renderIconFn) {
-      if (iconWeek) renderIconFn(iconWeek, 'clock', { size: 11, color: '#a1a1aa' });
-      if (iconPeak) renderIconFn(iconPeak, 'target', { size: 11, color: '#a1a1aa' });
-      if (iconStreak) renderIconFn(iconStreak, 'zap', { size: 11, color: '#fb923c' });
+      if (iconWeek) renderIconFn(iconWeek, 'clock', { size: 11, color: 'var(--snoopy-muted)' });
+      if (iconPeak) renderIconFn(iconPeak, 'target', { size: 11, color: 'var(--snoopy-muted)' });
+      if (iconStreak) renderIconFn(iconStreak, 'zap', { size: 11, color: 'var(--snoopy-module-accent)' });
     }
 
     const heatInspectBox = historySplit.createEl('div', {

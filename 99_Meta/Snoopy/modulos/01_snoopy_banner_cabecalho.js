@@ -800,30 +800,36 @@ return {
 
     const navPillsRow = headerRow.createEl('div', { 
       cls: 'snoopy-nav-pills',
-      attr: { style: 'display: flex; align-items: center; gap: 8px; flex-wrap: wrap;' } 
+      attr: { style: 'display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin-left: auto;' } 
     });
 
-    // 1. Grupo de Navegação: Direcionar para Módulos
-    const modulosGroup = navPillsRow.createEl('div', {
+    const topPillsRow = navPillsRow.createEl('div', {
+      cls: 'snoopy-nav-pills-top-row',
+      attr: { style: 'display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end;' }
+    });
+
+    const bottomPillsRow = navPillsRow.createEl('div', {
+      cls: 'snoopy-nav-pills-bottom-row',
+      attr: { style: 'display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end;' }
+    });
+
+    // 1. Grupo de Navegação: Direcionar para Módulos & Loja
+    const modulosGroup = topPillsRow.createEl('div', {
       cls: 'snoopy-nav-group-modulos',
-      attr: { style: 'display: inline-flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); padding: 2px 4px; border-radius: 6px;' }
+      attr: { style: 'display: inline-flex; align-items: center; gap: 4px; background: var(--snoopy-panel); border: 1px solid var(--snoopy-border); padding: 2px 4px; border-radius: 6px;' }
     });
 
     const moduloItems = [
       { label: 'HOJE', action: 'daily', icon: 'calendar', title: 'Abrir nota diária de hoje' },
       { label: 'ESTUDOS ↗', action: 'sub_estudos', icon: 'book-open', title: 'Direcionar para o Painel de Estudos' },
-      { label: 'CONFIG ↗', action: 'config', icon: 'settings', title: 'Direcionar para Configurações' }
+      { label: 'CONFIG ↗', action: 'config', icon: 'settings', title: 'Direcionar para Configurações' },
+      { label: 'LOJA', action: 'shop', icon: 'shopping-bag', title: 'Abrir Loja de Customizações e Temas' }
     ];
 
-    // Divisor visual entre Navegação e Ações Rápidas
-    navPillsRow.createEl('div', {
-      attr: { style: 'width: 1px; height: 18px; background: rgba(255,255,255,0.12); margin: 0 1px;' }
-    });
-
     // 2. Grupo de Ações: Adicionar Itens
-    const acoesGroup = navPillsRow.createEl('div', {
+    const acoesGroup = bottomPillsRow.createEl('div', {
       cls: 'snoopy-nav-group-acoes',
-      attr: { style: 'display: inline-flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); padding: 2px 4px; border-radius: 6px;' }
+      attr: { style: 'display: inline-flex; align-items: center; gap: 4px; background: var(--snoopy-panel); border: 1px solid var(--snoopy-border); padding: 2px 4px; border-radius: 6px;' }
     });
 
     const acaoItems = [
@@ -852,6 +858,29 @@ return {
         } else if (item.action === 'config') {
           await app.workspace.openLinkText("99_Meta/⚙️ Configurações.md", "", false);
           if (typeof Notice !== 'undefined') new Notice('Configurações do Snoopy Vault abertas');
+        } else if (item.action === 'shop') {
+          let modalInstance = null;
+          try {
+            const ml = app.vault.getAbstractFileByPath ? app.vault.getAbstractFileByPath("99_Meta/Snoopy/modulos/shop/shop_modal.js") : null;
+            if (ml && app.vault.read) {
+              modalInstance = (new Function(await app.vault.read(ml)))();
+            }
+          } catch (eShop) {}
+
+          if (modalInstance && typeof modalInstance.abrir === 'function') {
+            await modalInstance.abrir(app, {
+              ShopStore: ctx.ShopStore,
+              ModalFactory: ctx.ModalFactory,
+              renderIcon: ctx.renderIcon,
+              onAtualizar: async () => {
+                if (typeof window !== 'undefined' && typeof window.__snoopyAtualizarTudo === 'function') {
+                  window.__snoopyAtualizarTudo();
+                }
+              }
+            });
+          } else if (typeof Notice !== 'undefined') {
+            new Notice('[Snoopy] Loja de Customizações');
+          }
         } else if (item.action === 'nova_tarefa') {
           if (typeof window !== 'undefined' && typeof window.__snoopyAbrirModalNovaTarefa === 'function') {
             window.__snoopyAbrirModalNovaTarefa();
@@ -900,11 +929,11 @@ return {
 
     if (ShopStore && typeof ShopStore.alternarColorScheme === 'function') {
       // Divisor visual para o botão de modo
-      navPillsRow.createEl('div', {
-        attr: { style: 'width: 1px; height: 18px; background: rgba(255,255,255,0.12); margin: 0 1px;' }
+      topPillsRow.createEl('div', {
+        attr: { style: 'width: 1px; height: 18px; background: var(--snoopy-border); margin: 0 1px;' }
       });
 
-      const modeGroup = navPillsRow.createEl('div', {
+      const modeGroup = topPillsRow.createEl('div', {
         cls: 'snoopy-nav-group-theme-mode',
         attr: { style: 'display: inline-flex; align-items: center;' }
       });
