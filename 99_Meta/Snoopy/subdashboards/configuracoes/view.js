@@ -189,11 +189,72 @@ async function renderConfiguracoes(dv, app) {
               if (typeof Notice !== 'undefined') {
                 new Notice(`[Snoopy] Vault atualizado para v${versaoRemota}! Backup salvo em: ${res.idBackup}`);
               }
-              msgStatus.innerHTML = `<span style="color: var(--snoopy-module-accent, #4ade80); font-weight: 700;">Atualizado com sucesso para v${versaoRemota}! Reinicie ou recarregue a nota para ver as novidades.</span>`;
+
+              const repoUrl = `https://github.com/${repo}`;
+              const changelogUrl = `${repoUrl}/blob/main/CHANGELOG.md`;
+              const releaseUrl = `${repoUrl}/releases/tag/v${versaoRemota}`;
+
+              msgStatus.innerHTML = `
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                  <span style="color: var(--snoopy-module-accent, #4ade80); font-weight: 700;">
+                    Atualizado com sucesso para v${versaoRemota}! Reinicie ou recarregue a nota para ver as novidades.
+                  </span>
+                  <div style="display: flex; align-items: center; gap: 12px; font-size: 12px;">
+                    <a href="${changelogUrl}" target="_blank" rel="noopener noreferrer" style="color: var(--snoopy-module-accent); text-decoration: underline;">
+                      Ver Changelog no GitHub
+                    </a>
+                    <span style="color: var(--snoopy-muted);">&bull;</span>
+                    <a href="${releaseUrl}" target="_blank" rel="noopener noreferrer" style="color: var(--snoopy-muted); text-decoration: underline;">
+                      Notas da Release v${versaoRemota}
+                    </a>
+                  </div>
+                </div>
+              `;
               badgeVersao.textContent = `v${versaoRemota}`;
               btnRollback.disabled = false;
               btnRollback.style.opacity = '1';
               btnRollback.style.cursor = 'pointer';
+
+              // Exibir modal pós-atualização com o resumo das novidades e link para o GitHub
+              const changelogItens = (checagem && checagem.manifestoRemoto && Array.isArray(checagem.manifestoRemoto.changelog))
+                ? checagem.manifestoRemoto.changelog
+                : [];
+
+              if (ModalFactory && typeof ModalFactory.abrir === 'function') {
+                const listaHtml = changelogItens.length > 0
+                  ? `<ul style="margin: 8px 0 12px 18px; padding: 0; line-height: 1.6; font-size: 13px; color: var(--snoopy-text, var(--text-normal));">
+                      ${changelogItens.map(item => `<li style="margin-bottom: 6px;">${item}</li>`).join('')}
+                     </ul>`
+                  : `<p style="font-size: 13px; color: var(--snoopy-muted); margin: 8px 0;">Atualização para a versão v${versaoRemota} concluída com sucesso.</p>`;
+
+                ModalFactory.abrir({
+                  titulo: `Novidades da Versão v${versaoRemota}`,
+                  largura: '540px',
+                  conteudo: `
+                    <div style="font-family: var(--font-interface); display: flex; flex-direction: column; gap: 12px;">
+                      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--snoopy-border); padding-bottom: 8px;">
+                        <span style="font-weight: 700; font-size: 14px; color: var(--snoopy-module-accent);">v${versaoRemota} Instalada com Sucesso</span>
+                        <span style="font-size: 11px; color: var(--snoopy-muted); font-family: var(--font-monospace);">Backup: ${res.idBackup}</span>
+                      </div>
+                      <div style="max-height: 260px; overflow-y: auto; padding-right: 6px;">
+                        ${listaHtml}
+                      </div>
+                      <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--snoopy-border); padding-top: 12px; margin-top: 4px;">
+                        <a href="${changelogUrl}" target="_blank" rel="noopener noreferrer" class="snoopy-btn-action" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--snoopy-border); color: var(--snoopy-text);">
+                          Ver Changelog Completo no GitHub
+                        </a>
+                        <button id="snoopy-btn-fechar-changelog" class="snoopy-btn-primary snoopy-btn-sm" style="font-weight: 700; padding: 6px 16px;">
+                          Concluir
+                        </button>
+                      </div>
+                    </div>
+                  `,
+                  aoMontar: (el, fechar) => {
+                    const btnFechar = el.querySelector('#snoopy-btn-fechar-changelog');
+                    if (btnFechar) btnFechar.onclick = () => fechar();
+                  }
+                });
+              }
             } catch (err) {
               if (typeof Notice !== 'undefined') new Notice(`[Snoopy Erro] Falha na atualização: ${err.message}`);
               msgStatus.innerHTML = `<span style="color: var(--color-red, #f87171);">Erro ao aplicar atualização: ${err.message}</span>`;

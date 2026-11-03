@@ -26,15 +26,15 @@ function listarArquivosRecursivo(dir, filtro = () => true) {
   return arquivos;
 }
 
-const versao = '0.9.0';
+const versao = '0.9.1';
 const changelog = [
-  'Sistema de fontes embutidas offline-first (Inter, JetBrains Mono e Source Serif 4)',
-  'UIKit v2 com catálogo canônico de 87 ícones Lucide SVG, componentes de Estado Vazio e Pluralização',
-  'Anatomia de cabeçalho unificada e padronização dos nomes dos módulos',
-  'Diretrizes de design v2.2 com política de zero emojis na interface e botões principais em maiúsculo',
-  'Desacoplamento autônomo da Central de Customizações & Loja (ShopStore) com catálogo multi-categoria e fachada JardimStore retrocompatível',
-  'Motor de áudio procedural de foco puramente sintetizado via Web Audio API (ruídos coloridos, chuva e tons binaurais)',
-  'Documentação técnica Docs-as-Code aprofundada com C4 Mermaid, JSDoc de contratos públicos e registros MADR (ADRs 0001, 0002 e 0003)'
+  'Popup de conclusão do ciclo Pomodoro (+5 min extras de foco ou início imediato de pausa com timer de 30s)',
+  'Dock de áudio com restauração completa de links e reprodução de vídeos do YouTube',
+  'Design tokens com alto contraste para modo Claro (Light), preservando legibilidade nos Hábitos e Heatmap',
+  'Toggle de ambiente e partículas (ANIM: ON/OFF) com propagação de background para todo o workspace do Obsidian',
+  'Persistência híbrida e reconciliação confiável de moedas, temas e itens da loja ao fechar e reabrir o app',
+  'Motor de verificação de atualizações (SHA-256) integrado nas Configurações com download atômico e backup',
+  'Notificação inteligente de atualização disponível na Home e modal pós-atualização com changelog e link para o GitHub'
 ];
 
 

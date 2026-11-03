@@ -1,15 +1,15 @@
 {
-  "versao": "0.9.0",
+  "versao": "0.9.1",
   "repositorio": "Arkmedess/Snoopy_Vault",
-  "dataGeracao": "2026-11-03T03:17:42.478Z",
+  "dataGeracao": "2026-11-03T03:30:22.695Z",
   "changelog": [
-    "Sistema de fontes embutidas offline-first (Inter, JetBrains Mono e Source Serif 4)",
-    "UIKit v2 com catálogo canônico de 87 ícones Lucide SVG, componentes de Estado Vazio e Pluralização",
-    "Anatomia de cabeçalho unificada e padronização dos nomes dos módulos",
-    "Diretrizes de design v2.2 com política de zero emojis na interface e botões principais em maiúsculo",
-    "Desacoplamento autônomo da Central de Customizações & Loja (ShopStore) com catálogo multi-categoria e fachada JardimStore retrocompatível",
-    "Motor de áudio procedural de foco puramente sintetizado via Web Audio API (ruídos coloridos, chuva e tons binaurais)",
-    "Documentação técnica Docs-as-Code aprofundada com C4 Mermaid, JSDoc de contratos públicos e registros MADR (ADRs 0001, 0002 e 0003)"
+    "Popup de conclusão do ciclo Pomodoro (+5 min extras de foco ou início imediato de pausa com timer de 30s)",
+    "Dock de áudio com restauração completa de links e reprodução de vídeos do YouTube",
+    "Design tokens com alto contraste para modo Claro (Light), preservando legibilidade nos Hábitos e Heatmap",
+    "Toggle de ambiente e partículas (ANIM: ON/OFF) com propagação de background para todo o workspace do Obsidian",
+    "Persistência híbrida e reconciliação confiável de moedas, temas e itens da loja ao fechar e reabrir o app",
+    "Motor de verificação de atualizações (SHA-256) integrado nas Configurações com download atômico e backup",
+    "Notificação inteligente de atualização disponível na Home e modal pós-atualização com changelog e link para o GitHub"
   ],
   "motor": {
     ".obsidian/snippets/00_Snoopy_Fonts.css": "sha256:4bbce684cddeb3da442c314bbd9353260034b86a17cc3fb1f2c1c84d8bd53404",
@@ -56,7 +56,7 @@
     "99_Meta/Snoopy/modulos/pomodoro/pomodoro_playlist.js": "sha256:f4c2943fec38603af19be9c8ce8e423a1439538f4bce29332cc811063cb83e76",
     "99_Meta/Snoopy/modulos/pomodoro/pomodoro_timer.js": "sha256:af6006e6010adf2166cb3d6ae8c46f60a0515ae8f3f5db9118e4d8f77b8b59dc",
     "99_Meta/Snoopy/modulos/shop/shop_modal.js": "sha256:9db2c2a303def74a0dfacc0be1267171866802e636b984b871b1bc3a54072a0b",
-    "99_Meta/Snoopy/subdashboards/configuracoes/view.js": "sha256:e12ec2f5a97b33037499cfdd9152c297013a70439544412242fc374b1f58474a",
+    "99_Meta/Snoopy/subdashboards/configuracoes/view.js": "sha256:c5bd94ca567b8271a2c1baf3aaec4fd74f799a861bd1477b776cb9b4e2874559",
     "99_Meta/Snoopy/subdashboards/estudos/abas/aba_ciclo.js": "sha256:010d68db6109971d74209e7da76a754df448705a450daea486b5ae18159fcf8f",
     "99_Meta/Snoopy/subdashboards/estudos/abas/aba_ciclo_revisoes.js": "sha256:b24fd32efd03ad862f2375fbee914a53c58cd4050cad6d8fb44d443b5d1ec22f",
     "99_Meta/Snoopy/subdashboards/estudos/abas/aba_painel.js": "sha256:34b2f3885a36db436a2984074f64de24e9f9d0dbe2994bca78321afe24caa84a",
