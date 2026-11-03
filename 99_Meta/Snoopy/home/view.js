@@ -361,6 +361,67 @@ const modulosSnoopy = [
       console.error(`[Snoopy Vault] Erro ao carregar módulo "${moduloPath}":`, err);
     }
   }
+
+  // 5. Notificação Não-Bloqueante de Atualização Disponível
+  if (typeof window !== 'undefined' && !window.__snoopyAvisoAtualizacaoExibido) {
+    setTimeout(async () => {
+      try {
+        if (window.__snoopyAvisoAtualizacaoExibido) return;
+        const Updater = await ModuleLoader.carregar(app, "99_Meta/Snoopy/core/updater.js");
+        if (!Updater || typeof Updater.verificarAtualizacaoDisponivel !== 'function') return;
+
+        const checagem = await Updater.verificarAtualizacaoDisponivel(app);
+        if (checagem && checagem.disponivel && checagem.versaoRemota) {
+          window.__snoopyAvisoAtualizacaoExibido = true;
+
+          if (ModalFactory && typeof ModalFactory.abrir === 'function') {
+            const htmlPopup = `
+              <div class="snoopy-card-header" style="margin-bottom: 4px;">
+                <span class="snoopy-section-title" style="font-size: 15px; font-weight: 700;">Atualização Disponível</span>
+                <button id="modal-close-btn" class="snoopy-modal-close" title="Fechar"></button>
+              </div>
+
+              <div class="snoopy-modal-label">Uma nova versão do motor Snoopy Vault está disponível no GitHub:</div>
+
+              <div style="padding: 12px 14px; background: var(--snoopy-card); border: 1px solid var(--snoopy-border); border-radius: 8px; margin: 8px 0; font-size: 13px; color: var(--snoopy-text); line-height: 1.5;">
+                Nova versão: <strong style="color: var(--snoopy-module-accent);">v${checagem.versaoRemota}</strong> (instalada: <strong>v${checagem.versaoLocal}</strong>)<br>
+                <span style="font-size: 11.5px; color: var(--snoopy-muted); margin-top: 4px; display: block;">
+                  Deseja abrir as configurações para atualizar agora com backup automático?
+                </span>
+              </div>
+
+              <div class="snoopy-toolbar" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px;">
+                <button id="snoopy-btn-update-later" class="snoopy-btn-action snoopy-btn-md">Lembrar Mais Tarde</button>
+                <button id="snoopy-btn-update-now" class="snoopy-btn-primary snoopy-btn-md">Ver Atualização</button>
+              </div>
+            `;
+
+            ModalFactory.abrir({
+              htmlContent: htmlPopup,
+              maxWidth: '430px',
+              onMontar: (box, fechar) => {
+                const btnClose = box.querySelector('#modal-close-btn');
+                if (btnClose) btnClose.onclick = fechar;
+
+                const btnLater = box.querySelector('#snoopy-btn-update-later');
+                if (btnLater) btnLater.onclick = fechar;
+
+                const btnNow = box.querySelector('#snoopy-btn-update-now');
+                if (btnNow) {
+                  btnNow.onclick = async () => {
+                    fechar();
+                    try {
+                      await app.workspace.openLinkText('99_Meta/⚙️ Configurações.md', '', false);
+                    } catch (_) {}
+                  };
+                }
+              }
+            });
+          }
+        }
+      } catch (_) {}
+    }, 1500);
+  }
 }
 
 if (typeof module !== 'undefined' && module.exports) {

@@ -112,23 +112,41 @@ const Updater = {
   /**
    * Aplica a atualização de forma atômica criando backup prévio, abortando sem efeitos colaterais
    * caso algum download falhe e preservando arquivos customizados como `.novo`.
+   * Suporta tanto a assinatura com objeto de opções quanto com parâmetros posicionais legados.
    *
    * @param {object} app - Instância do Obsidian.
-   * @param {object} params
-   * @param {object} params.plano - Plano retornado por planejarAtualizacao.
-   * @param {function(string): Promise<string>} params.baixarConteudo - Função que baixa o arquivo remoto.
-   * @param {function(object): void} [params.aoProgredir] - Callback de progresso.
-   * @returns {Promise<{ sucesso: boolean, idBackup: string, arquivosGravados: string[] }>}
+   * @param {object} opcoesOuManifesto - Objeto com { plano, baixarConteudo } ou manifestoRemoto direto.
+   * @param {string|object|null} [tagOuOpcoes=null] - Tag da versão ou opções complementares.
+   * @param {boolean} [criarBackup=true]
+   * @returns {Promise<{ sucesso: boolean, idBackup: string, arquivosGravados: string[], backupCriado?: string }>}
    */
-  async aplicarAtualizacao(app, { plano, baixarConteudo, aoProgredir }) {
+  async aplicarAtualizacao(app, opcoesOuManifesto, tagOuOpcoes = null, criarBackup = true) {
     if (!app || !app.vault || !app.vault.adapter) {
       throw new Error('Instância do Obsidian Vault Adapter necessária.');
     }
-    if (!plano || typeof plano !== 'object') {
+
+    let plano;
+    let baixarConteudo;
+    let aoProgredir;
+
+    if (opcoesOuManifesto && opcoesOuManifesto.plano) {
+      plano = opcoesOuManifesto.plano;
+      baixarConteudo = opcoesOuManifesto.baixarConteudo;
+      aoProgredir = opcoesOuManifesto.aoProgredir;
+    } else if (opcoesOuManifesto && (opcoesOuManifesto.motor || opcoesOuManifesto.versao)) {
+      // Suporte retrocompatível: aplicarAtualizacao(app, manifestoRemoto, tag, criarBackup)
+      const manifestoRemoto = opcoesOuManifesto;
+      const tag = typeof tagOuOpcoes === 'string' ? tagOuOpcoes : (manifestoRemoto.versao ? `v${manifestoRemoto.versao}` : 'main');
+      const mapaLocal = await this.construirMapaLocal(app);
+      plano = this.planejarAtualizacao({ manifestoRemoto, hashesLocais: mapaLocal });
+      baixarConteudo = async (caminho) => this.baixarArquivoRemoto(caminho, 'Arkmedess/Snoopy_Vault', tag);
+    } else {
       throw new Error('Plano de atualização não fornecido.');
     }
+
     if (typeof baixarConteudo !== 'function') {
-      throw new Error('Função de download remoto obrigatória.');
+      const versaoAlvo = (plano && plano.versaoAlvo) ? `v${plano.versaoAlvo}` : 'main';
+      baixarConteudo = async (caminho) => this.baixarArquivoRemoto(caminho, 'Arkmedess/Snoopy_Vault', versaoAlvo);
     }
 
     const adapter = app.vault.adapter;
@@ -269,6 +287,175 @@ const Updater = {
       }
     } catch(e) {}
     return resultado;
+  },
+
+  /**
+   * Calcula o hash SHA-256 no formato 'sha256:<hex>' de forma agnóstica (WebCrypto ou Node.js).
+   *
+   * @param {string|Buffer|Uint8Array} conteudo
+   * @returns {Promise<string>}
+   */
+  async calcularSha256(conteudo) {
+    if (typeof crypto !== 'undefined' && crypto.subtle && typeof crypto.subtle.digest === 'function') {
+      const data = typeof conteudo === 'string' ? new TextEncoder().encode(conteudo) : conteudo;
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return 'sha256:' + hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+    try {
+      const nodeCrypto = require('crypto');
+      return 'sha256:' + nodeCrypto.createHash('sha256').update(conteudo).digest('hex');
+    } catch (_) {
+      return '';
+    }
+  },
+
+  /**
+   * Busca o manifesto oficial remoto no repositório GitHub.
+   *
+   * @param {string} [repo='Arkmedess/Snoopy_Vault'] - Repositório no GitHub.
+   * @param {string} [branchOuTag='main'] - Branch ou tag de versão alvo.
+   * @returns {Promise<object|null>}
+   */
+  async buscarManifestoRemoto(repo = 'Arkmedess/Snoopy_Vault', branchOuTag = 'main') {
+    try {
+      const url = `https://raw.githubusercontent.com/${repo}/${branchOuTag}/99_Meta/Snoopy/manifest.json`;
+      const res = await fetch(url, { cache: 'no-cache' });
+      if (!res.ok) {
+        // Tenta fallback sem prefixo 'v' se foi fornecido com 'v'
+        if (branchOuTag.startsWith('v')) {
+          const semV = branchOuTag.slice(1);
+          const resFallback = await fetch(`https://raw.githubusercontent.com/${repo}/${semV}/99_Meta/Snoopy/manifest.json`);
+          if (resFallback.ok) return await resFallback.json();
+        }
+        return null;
+      }
+      return await res.json();
+    } catch (e) {
+      console.warn('[Updater] Falha ao buscar manifesto remoto:', e);
+      return null;
+    }
+  },
+
+  /**
+   * Baixa o conteúdo bruto de um arquivo remoto do repositório GitHub.
+   *
+   * @param {string} caminho - Caminho relativo do arquivo.
+   * @param {string} [repo='Arkmedess/Snoopy_Vault']
+   * @param {string} [branchOuTag='main']
+   * @returns {Promise<string>}
+   */
+  async baixarArquivoRemoto(caminho, repo = 'Arkmedess/Snoopy_Vault', branchOuTag = 'main') {
+    const url = `https://raw.githubusercontent.com/${repo}/${branchOuTag}/${caminho}`;
+    const res = await fetch(url, { cache: 'no-cache' });
+    if (!res.ok) {
+      throw new Error(`Falha no download de ${caminho} (${res.status} ${res.statusText})`);
+    }
+    return await res.text();
+  },
+
+  /**
+   * Constrói o mapa de hashes SHA-256 dos arquivos atualmente presentes no cofre.
+   *
+   * @param {object} app - Instância do Obsidian.
+   * @returns {Promise<Object.<string, string>>} Mapa de caminhos e hashes locais.
+   */
+  async construirMapaLocal(app) {
+    const mapa = {};
+    if (!app || !app.vault) return mapa;
+
+    try {
+      const manifestFile = app.vault.getAbstractFileByPath ? app.vault.getAbstractFileByPath('99_Meta/Snoopy/manifest.json') : null;
+      let listaArquivos = [];
+      if (manifestFile && typeof app.vault.read === 'function') {
+        const conteudo = await app.vault.read(manifestFile);
+        const manifest = JSON.parse(conteudo);
+        if (manifest && manifest.motor) {
+          listaArquivos = Object.keys(manifest.motor);
+        }
+      }
+
+      for (const caminho of listaArquivos) {
+        try {
+          let conteudo = null;
+          const file = app.vault.getAbstractFileByPath ? app.vault.getAbstractFileByPath(caminho) : null;
+          if (file && typeof app.vault.read === 'function') {
+            conteudo = await app.vault.read(file);
+          } else if (app.vault.adapter && typeof app.vault.adapter.exists === 'function' && await app.vault.adapter.exists(caminho)) {
+            conteudo = await app.vault.adapter.read(caminho);
+          }
+
+          if (conteudo !== null && conteudo !== undefined) {
+            mapa[caminho] = await this.calcularSha256(conteudo);
+          }
+        } catch (_) {}
+      }
+    } catch (e) {
+      console.warn('[Updater] Erro ao construir mapa local:', e);
+    }
+
+    return mapa;
+  },
+
+  /**
+   * Verifica se há atualizações disponíveis para o Snoopy Vault no GitHub.
+   *
+   * @param {object} app - Instância do Obsidian.
+   * @param {string} [repo='Arkmedess/Snoopy_Vault']
+   * @returns {Promise<{
+   *   disponivel: boolean,
+   *   versaoLocal: string,
+   *   versaoRemota: string|null,
+   *   plano: object|null,
+   *   manifestoRemoto: object|null,
+   *   erro?: string
+   * }>}
+   */
+  async verificarAtualizacaoDisponivel(app, repo = 'Arkmedess/Snoopy_Vault') {
+    let versaoLocal = '0.0.0';
+    let manifestoLocal = null;
+
+    try {
+      const manifestFile = app.vault.getAbstractFileByPath ? app.vault.getAbstractFileByPath('99_Meta/Snoopy/manifest.json') : null;
+      if (manifestFile && typeof app.vault.read === 'function') {
+        const conteudo = await app.vault.read(manifestFile);
+        manifestoLocal = JSON.parse(conteudo);
+        if (manifestoLocal && manifestoLocal.versao) {
+          versaoLocal = String(manifestoLocal.versao);
+        }
+      }
+    } catch (_) {}
+
+    const manifestoRemoto = await this.buscarManifestoRemoto(repo, 'main');
+    if (!manifestoRemoto) {
+      return {
+        disponivel: false,
+        versaoLocal,
+        versaoRemota: null,
+        plano: null,
+        manifestoRemoto: null,
+        erro: 'OFFLINE_OU_INDISPONIVEL'
+      };
+    }
+
+    const hashesLocais = await this.construirMapaLocal(app);
+    const plano = this.planejarAtualizacao({
+      manifestoRemoto,
+      estadoInstalado: manifestoLocal,
+      hashesLocais
+    });
+
+    const versaoRemota = manifestoRemoto.versao || versaoLocal;
+    const versaoDiferente = versaoRemota !== versaoLocal;
+    const requerAtualizacao = plano.requerAtualizacao || versaoDiferente;
+
+    return {
+      disponivel: requerAtualizacao,
+      versaoLocal,
+      versaoRemota,
+      plano,
+      manifestoRemoto
+    };
   },
 
   /**

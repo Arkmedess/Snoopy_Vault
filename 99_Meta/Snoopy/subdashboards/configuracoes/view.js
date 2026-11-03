@@ -128,44 +128,36 @@ async function renderConfiguracoes(dv, app) {
     btnVerificar.innerHTML = '';
     UIKit.renderIcon(btnVerificar, 'refresh-cw', { size: 13 });
     btnVerificar.createEl('span', { text: 'Verificando no GitHub...' });
-    msgStatus.innerHTML = '<span style="color: var(--text-muted);">Consultando repositório oficial...</span>';
+    msgStatus.innerHTML = '<span style="color: var(--snoopy-muted, var(--text-muted));">Consultando repositório oficial...</span>';
 
     try {
-      // Busca manifesto remoto na release
       const repo = 'Arkmedess/Snoopy_Vault';
-      const tag = `v${statusCofre.versao}`;
-      const manifestoRemoto = await Updater.buscarManifestoRemoto(repo, tag).catch(() => null);
+      const resultado = await Updater.verificarAtualizacaoDisponivel(app, repo);
 
-      if (!manifestoRemoto) {
-        msgStatus.innerHTML = `<span style="color: var(--text-accent);">Não foi possível conectar ao GitHub Releases no momento ou você já possui a versão estável mais recente (v${statusCofre.versao}).</span>`;
-        btnVerificar.disabled = false;
-        btnVerificar.innerHTML = '';
-        UIKit.renderIcon(btnVerificar, 'search', { size: 13 });
-        btnVerificar.createEl('span', { text: 'Verificar Atualizações' });
+      if (!resultado || resultado.erro) {
+        msgStatus.innerHTML = `<span style="color: var(--snoopy-muted, var(--text-muted));">Não foi possível conectar ao GitHub no momento ou você já possui a versão mais recente instalada (v${statusCofre.versao}).</span>`;
         return;
       }
 
-      // Calcula mapa de hashes locais
-      const mapaLocal = await Updater.construirMapaLocal(app);
-      const plano = Updater.planejarAtualizacao(manifestoRemoto, mapaLocal);
+      const { disponivel, versaoRemota, versaoLocal, plano } = resultado;
 
-      const precisaAtualizar = plano.arquivosParaAdicionar.length > 0 ||
-                               plano.arquivosParaAtualizar.length > 0 ||
-                               plano.arquivosPreservadosNovo.length > 0;
-
-      if (!precisaAtualizar && manifestoRemoto.versao === statusCofre.versao) {
-        msgStatus.innerHTML = `<span style="color: var(--color-green, #4ade80); font-weight: 500;">Seu cofre já está 100% atualizado na versão v${statusCofre.versao}!</span>`;
+      if (!disponivel) {
+        msgStatus.innerHTML = `<span style="color: var(--snoopy-module-accent, #4ade80); font-weight: 600;">Seu cofre já está 100% atualizado na versão mais recente (v${versaoLocal})!</span>`;
       } else {
+        const totalAtualizar = plano ? (plano.atualizar ? plano.atualizar.length : 0) : 0;
+        const totalAdicionar = plano ? (plano.adicionar ? plano.adicionar.length : 0) : 0;
+        const totalPreservar = plano ? (plano.preservar ? plano.preservar.length : 0) : 0;
+
         msgStatus.innerHTML = `
-          <div style="background: var(--background-primary); border-left: 4px solid var(--interactive-accent); padding: 12px; border-radius: 4px; margin-top: 8px;">
-            <strong>Nova versão disponível: v${manifestoRemoto.versao}</strong><br>
-            <span style="font-size: 0.85rem; color: var(--text-muted);">
-              • ${plano.arquivosParaAtualizar.length} arquivos para atualizar<br>
-              • ${plano.arquivosParaAdicionar.length} novos arquivos<br>
-              • ${plano.arquivosPreservadosNovo.length} arquivos locais com suas edições (serão preservados e gravados com sufixo .novo)<br>
-              • Backup atômico ativado por padrão.
-            </span>
-            <div id="btn-aplicar-container" style="margin-top: 10px;"></div>
+          <div style="background: var(--snoopy-card, var(--background-primary)); border-left: 4px solid var(--snoopy-module-accent, #4ade80); padding: 14px; border-radius: 6px; margin-top: 8px;">
+            <strong style="color: var(--snoopy-text, var(--text-normal)); font-size: 14px;">Nova versão disponível: v${versaoRemota} (instalada: v${versaoLocal})</strong><br>
+            <div style="font-size: 12px; color: var(--snoopy-muted, var(--text-muted)); margin-top: 6px; line-height: 1.5;">
+              • ${totalAtualizar} arquivos para atualizar<br>
+              • ${totalAdicionar} novos arquivos<br>
+              • ${totalPreservar} arquivos customizados preservados (com extensão .novo)<br>
+              • Backup prévio com timestamp gerado automaticamente antes de qualquer alteração.
+            </div>
+            <div id="btn-aplicar-container" style="margin-top: 12px;"></div>
           </div>
         `;
 
@@ -183,19 +175,34 @@ async function renderConfiguracoes(dv, app) {
             btnAplicar.innerHTML = '';
             UIKit.renderIcon(btnAplicar, 'refresh-cw', { size: 13 });
             btnAplicar.createEl('span', { text: 'Baixando e aplicando...' });
+
             try {
-              const res = await Updater.aplicarAtualizacao(app, manifestoRemoto, `v${manifestoRemoto.versao}`, true);
-              new Notice(`[Snoopy] Vault atualizado para v${manifestoRemoto.versao}! Backup salvo em: ${res.backupCriado}`);
-              msgStatus.innerHTML = `<span style="color: var(--color-green, #4ade80); font-weight: bold;">Atualizado com sucesso para v${manifestoRemoto.versao}! Recarregue a nota ou o Obsidian para ver os novos recursos.</span>`;
+              const res = await Updater.aplicarAtualizacao(app, {
+                plano,
+                aoProgredir: ({ atual, total }) => {
+                  btnAplicar.innerHTML = '';
+                  UIKit.renderIcon(btnAplicar, 'refresh-cw', { size: 13 });
+                  btnAplicar.createEl('span', { text: `Baixando (${atual}/${total})...` });
+                }
+              });
+
+              if (typeof Notice !== 'undefined') {
+                new Notice(`[Snoopy] Vault atualizado para v${versaoRemota}! Backup salvo em: ${res.idBackup}`);
+              }
+              msgStatus.innerHTML = `<span style="color: var(--snoopy-module-accent, #4ade80); font-weight: 700;">Atualizado com sucesso para v${versaoRemota}! Reinicie ou recarregue a nota para ver as novidades.</span>`;
+              badgeVersao.textContent = `v${versaoRemota}`;
+              btnRollback.disabled = false;
+              btnRollback.style.opacity = '1';
+              btnRollback.style.cursor = 'pointer';
             } catch (err) {
-              new Notice(`[Snoopy Erro] Falha na atualização: ${err.message}`);
+              if (typeof Notice !== 'undefined') new Notice(`[Snoopy Erro] Falha na atualização: ${err.message}`);
               msgStatus.innerHTML = `<span style="color: var(--color-red, #f87171);">Erro ao aplicar atualização: ${err.message}</span>`;
             }
           });
         }
       }
     } catch (e) {
-      msgStatus.innerHTML = `<span style="color: var(--color-red, #f87171);">Erro ao verificar: ${e.message}</span>`;
+      msgStatus.innerHTML = `<span style="color: var(--color-red, #f87171);">Erro ao verificar atualizações: ${e.message}</span>`;
     } finally {
       btnVerificar.disabled = false;
       btnVerificar.innerHTML = '';
@@ -207,7 +214,7 @@ async function renderConfiguracoes(dv, app) {
   // Ação: Rollback
   btnRollback.addEventListener('click', async () => {
     if (!statusCofre.ultimoBackup) {
-      new Notice('[Snoopy] Nenhum backup encontrado para restauração.');
+      if (typeof Notice !== 'undefined') new Notice('[Snoopy] Nenhum backup encontrado para restauração.');
       return;
     }
 
@@ -221,11 +228,12 @@ async function renderConfiguracoes(dv, app) {
 
     try {
       const res = await Updater.desfazerAtualizacao(app, statusCofre.ultimoBackup);
-      new Notice(`[Snoopy] Rollback concluído! ${res.restaurados.length} arquivos restaurados.`);
-      msgStatus.innerHTML = `<span style="color: var(--color-green, #4ade80);">Backup restaurado com sucesso!</span>`;
+      const totalRestaurados = res && res.arquivosRestaurados ? res.arquivosRestaurados.length : 0;
+      if (typeof Notice !== 'undefined') new Notice(`[Snoopy] Backup restaurado com sucesso! (${totalRestaurados} arquivos recuperados)`);
+      msgStatus.innerHTML = `<span style="color: var(--snoopy-module-accent, #4ade80); font-weight: bold;">Backup ${statusCofre.ultimoBackup} restaurado com sucesso!</span>`;
     } catch (e) {
-      new Notice(`[Snoopy Erro] Falha no rollback: ${e.message}`);
-      msgStatus.innerHTML = `<span style="color: var(--color-red, #f87171);">Erro: ${e.message}</span>`;
+      if (typeof Notice !== 'undefined') new Notice(`[Snoopy Erro] Falha no rollback: ${e.message}`);
+      msgStatus.innerHTML = `<span style="color: var(--color-red, #f87171);">Erro ao restaurar: ${e.message}</span>`;
     } finally {
       btnRollback.disabled = false;
       btnRollback.innerHTML = '';
