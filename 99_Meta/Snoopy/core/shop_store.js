@@ -707,6 +707,39 @@ function executarSerializado(app, operacaoAsync) {
   return proximaFila;
 }
 
+const STORAGE_KEY_STATE = 'snoopy_vault_shop_state';
+const STORAGE_KEY_THEME = 'snoopy_vault_theme';
+const STORAGE_KEY_SCHEME = 'snoopy_vault_scheme';
+const STORAGE_KEY_AMBIENT = 'snoopy_vault_ambient';
+
+function _salvarNoLocalStorage(estado, jsonStr = null) {
+  if (typeof window === 'undefined' || !window.localStorage) return;
+  try {
+    const raw = jsonStr || JSON.stringify(estado);
+    window.localStorage.setItem(STORAGE_KEY_STATE, raw);
+    if (estado.equipados && estado.equipados.cosmetic) {
+      window.localStorage.setItem(STORAGE_KEY_THEME, estado.equipados.cosmetic);
+    }
+    if (estado.colorScheme) {
+      window.localStorage.setItem(STORAGE_KEY_SCHEME, estado.colorScheme);
+    }
+    if (estado.ambientEnabled !== undefined) {
+      window.localStorage.setItem(STORAGE_KEY_AMBIENT, String(estado.ambientEnabled));
+    }
+  } catch (_) {}
+}
+
+function _lerDoLocalStorage() {
+  if (typeof window === 'undefined' || !window.localStorage) return null;
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY_STATE);
+    if (raw) {
+      return JSON.parse(raw);
+    }
+  } catch (_) {}
+  return null;
+}
+
 const ShopStore = {
   executarSerializado,
   CAMINHO_STORE,
@@ -855,14 +888,14 @@ const ShopStore = {
   },
 
   /**
-   * Obtém o estado de forma síncrona através do cache de memória ou do mock de testes.
+   * Obtém o estado de forma síncrona através do cache de memória, do localStorage ou do mock de testes.
    * @private
    */
   _obterEstadoSincrono(app) {
     if (!app || typeof app !== 'object') return this.obterEstadoPadrao();
     if (cachePorApp.has(app)) return cachePorApp.get(app);
 
-    // Suporte síncrono para testes automatizados via mock vault._getRawStore()
+    // 1. Suporte síncrono para testes automatizados via mock vault._getRawStore()
     if (app.vault && typeof app.vault._getRawStore === 'function') {
       try {
         const storeMap = app.vault._getRawStore();
@@ -873,6 +906,7 @@ const ShopStore = {
           const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
           const estado = this._normalizarEstado(parsed);
           cachePorApp.set(app, estado);
+          _salvarNoLocalStorage(estado);
           return estado;
         }
       } catch (_) {
@@ -880,11 +914,19 @@ const ShopStore = {
       }
     }
 
+    // 2. Fallback síncrono para window.localStorage (sessões Electron/Navegador)
+    const storageRaw = _lerDoLocalStorage();
+    if (storageRaw) {
+      const estado = this._normalizarEstado(storageRaw);
+      cachePorApp.set(app, estado);
+      return estado;
+    }
+
     return this.obterEstadoPadrao();
   },
 
   /**
-   * Lê o estado da loja a partir do cofre ou realiza migração do arquivo legado.
+   * Lê o estado da loja a partir do cofre com merge defensivo de localStorage ou migração de arquivo legado.
    *
    * @param {object} app - Instância do Obsidian App.
    * @returns {Promise<object>}
@@ -892,39 +934,91 @@ const ShopStore = {
   async carregar(app) {
     if (!app || !app.vault) return this.obterEstadoPadrao();
 
+    let estadoFinal = null;
+    let precisaSalvarNoVault = false;
+
     try {
-      const fileShop = app.vault.getAbstractFileByPath(CAMINHO_STORE);
-      if (fileShop) {
-        const conteudo = await app.vault.read(fileShop);
-        const parsed = JSON.parse(conteudo);
-        const estado = this._normalizarEstado(parsed);
-        cachePorApp.set(app, estado);
-        return estado;
+      let conteudo = null;
+      const fileShop = app.vault.getAbstractFileByPath ? app.vault.getAbstractFileByPath(CAMINHO_STORE) : null;
+      if (fileShop && typeof app.vault.read === 'function') {
+        conteudo = await app.vault.read(fileShop);
+      } else if (app.vault.adapter && typeof app.vault.adapter.exists === 'function' && await app.vault.adapter.exists(CAMINHO_STORE)) {
+        conteudo = await app.vault.adapter.read(CAMINHO_STORE);
       }
 
-      // Migração automática a partir do arquivo legado se o shop store ainda não existir
-      const fileLegado = app.vault.getAbstractFileByPath(CAMINHO_STORE_LEGADO);
-      if (fileLegado) {
-        const conteudoLegado = await app.vault.read(fileLegado);
-        const parsedLegado = JSON.parse(conteudoLegado);
-        const estadoMigrado = this._normalizarEstado(parsedLegado);
-        await this.salvar(app, estadoMigrado);
-        cachePorApp.set(app, estadoMigrado);
-        return estadoMigrado;
+      if (conteudo) {
+        const parsed = JSON.parse(conteudo);
+        estadoFinal = this._normalizarEstado(parsed);
+      } else {
+        // Migração automática a partir do arquivo legado se o shop store ainda não existir
+        const fileLegado = app.vault.getAbstractFileByPath ? app.vault.getAbstractFileByPath(CAMINHO_STORE_LEGADO) : null;
+        if (fileLegado && typeof app.vault.read === 'function') {
+          const conteudoLegado = await app.vault.read(fileLegado);
+          const parsedLegado = JSON.parse(conteudoLegado);
+          estadoFinal = this._normalizarEstado(parsedLegado);
+          precisaSalvarNoVault = true;
+        }
       }
     } catch (e) {
-      console.warn('[ShopStore] Falha ao ler store, inicializando padrão seguro:', e);
+      console.warn('[ShopStore] Falha ao ler store do cofre, aplicando fallbacks seguros:', e);
     }
 
-    const padrao = this.obterEstadoPadrao();
-    if (typeof app === 'object') {
-      cachePorApp.set(app, padrao);
+    // Camada de Resiliência: merge inteligente com o LocalStorage
+    const estadoStorage = _lerDoLocalStorage();
+    if (estadoStorage) {
+      const storageNorm = this._normalizarEstado(estadoStorage);
+      if (!estadoFinal) {
+        estadoFinal = storageNorm;
+        precisaSalvarNoVault = true;
+      } else {
+        // Fusão defensiva: garante que moedas e itens adquiridos no localStorage nunca sejam perdidos
+        let mudou = false;
+        if (storageNorm.saldo > estadoFinal.saldo) {
+          estadoFinal.saldo = storageNorm.saldo;
+          mudou = true;
+        }
+        if (storageNorm.totalGanhosHistoricos > estadoFinal.totalGanhosHistoricos) {
+          estadoFinal.totalGanhosHistoricos = storageNorm.totalGanhosHistoricos;
+          mudou = true;
+        }
+        const desbloqueadosUnicos = Array.from(new Set([...estadoFinal.desbloqueados, ...storageNorm.desbloqueados]));
+        if (desbloqueadosUnicos.length > estadoFinal.desbloqueados.length) {
+          estadoFinal.desbloqueados = desbloqueadosUnicos;
+          mudou = true;
+        }
+        if (storageNorm.equipados && storageNorm.equipados.cosmetic && storageNorm.equipados.cosmetic !== 'theme-preset-snoopy' && estadoFinal.equipados.cosmetic === 'theme-preset-snoopy') {
+          estadoFinal.equipados.cosmetic = storageNorm.equipados.cosmetic;
+          mudou = true;
+        }
+        if (storageNorm.colorScheme && storageNorm.colorScheme !== estadoFinal.colorScheme) {
+          estadoFinal.colorScheme = storageNorm.colorScheme;
+          mudou = true;
+        }
+        if (storageNorm.ambientEnabled !== undefined && storageNorm.ambientEnabled !== estadoFinal.ambientEnabled) {
+          estadoFinal.ambientEnabled = storageNorm.ambientEnabled;
+          mudou = true;
+        }
+        if (mudou) precisaSalvarNoVault = true;
+      }
     }
-    return padrao;
+
+    if (!estadoFinal) {
+      estadoFinal = this.obterEstadoPadrao();
+      precisaSalvarNoVault = true;
+    }
+
+    cachePorApp.set(app, estadoFinal);
+    _salvarNoLocalStorage(estadoFinal);
+
+    if (precisaSalvarNoVault) {
+      await this.salvar(app, estadoFinal);
+    }
+
+    return estadoFinal;
   },
 
   /**
-   * Salva o estado da loja no cofre e atualiza o cache local.
+   * Salva o estado da loja no cofre e atualiza síncronamente o cache e localStorage.
    *
    * @param {object} app - Instância do Obsidian App.
    * @param {object} estado - Estado completo a persistir.
@@ -937,15 +1031,27 @@ const ShopStore = {
         cachePorApp.set(app, estado);
       }
       const jsonStr = JSON.stringify(estado, null, 2);
-      const file = app.vault.getAbstractFileByPath(CAMINHO_STORE);
-      if (file) {
-        await app.vault.modify(file, jsonStr);
-      } else if (typeof app.vault.create === 'function') {
-        await app.vault.create(CAMINHO_STORE, jsonStr);
+      _salvarNoLocalStorage(estado, jsonStr);
+
+      // 1. Gravação resiliente no cofre
+      if (app.vault.adapter && typeof app.vault.adapter.write === 'function') {
+        await app.vault.adapter.write(CAMINHO_STORE, jsonStr);
+      } else {
+        const file = app.vault.getAbstractFileByPath ? app.vault.getAbstractFileByPath(CAMINHO_STORE) : null;
+        if (file && typeof app.vault.modify === 'function') {
+          await app.vault.modify(file, jsonStr);
+        } else if (typeof app.vault.create === 'function') {
+          try {
+            await app.vault.create(CAMINHO_STORE, jsonStr);
+          } catch (_) {
+            const reFile = app.vault.getAbstractFileByPath ? app.vault.getAbstractFileByPath(CAMINHO_STORE) : null;
+            if (reFile && typeof app.vault.modify === 'function') await app.vault.modify(reFile, jsonStr);
+          }
+        }
       }
 
-      // Sincronização defensiva com arquivo legado para retrocompatibilidade
-      const legacyFile = app.vault.getAbstractFileByPath(CAMINHO_STORE_LEGADO);
+      // 2. Sincronização defensiva com arquivo legado para retrocompatibilidade
+      const legacyFile = app.vault.getAbstractFileByPath ? app.vault.getAbstractFileByPath(CAMINHO_STORE_LEGADO) : null;
       const saldoLegado = (!Number.isNaN(Number(estado.saldo)) && Number.isFinite(Number(estado.saldo)))
         ? Math.max(0, Math.floor(Number(estado.saldo)))
         : 0;
@@ -972,10 +1078,19 @@ const ShopStore = {
         historicoCompras: transacoesLegadas
       }, null, 2);
 
-      if (legacyFile) {
-        await app.vault.modify(legacyFile, legacyJson);
-      } else if (typeof app.vault.create === 'function') {
-        await app.vault.create(CAMINHO_STORE_LEGADO, legacyJson);
+      if (app.vault.adapter && typeof app.vault.adapter.write === 'function') {
+        await app.vault.adapter.write(CAMINHO_STORE_LEGADO, legacyJson);
+      } else {
+        if (legacyFile && typeof app.vault.modify === 'function') {
+          await app.vault.modify(legacyFile, legacyJson);
+        } else if (typeof app.vault.create === 'function') {
+          try {
+            await app.vault.create(CAMINHO_STORE_LEGADO, legacyJson);
+          } catch (_) {
+            const reLegacy = app.vault.getAbstractFileByPath ? app.vault.getAbstractFileByPath(CAMINHO_STORE_LEGADO) : null;
+            if (reLegacy && typeof app.vault.modify === 'function') await app.vault.modify(reLegacy, legacyJson);
+          }
+        }
       }
     } catch (e) {
       console.error('[ShopStore] Falha ao salvar estado:', e);
@@ -1199,7 +1314,7 @@ const ShopStore = {
       }
 
       if (item.categoria === 'cosmetic') {
-        this.aplicarTema(itemId);
+        this.aplicarTema(itemId, null, estado.colorScheme);
       }
 
       return {
@@ -1246,7 +1361,7 @@ const ShopStore = {
       }
 
       if (item.categoria === 'cosmetic') {
-        this.aplicarTema(itemId);
+        this.aplicarTema(itemId, null, estado.colorScheme);
       }
 
       return {
@@ -1493,6 +1608,39 @@ const ShopStore = {
   async obterTemaEquipado(app) {
     const estado = await this.carregar(app);
     return (estado.equipados && estado.equipados.cosmetic) || 'theme-preset-snoopy';
+  },
+
+  /**
+   * Retorna o ID do tema cosmético equipado de forma síncrona (cache ou localStorage).
+   *
+   * @param {object} app
+   * @returns {string}
+   */
+  obterTemaEquipadoSincrono(app) {
+    const estado = this._obterEstadoSincrono(app);
+    return (estado.equipados && estado.equipados.cosmetic) || 'theme-preset-snoopy';
+  },
+
+  /**
+   * Retorna o esquema de cor ('dark'|'light') de forma síncrona (cache ou localStorage).
+   *
+   * @param {object} app
+   * @returns {'dark'|'light'}
+   */
+  obterColorSchemeSincrono(app) {
+    const estado = this._obterEstadoSincrono(app);
+    return estado.colorScheme || 'dark';
+  },
+
+  /**
+   * Retorna se a animação ambiente está habilitada de forma síncrona.
+   *
+   * @param {object} app
+   * @returns {boolean}
+   */
+  obterAmbientEnabledSincrono(app) {
+    const estado = this._obterEstadoSincrono(app);
+    return estado.ambientEnabled === true;
   },
 
   /**

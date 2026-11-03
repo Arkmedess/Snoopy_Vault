@@ -1,7 +1,7 @@
 {
   "versao": "0.9.0",
   "repositorio": "Arkmedess/Snoopy_Vault",
-  "dataGeracao": "2026-11-03T01:19:41.372Z",
+  "dataGeracao": "2026-11-03T02:03:18.031Z",
   "changelog": [
     "Sistema de fontes embutidas offline-first (Inter, JetBrains Mono e Source Serif 4)",
     "UIKit v2 com catálogo canônico de 87 ícones Lucide SVG, componentes de Estado Vazio e Pluralização",
@@ -29,7 +29,7 @@
     "99_Meta/Snoopy/core/modal_factory.js": "sha256:8fd4bc732296248803b332f7c6c3f6bcc1dd2e50e564ea842246b1ee3b5fc1dd",
     "99_Meta/Snoopy/core/module_loader.js": "sha256:53867a97a349f9baf73104eebfeeae296273bf0935d14ae53533651be4d62a0d",
     "99_Meta/Snoopy/core/pomodoro_audio.js": "sha256:6c5f3b9c727e6edcc18274fd8b94ffe5b48426caa9e8529b48d306236bd15d48",
-    "99_Meta/Snoopy/core/shop_store.js": "sha256:3bd26e099ee97f042a0cb69df0d65b4300afaa04cce78763ac6d56fe87875850",
+    "99_Meta/Snoopy/core/shop_store.js": "sha256:a65f49b70f340886cc8774ec14b4bff517280973c53b6c0c5f24278122d3d673",
     "99_Meta/Snoopy/core/task_parser.js": "sha256:620de8c7d17c6ee466a96618ea2a24300a21769328c9c501f0e80962e0cb64c6",
     "99_Meta/Snoopy/core/task_templates.js": "sha256:85be2d99ce066c43aa64cdb522f8f743867825f64832259dba388a5eaa4f9dfa",
     "99_Meta/Snoopy/core/ui_kit.js": "sha256:799807817f5ff8d4c18bd5e078087d8222f415a333e8d7659ab10127917431cc",
@@ -40,7 +40,7 @@
     "99_Meta/Snoopy/docs/adr/0001-desacoplamento-loja-shopstore.md": "sha256:7c78f761eb1d4923e7a4cadcfa075e835e913ad4558b2910a9be62bf4ac246ff",
     "99_Meta/Snoopy/docs/adr/0002-motor-audio-procedural-web-audio.md": "sha256:59e6a0012257ca997f65fa83ed207a1f84c41658a41771bebcd21f87cd565dbd",
     "99_Meta/Snoopy/docs/adr/0003-politica-zero-emojis-uikit-lucide.md": "sha256:f045eb172536bd5a7cf7b093f80cc512f8fd841dbc6c70aa0d293920d985e254",
-    "99_Meta/Snoopy/home/view.js": "sha256:03d1bc08e1574e8fe6ab5df99b0fab10c9783bbe5c96a5a09bed9d1f0b93a4cc",
+    "99_Meta/Snoopy/home/view.js": "sha256:6cfd207e8c165a614e78543b2edcae6a6673ceeb4c5212b5b611a53d99779c0e",
     "99_Meta/Snoopy/modulos/01_snoopy_banner_cabecalho.js": "sha256:f664dfe195e3c64404069ffa9daa5a642469230b8b0837fcc2969b03cbe2fe88",
     "99_Meta/Snoopy/modulos/02_snoopy_cockpit_pomodoro.js": "sha256:48de8205ec480f29376928126d04bca73bfbc0ffd477cb8596e320d259ea161a",
     "99_Meta/Snoopy/modulos/03_snoopy_kanban_projetos.js": "sha256:d5ac0582959d17952747f46163e156a4a8e2d62bb621f362cbe93d6a746ca794",

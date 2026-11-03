@@ -97,6 +97,14 @@ let ShopStore = await ModuleLoader.carregar(app, "99_Meta/Snoopy/core/shop_store
 // Aplicação do tema equipado a partir dos design tokens
 if (ShopStore && typeof ShopStore.carregar === 'function') {
   try {
+    // 1. Aplicação síncrona imediata (prevenção de flash visual ao abrir o Obsidian)
+    if (typeof ShopStore.obterTemaEquipadoSincrono === 'function') {
+      const temaSincrono = ShopStore.obterTemaEquipadoSincrono(app);
+      const schemeSincrono = ShopStore.obterColorSchemeSincrono(app);
+      ShopStore.aplicarTema(temaSincrono, null, schemeSincrono);
+    }
+
+    // 2. Sincronização completa do cofre e confirmação de background
     const estadoShop = await ShopStore.carregar(app);
     const temaId = (estadoShop.equipados && estadoShop.equipados.cosmetic) || 'theme-preset-snoopy';
     const scheme = estadoShop.colorScheme || 'dark';

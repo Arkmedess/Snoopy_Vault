@@ -1,0 +1,21 @@
+{
+  "versao": 1,
+  "saldo": 0,
+  "totalGanhosHistoricos": 0,
+  "colorScheme": "dark",
+  "ambientEnabled": false,
+  "desbloqueados": [
+    "sprout",
+    "audio-white-noise",
+    "theme-preset-snoopy"
+  ],
+  "equipados": {
+    "botanical": "sprout",
+    "audio": "audio-white-noise",
+    "cosmetic": "theme-preset-snoopy"
+  },
+  "estatisticasBotanicas": {
+    "totalPlantadas": 0
+  },
+  "historicoTransacoes": []
+}
