@@ -2122,6 +2122,17 @@ input[type="checkbox"].snoopy-circle-check:checked::after {
   color: var(--snoopy-text);
 }
 
+.snoopy-countdown-card {
+  background: var(--snoopy-card);
+  border: 1px solid var(--snoopy-border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 8px 0;
+}
+
 .snoopy-form-input {
   width: 100%;
   background: var(--snoopy-card);

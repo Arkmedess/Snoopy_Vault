@@ -1014,7 +1014,7 @@ return {
       }
     }
 
-    const finalizarFoco = async () => {
+    const finalizarFoco = async (abrirAnotacao = false) => {
       completedCyclesToday++;
       mapaFoco[todayStr] = completedCyclesToday;
 
@@ -1074,7 +1074,7 @@ return {
         renderizarPlaylistVisual();
       }
 
-      if (modalManager) {
+      if (modalManager && abrirAnotacao) {
         modalManager.abrirModalAnotacao(false);
       }
     };
@@ -1275,11 +1275,31 @@ return {
           if (typeof atualizarIconeAudio === 'function') atualizarIconeAudio();
         }
         if (mode === 'foco') {
-          finalizarFoco();
-          // Automação: transita para Pausa automaticamente
-          if (timer) {
-            timer.setMode('pausa');
-            timer.start();
+          const transitarParaPausa = () => {
+            finalizarFoco(false);
+            if (timer) {
+              timer.setMode('pausa');
+              timer.start();
+            }
+          };
+
+          const estenderTempoFoco = () => {
+            if (timer) {
+              timer.estenderFoco(5);
+            }
+            if (typeof Notice !== 'undefined') {
+              new Notice('[Snoopy Pomodoro] +5 minutos adicionados ao foco!');
+            }
+          };
+
+          if (modalManager && typeof modalManager.abrirModalFimFoco === 'function') {
+            modalManager.abrirModalFimFoco({
+              onAdicionarExtra: estenderTempoFoco,
+              onIniciarPausa: transitarParaPausa,
+              tempoAutoPausaSegundos: 30
+            });
+          } else {
+            transitarParaPausa();
           }
         } else {
           // Pausa concluída: avança para a próxima faixa e volta para Foco

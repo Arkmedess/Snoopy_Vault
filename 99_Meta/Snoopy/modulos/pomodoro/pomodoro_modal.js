@@ -193,6 +193,99 @@ class PomodoroModal {
       }
     });
   }
+
+  /**
+   * Abre o popup de encerramento do pomodoro permitindo estender +5 min de foco ou iniciar a pausa.
+   * Se nenhuma ação for selecionada, a pausa inicia automaticamente após o timeout estipulado (padrão 30s).
+   *
+   * @param {object} params - Configurações e callbacks do encerramento.
+   * @param {Function} params.onAdicionarExtra - Callback para estender foco em 5 minutos.
+   * @param {Function} params.onIniciarPausa - Callback para transitar para o modo de pausa.
+   * @param {number} [params.tempoAutoPausaSegundos=30] - Duração da contagem regressiva em segundos.
+   */
+  abrirModalFimFoco({ onAdicionarExtra, onIniciarPausa, tempoAutoPausaSegundos = 30 }) {
+    if (!this.ModalFactory || !this.ModalFactory.abrir) {
+      if (typeof onIniciarPausa === 'function') onIniciarPausa();
+      return;
+    }
+
+    const htmlContent = `
+      <div class="snoopy-card-header" style="margin-bottom: 4px;">
+        <span class="snoopy-section-title">Ciclo de Foco Concluído!</span>
+        <button id="modal-close-btn" class="snoopy-modal-close" title="Fechar"></button>
+      </div>
+      <div class="snoopy-modal-label">Sua sessão de foco foi concluída. Escolha como deseja prosseguir:</div>
+
+      <div class="snoopy-countdown-card">
+        <div style="display: flex; align-items: center; justify-content: space-between; font-size: 12.5px;">
+          <span style="color: var(--snoopy-text);">A pausa iniciará automaticamente em:</span>
+          <strong id="snoopy-auto-pause-counter" style="color: var(--snoopy-module-accent); font-size: 14px; font-weight: 800; font-family: monospace;">${tempoAutoPausaSegundos}s</strong>
+        </div>
+        <div style="width: 100%; height: 4px; background: var(--snoopy-panel); border-radius: 9999px; overflow: hidden;">
+          <div id="snoopy-auto-pause-bar" style="width: 100%; height: 100%; background: var(--snoopy-module-accent); transition: width 1s linear;"></div>
+        </div>
+      </div>
+
+      <div class="snoopy-toolbar" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px;">
+        <button id="snoopy-btn-extra-5m" class="snoopy-btn-action snoopy-btn-md">+5 min Extras</button>
+        <button id="snoopy-btn-start-break" class="snoopy-btn-primary snoopy-btn-md">Iniciar Pausa</button>
+      </div>
+    `;
+
+    this.ModalFactory.abrir({
+      htmlContent,
+      maxWidth: '440px',
+      onMontar: (box, fechar) => {
+        let resolvido = false;
+        let segsRestantes = tempoAutoPausaSegundos;
+
+        const counterEl = box.querySelector('#snoopy-auto-pause-counter');
+        const barEl = box.querySelector('#snoopy-auto-pause-bar');
+
+        const timerAutoPausa = setInterval(() => {
+          segsRestantes--;
+          if (counterEl) counterEl.textContent = `${segsRestantes}s`;
+          if (barEl) barEl.style.width = `${Math.max(0, (segsRestantes / tempoAutoPausaSegundos) * 100)}%`;
+
+          if (segsRestantes <= 0) {
+            limparEFinalizar('pausa');
+          }
+        }, 1000);
+
+        if (typeof timerAutoPausa?.unref === 'function') {
+          timerAutoPausa.unref();
+        }
+
+        const limparEFinalizar = (acao) => {
+          if (resolvido) return;
+          resolvido = true;
+          clearInterval(timerAutoPausa);
+          fechar();
+
+          if (acao === 'extra') {
+            if (typeof onAdicionarExtra === 'function') onAdicionarExtra();
+          } else {
+            if (typeof onIniciarPausa === 'function') onIniciarPausa();
+          }
+        };
+
+        const btnClose = box.querySelector('#modal-close-btn');
+        if (btnClose) {
+          btnClose.onclick = () => limparEFinalizar('pausa');
+        }
+
+        const btnExtra = box.querySelector('#snoopy-btn-extra-5m');
+        if (btnExtra) {
+          btnExtra.onclick = () => limparEFinalizar('extra');
+        }
+
+        const btnPausa = box.querySelector('#snoopy-btn-start-break');
+        if (btnPausa) {
+          btnPausa.onclick = () => limparEFinalizar('pausa');
+        }
+      }
+    });
+  }
 }
 
 if (typeof module !== 'undefined' && module.exports) {

@@ -1,7 +1,7 @@
 {
   "versao": "0.9.0",
   "repositorio": "Arkmedess/Snoopy_Vault",
-  "dataGeracao": "2026-11-03T00:40:29.903Z",
+  "dataGeracao": "2026-11-03T01:19:41.372Z",
   "changelog": [
     "Sistema de fontes embutidas offline-first (Inter, JetBrains Mono e Source Serif 4)",
     "UIKit v2 com catálogo canônico de 87 ícones Lucide SVG, componentes de Estado Vazio e Pluralização",
@@ -13,7 +13,7 @@
   ],
   "motor": {
     ".obsidian/snippets/00_Snoopy_Fonts.css": "sha256:4bbce684cddeb3da442c314bbd9353260034b86a17cc3fb1f2c1c84d8bd53404",
-    ".obsidian/snippets/05_Snoopy_Theme.css": "sha256:2d738ac9428db593622e7e38c2522da99232a7c4f6de98d3cba6561c4490361c",
+    ".obsidian/snippets/05_Snoopy_Theme.css": "sha256:c8c953e5a7a8e69b9b615b1888a9663ee2889179ec0ce0936d17ed6095222ddf",
     "99_Meta/Snoopy/README.md": "sha256:2dc1b86b45ce94e0fe8ddd36bdb3db6577bcff6f7d1aa875f3744ab541ae8c16",
     "99_Meta/Snoopy/audio/binaural_gamma.ogg": "sha256:6de2a10368e9f53f93585d6a71bcabe7a1e81b091b6624fc2c46e3210c93bed3",
     "99_Meta/Snoopy/audio/brown_noise.ogg": "sha256:a607a39ded423da6acc39c47592031dff785de118d380cc0018e55da6df34714",
@@ -42,7 +42,7 @@
     "99_Meta/Snoopy/docs/adr/0003-politica-zero-emojis-uikit-lucide.md": "sha256:f045eb172536bd5a7cf7b093f80cc512f8fd841dbc6c70aa0d293920d985e254",
     "99_Meta/Snoopy/home/view.js": "sha256:03d1bc08e1574e8fe6ab5df99b0fab10c9783bbe5c96a5a09bed9d1f0b93a4cc",
     "99_Meta/Snoopy/modulos/01_snoopy_banner_cabecalho.js": "sha256:f664dfe195e3c64404069ffa9daa5a642469230b8b0837fcc2969b03cbe2fe88",
-    "99_Meta/Snoopy/modulos/02_snoopy_cockpit_pomodoro.js": "sha256:a3bb24bcaf196403b496d1f7b71f68fd21f56421d320ebb3e6d40f5fd7d35864",
+    "99_Meta/Snoopy/modulos/02_snoopy_cockpit_pomodoro.js": "sha256:48de8205ec480f29376928126d04bca73bfbc0ffd477cb8596e320d259ea161a",
     "99_Meta/Snoopy/modulos/03_snoopy_kanban_projetos.js": "sha256:d5ac0582959d17952747f46163e156a4a8e2d62bb621f362cbe93d6a746ca794",
     "99_Meta/Snoopy/modulos/03_snoopy_planner_calendario.js": "sha256:72e4f34312cd654d6abf1e7984ce066db1774182096d4353d112845ed83f4a2d",
     "99_Meta/Snoopy/modulos/04_snoopy_daily_tracker.js": "sha256:7f1f3b9ae5620a66e897ba21a2105970699821aea90e31ddd36a4862d876a439",
@@ -52,9 +52,9 @@
     "99_Meta/Snoopy/modulos/daily_tracker/tarefas_modal.js": "sha256:d6dfd5d9590b1949d46e6fbc75e6d53160f5b6dbfd159c24e55fc5f8c4b217f5",
     "99_Meta/Snoopy/modulos/daily_tracker/tarefas_view.js": "sha256:4d64555b52ca668bf42c139e7328e645591bf9d2e25f3098f1691f01a33eb3b7",
     "99_Meta/Snoopy/modulos/pomodoro/pomodoro_jardim.js": "sha256:9c330db94b5a6a8a606bd4687d39713effb6a94574aaf44d9e98b1a1ddbead85",
-    "99_Meta/Snoopy/modulos/pomodoro/pomodoro_modal.js": "sha256:522d9e909fd812a79783c4a98c192f6085b680e13b272e95bea82993c1408d14",
+    "99_Meta/Snoopy/modulos/pomodoro/pomodoro_modal.js": "sha256:80107f8fd5a58a90cfbe42a6c8762de9640d76579b4daa7366d4b00d4ef0813c",
     "99_Meta/Snoopy/modulos/pomodoro/pomodoro_playlist.js": "sha256:f4c2943fec38603af19be9c8ce8e423a1439538f4bce29332cc811063cb83e76",
-    "99_Meta/Snoopy/modulos/pomodoro/pomodoro_timer.js": "sha256:8561a1bb18665a5ed3421f0a341fe7c10457240436baf9403d0765b2780e1b6b",
+    "99_Meta/Snoopy/modulos/pomodoro/pomodoro_timer.js": "sha256:af6006e6010adf2166cb3d6ae8c46f60a0515ae8f3f5db9118e4d8f77b8b59dc",
     "99_Meta/Snoopy/modulos/shop/shop_modal.js": "sha256:9db2c2a303def74a0dfacc0be1267171866802e636b984b871b1bc3a54072a0b",
     "99_Meta/Snoopy/subdashboards/configuracoes/view.js": "sha256:d2196636b7ce22da3a1b00c74700268bab534766e529fc84ba3520e893154489",
     "99_Meta/Snoopy/subdashboards/estudos/abas/aba_ciclo.js": "sha256:010d68db6109971d74209e7da76a754df448705a450daea486b5ae18159fcf8f",

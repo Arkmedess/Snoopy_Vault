@@ -116,6 +116,25 @@ class PomodoroTimer {
   }
 
   /**
+   * Estende o tempo de foco adicionando minutos extras e iniciando a contagem imediatamente.
+   *
+   * @param {number} [minutos=5] - Minutos adicionais de foco.
+   */
+  estenderFoco(minutos = 5) {
+    this._limparAgendamentos();
+    const segs = Math.max(1, Math.floor(Number(minutos) * 60) || 300);
+    this.currentMode = 'foco';
+    this.totalSeconds = segs;
+    this.remainingSeconds = segs;
+    this.remainingMs = segs * 1000;
+    this.endAt = null;
+    this.state = 'idle';
+
+    this.onModeChange({ mode: this.currentMode, totalSeconds: this.totalSeconds });
+    this.start();
+  }
+
+  /**
    * Inicia ou pausa o temporizador.
    *
    * @returns {boolean} Retorna true se agora está em execução, false se pausado.
