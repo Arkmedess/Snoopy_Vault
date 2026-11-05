@@ -16,6 +16,7 @@ const TarefasView = {
     const { app, dv, todayStr, DateUtils, VaultStore, TaskParser } = ctx;
 
     let currentViewMode = (typeof window !== 'undefined' && window.__snoopyTaskViewMode) || 'lista';
+    if (currentViewMode === 'calendario') currentViewMode = 'lista';
     let tabsContainer = null;
     let setViewMode = null;
 
@@ -40,23 +41,15 @@ const TarefasView = {
       if (ctx.renderIcon) ctx.renderIcon(btnKanban, 'kanban', { size: 14 });
       else btnKanban.textContent = 'Kanban';
 
-      const btnCalendario = switcher.createEl('button', {
-        cls: `snoopy-btn-view-mode ${currentViewMode === 'calendario' ? 'active' : ''}`,
-        attr: { 'data-mode': 'calendario', title: 'Visualização em Calendário Mensal', 'aria-label': 'Visualização em Calendário' }
-      });
-      if (ctx.renderIcon) ctx.renderIcon(btnCalendario, 'calendar', { size: 14 });
-      else btnCalendario.textContent = 'Calendário';
-
       setViewMode = (mode) => {
         currentViewMode = mode;
         if (typeof window !== 'undefined') window.__snoopyTaskViewMode = mode;
         btnLista.classList.toggle('active', mode === 'lista');
         btnKanban.classList.toggle('active', mode === 'kanban');
-        btnCalendario.classList.toggle('active', mode === 'calendario');
 
-        // No modo calendário, oculta as abas de HOJE/AMANHÃ para aproveitar todo o espaço útil
+        // No modo kanban, oculta as abas de HOJE/AMANHÃ para foco total no fluxo
         if (tabsContainer) {
-          if (mode === 'calendario') {
+          if (mode === 'kanban') {
             tabsContainer.classList.add('snoopy-hidden');
             tabsContainer.style.display = 'none';
             if (typeof tabsContainer.style.setProperty === 'function') {
@@ -65,6 +58,9 @@ const TarefasView = {
           } else {
             tabsContainer.classList.remove('snoopy-hidden');
             tabsContainer.style.display = 'flex';
+            if (typeof tabsContainer.style.removeProperty === 'function') {
+              tabsContainer.style.removeProperty('display');
+            }
           }
         }
 
@@ -73,7 +69,6 @@ const TarefasView = {
 
       btnLista.onclick = () => setViewMode('lista');
       btnKanban.onclick = () => setViewMode('kanban');
-      btnCalendario.onclick = () => setViewMode('calendario');
 
       return switcher;
     }
@@ -130,10 +125,11 @@ const TarefasView = {
       if (addTaskBtn) addTaskBtn.onclick = abrirModalNovaTarefa;
     }
 
-    // Barra de Filtros / Abas (Fixa na lista/kanban, oculta no calendário para otimizar espaço)
+    // Barra de Filtros / Abas (Visível no modo lista, oculta no modo kanban para otimizar espaço)
+    const isTabsHidden = currentViewMode === 'kanban';
     tabsContainer = tasksCard.createEl('div', { 
-      cls: `snoopy-task-tabs snoopy-toolbar ${currentViewMode === 'calendario' ? 'snoopy-hidden' : ''}`, 
-      attr: { style: `overflow-x: auto; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.05); flex-shrink: 0; min-height: 38px; ${currentViewMode === 'calendario' ? 'display: none !important;' : ''}` } 
+      cls: `snoopy-task-tabs snoopy-toolbar ${isTabsHidden ? 'snoopy-hidden' : ''}`, 
+      attr: { style: `overflow-x: auto; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.05); flex-shrink: 0; min-height: 38px; ${isTabsHidden ? 'display: none !important;' : ''}` } 
     });
 
     const tabsDef = [
@@ -502,21 +498,39 @@ const TarefasView = {
           if (filePath) {
             const file = app.vault.getAbstractFileByPath(filePath);
             if (file) {
+              const novoChecked = cb.checked;
+              item.completed = novoChecked;
+              if (item.taskRef) item.taskRef.completed = novoChecked;
+
+              const idxPend = cacheTarefasPendentes.findIndex(x => x === item || (x.taskRef && t && x.taskRef.text === t.text) || x.cleanText === item.cleanText);
+              const idxConc = cacheTarefasConcluidasHoje.findIndex(x => x === item || (x.taskRef && t && x.taskRef.text === t.text) || x.cleanText === item.cleanText);
+
+              if (novoChecked) {
+                if (idxPend >= 0) cacheTarefasPendentes.splice(idxPend, 1);
+                if (idxConc < 0) cacheTarefasConcluidasHoje.push(item);
+              } else {
+                if (idxConc >= 0) cacheTarefasConcluidasHoje.splice(idxConc, 1);
+                if (idxPend < 0) cacheTarefasPendentes.push(item);
+              }
+
+              renderizarTarefasDoCache();
+
               await VaultStore.substituirLinha(
                 app, 
                 file, 
                 l => l.includes(t.text), 
-                l => cb.checked 
+                l => novoChecked 
                   ? l.replace(/- \[ \]/, `- [x] ✅ ${todayStr}`) 
                   : l.replace(/- \[[xX]\]/, '- [ ]').replace(REGEX_CHECKED_TASKS, '').trim()
               );
-              if (typeof Notice !== 'undefined') new Notice(cb.checked ? `[Snoopy] Concluída: ${item.cleanText}` : `[Snoopy] Reaberta: ${item.cleanText}`);
-              await recarregarEAtualizarTarefas();
+              if (typeof Notice !== 'undefined') new Notice(novoChecked ? `[Snoopy] Concluída: ${item.cleanText}` : `[Snoopy] Reaberta: ${item.cleanText}`);
             }
           }
         };
       });
     }
+
+    let elementoCardSendoArrastado = null;
 
     function renderizarTarefasModoKanban() {
       todoListContainer.innerHTML = '';
@@ -525,8 +539,20 @@ const TarefasView = {
         cls: 'snoopy-task-kanban-board'
       });
 
-      const tarefasHoje = cacheTarefasPendentes.filter(t => t.statusPrazo === 'hoje' || t.statusPrazo === 'atrasada');
-      const tarefasAFazer = cacheTarefasPendentes.filter(t => t.statusPrazo !== 'hoje' && t.statusPrazo !== 'atrasada');
+      const ordenarKanban = (lista) => {
+        return lista.sort((a, b) => {
+          const pPrazo = { atrasada: 1, hoje: 2, futura: 3, sem_prazo: 4 };
+          const pPrio = { alta: 1, media: 2, baixa: 3 };
+          const pA = pPrazo[a.statusPrazo] || 5;
+          const pB = pPrazo[b.statusPrazo] || 5;
+          if (pA !== pB) return pA - pB;
+          if (a.dueStr && b.dueStr) return a.dueStr.localeCompare(b.dueStr);
+          return (pPrio[a.prio] || 4) - (pPrio[b.prio] || 4);
+        });
+      };
+
+      const tarefasHoje = ordenarKanban(cacheTarefasPendentes.filter(t => t.statusPrazo === 'hoje' || t.statusPrazo === 'atrasada'));
+      const tarefasAFazer = ordenarKanban(cacheTarefasPendentes.filter(t => t.statusPrazo !== 'hoje' && t.statusPrazo !== 'atrasada'));
       const tarefasConcluidas = [...cacheTarefasConcluidasHoje];
 
       const colunasDef = [
@@ -534,6 +560,159 @@ const TarefasView = {
         { id: 'hoje', titulo: 'HOJE / EM ANDAMENTO', dotCls: 'dot-hoje', itens: tarefasHoje },
         { id: 'concluido', titulo: 'CONCLUÍDO', dotCls: 'dot-concluido', itens: tarefasConcluidas }
       ];
+
+      const moverTarefaParaColuna = async (dragData, destinoColId) => {
+        if (!dragData || !dragData.path || !dragData.rawText) return;
+        if (dragData.origemCol === destinoColId) return;
+
+        // 1. SINCRONIZAÇÃO OTIMISTA IN-PLACE DO CACHE (0ms)
+        const idxPendente = cacheTarefasPendentes.findIndex(t => t.cleanText === dragData.cleanText || (t.taskRef && t.taskRef.text.includes(dragData.rawText)));
+        const idxConcluido = cacheTarefasConcluidasHoje.findIndex(t => t.cleanText === dragData.cleanText || (t.taskRef && t.taskRef.text.includes(dragData.rawText)));
+
+        let itemMovido = null;
+        if (idxPendente >= 0) {
+          itemMovido = cacheTarefasPendentes.splice(idxPendente, 1)[0];
+        } else if (idxConcluido >= 0) {
+          itemMovido = cacheTarefasConcluidasHoje.splice(idxConcluido, 1)[0];
+        }
+
+        if (itemMovido) {
+          if (destinoColId === 'concluido') {
+            itemMovido.completed = true;
+            cacheTarefasConcluidasHoje.unshift(itemMovido);
+          } else if (destinoColId === 'hoje') {
+            itemMovido.completed = false;
+            itemMovido.statusPrazo = 'hoje';
+            itemMovido.dueStr = todayStr;
+            cacheTarefasPendentes.unshift(itemMovido);
+          } else {
+            itemMovido.completed = false;
+            itemMovido.statusPrazo = 'sem_prazo';
+            itemMovido.dueStr = null;
+            cacheTarefasPendentes.push(itemMovido);
+          }
+        }
+
+        // 2. ATUALIZAÇÃO OTIMISTA INSTANTÂNEA NO DOM (Na posição canônica ordenada)
+        const colOrigemEl = board.querySelector(`.col-${dragData.origemCol}`);
+        const colDestinoEl = board.querySelector(`.col-${destinoColId}`);
+        const cardsWrapDestino = colDestinoEl ? colDestinoEl.querySelector('.snoopy-task-kanban-col-cards') : null;
+        const cardsWrapOrigem = colOrigemEl ? colOrigemEl.querySelector('.snoopy-task-kanban-col-cards') : null;
+
+        const cardAlvo = elementoCardSendoArrastado || (cardsWrapOrigem ? cardsWrapOrigem.querySelector('.snoopy-task-kanban-card') : null);
+
+        if (cardAlvo && cardsWrapDestino) {
+          // Remove mensagem de vazio da coluna destino se houver
+          const emptyDestino = cardsWrapDestino.querySelector('.snoopy-meta');
+          if (emptyDestino && emptyDestino.textContent && emptyDestino.textContent.includes('Nenhum item')) {
+            if (typeof emptyDestino.remove === 'function') {
+              emptyDestino.remove();
+            } else if (emptyDestino.parentElement && typeof emptyDestino.parentElement.removeChild === 'function') {
+              emptyDestino.parentElement.removeChild(emptyDestino);
+            }
+          }
+
+          // Insere na posição ordenada em vez de jogar rudemente no final da coluna
+          const cardsExistentes = Array.from(cardsWrapDestino.querySelectorAll('.snoopy-task-kanban-card')).filter(c => c !== cardAlvo);
+          let inserido = false;
+          if (itemMovido && cardsExistentes.length > 0) {
+            const pMap = { alta: 1, media: 2, baixa: 3 };
+            const movidoAtrasado = itemMovido.statusPrazo === 'atrasada';
+            for (const c of cardsExistentes) {
+              const cAtrasada = c.getAttribute('data-atrasada') === 'true';
+              const cPrio = c.getAttribute('data-prio') || 'baixa';
+              if (movidoAtrasado && !cAtrasada) {
+                cardsWrapDestino.insertBefore(cardAlvo, c);
+                inserido = true;
+                break;
+              }
+              if (movidoAtrasado === cAtrasada && (pMap[itemMovido.prio] || 4) < (pMap[cPrio] || 4)) {
+                cardsWrapDestino.insertBefore(cardAlvo, c);
+                inserido = true;
+                break;
+              }
+            }
+          }
+          if (!inserido) {
+            if (cardsExistentes.length > 0 && (destinoColId === 'concluido' || destinoColId === 'hoje')) {
+              cardsWrapDestino.insertBefore(cardAlvo, cardsExistentes[0]);
+            } else {
+              cardsWrapDestino.appendChild(cardAlvo);
+            }
+          }
+
+          // Atualiza os contadores de coluna no cabeçalho
+          const countOrigem = colOrigemEl ? colOrigemEl.querySelector('.snoopy-task-kanban-col-header .snoopy-micro') : null;
+          const countDestino = colDestinoEl ? colDestinoEl.querySelector('.snoopy-task-kanban-col-header .snoopy-micro') : null;
+          if (countOrigem) countOrigem.textContent = String(Math.max(0, (parseInt(countOrigem.textContent) || 0) - 1));
+          if (countDestino) countDestino.textContent = String((parseInt(countDestino.textContent) || 0) + 1);
+
+          // Se a coluna de origem ficou vazia, reexibe a mensagem sutil
+          if (cardsWrapOrigem && cardsWrapOrigem.querySelectorAll('.snoopy-task-kanban-card').length === 0) {
+            cardsWrapOrigem.createEl('div', {
+              cls: 'snoopy-meta',
+              attr: { style: 'color: #71717a; font-size: 11px; font-style: italic; text-align: center; padding: 16px 0;' },
+              text: 'Nenhum item nesta coluna'
+            });
+          }
+
+          // Atualiza estilização do card conforme o destino
+          const cb = cardAlvo.querySelector('.snoopy-circle-check');
+          const titleEl = cardAlvo.querySelector('span[style*="font-size: 12px"]');
+          if (destinoColId === 'concluido') {
+            if (cb) cb.checked = true;
+            if (titleEl) {
+              titleEl.style.color = 'var(--text-muted)';
+              titleEl.style.textDecoration = 'line-through';
+            }
+          } else {
+            if (cb) cb.checked = false;
+            if (titleEl) {
+              titleEl.style.color = '#ffffff';
+              titleEl.style.textDecoration = 'none';
+            }
+          }
+        }
+
+        // 3. PERSISTÊNCIA ASSÍNCRONA NO VAULT (BACKGROUND WORKER)
+        const file = app.vault.getAbstractFileByPath(dragData.path);
+        if (!file) return;
+
+        let novaLinhaPersistida = '';
+        await VaultStore.substituirLinha(
+          app,
+          file,
+          l => l.includes(dragData.rawText),
+          l => {
+            let novaLinha = l;
+            if (destinoColId === 'concluido') {
+              if (/- \[ \]/.test(novaLinha)) {
+                novaLinha = novaLinha.replace(/- \[ \]/, `- [x] ✅ ${todayStr}`);
+              } else if (!/- \[[xX]\]/.test(novaLinha)) {
+                novaLinha = `- [x] ✅ ${todayStr} ${novaLinha}`.trim();
+              }
+            } else if (destinoColId === 'hoje') {
+              novaLinha = novaLinha.replace(/- \[[xX]\]/, '- [ ]').replace(REGEX_CHECKED_TASKS, '').trim();
+              if (!/- \[ \]/.test(novaLinha)) novaLinha = `- [ ] ${novaLinha}`;
+              if (/(?:due:|📅)\s*(\d{4}-\d{2}-\d{2}|\d{2}[-/]\d{2}[-/]\d{4})/.test(novaLinha)) {
+                novaLinha = novaLinha.replace(/(?:due:|📅)\s*(\d{4}-\d{2}-\d{2}|\d{2}[-/]\d{2}[-/]\d{4})/, `📅 ${todayStr}`);
+              } else {
+                novaLinha = `${novaLinha} 📅 ${todayStr}`;
+              }
+            } else if (destinoColId === 'afazer') {
+              novaLinha = novaLinha.replace(/- \[[xX]\]/, '- [ ]').replace(REGEX_CHECKED_TASKS, '').trim();
+              if (!/- \[ \]/.test(novaLinha)) novaLinha = `- [ ] ${novaLinha}`;
+              novaLinha = novaLinha.replace(/(?:due:|📅)\s*(\d{4}-\d{2}-\d{2}|\d{2}[-/]\d{2}[-/]\d{4})/, '').trim();
+            }
+            novaLinhaPersistida = novaLinha;
+            if (itemMovido && itemMovido.taskRef) itemMovido.taskRef.text = novaLinhaPersistida;
+            return novaLinha;
+          }
+        );
+
+        const rotulosCol = { afazer: 'A Fazer', hoje: 'Hoje / Em Andamento', concluido: 'Concluído' };
+        if (typeof Notice !== 'undefined') new Notice(`[Snoopy] Tarefa movida para ${rotulosCol[destinoColId] || destinoColId}!`);
+      };
 
       colunasDef.forEach(col => {
         const colEl = board.createEl('div', {
@@ -563,6 +742,35 @@ const TarefasView = {
           attr: { style: 'display: flex; flex-direction: column; gap: 8px; overflow-y: auto; max-height: 380px; padding-right: 2px;' }
         });
 
+        // Suporte HTML5 Drag and Drop na coluna
+        cardsWrap.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+          colEl.classList.add('snoopy-kanban-dragover');
+          colEl.style.borderColor = 'var(--snoopy-module-accent, #86efac)';
+        });
+
+        cardsWrap.addEventListener('dragleave', () => {
+          colEl.classList.remove('snoopy-kanban-dragover');
+          colEl.style.borderColor = '';
+        });
+
+        cardsWrap.addEventListener('drop', async (e) => {
+          e.preventDefault();
+          colEl.classList.remove('snoopy-kanban-dragover');
+          colEl.style.borderColor = '';
+
+          const rawPayload = e.dataTransfer ? e.dataTransfer.getData('text/plain') : null;
+          if (!rawPayload) return;
+          let dragData = null;
+          try {
+            dragData = JSON.parse(rawPayload);
+          } catch (_) {
+            return;
+          }
+          await moverTarefaParaColuna(dragData, col.id);
+        });
+
         if (col.itens.length === 0) {
           cardsWrap.createEl('div', {
             cls: 'snoopy-meta',
@@ -571,13 +779,13 @@ const TarefasView = {
           });
         } else {
           col.itens.forEach(item => {
-            renderizarCardKanban(cardsWrap, item);
+            renderizarCardKanban(cardsWrap, item, col.id);
           });
         }
       });
     }
 
-    function renderizarCardKanban(cardsWrap, item) {
+    function renderizarCardKanban(cardsWrap, item, colId) {
       const t = item.taskRef;
       const filePath = t.path || (t.link ? t.link.path : null);
       const fileName = t.link ? (t.link.display || t.link.path.split('/').pop().replace(/\.md$/, '')) : (filePath ? filePath.split('/').pop().replace(/\.md$/, '') : 'Nota');
@@ -604,6 +812,36 @@ const TarefasView = {
       }
 
       const card = cardsWrap.createEl('div', { cls: 'snoopy-task-kanban-card' });
+      card.setAttribute('data-prio', item.prio || 'baixa');
+      card.setAttribute('data-atrasada', item.statusPrazo === 'atrasada' ? 'true' : 'false');
+      card.setAttribute('data-task-path', filePath || '');
+      card.setAttribute('data-task-raw', encodeURIComponent(t.text || ''));
+
+      // Suporte a HTML5 Drag & Drop no Card
+      card.setAttribute('draggable', 'true');
+      card.style.cursor = 'grab';
+
+      card.addEventListener('dragstart', (e) => {
+        elementoCardSendoArrastado = card;
+        const dragPayload = JSON.stringify({
+          path: filePath,
+          rawText: t.text,
+          cleanText: item.cleanText,
+          origemCol: colId
+        });
+        if (e.dataTransfer) {
+          e.dataTransfer.setData('text/plain', dragPayload);
+          e.dataTransfer.effectAllowed = 'move';
+        }
+        card.classList.add('is-dragging');
+        card.style.opacity = '0.4';
+      });
+
+      card.addEventListener('dragend', () => {
+        elementoCardSendoArrastado = null;
+        card.classList.remove('is-dragging');
+        card.style.opacity = '1';
+      });
 
       // Topo: Checkbox + Título
       const topRow = card.createEl('div', {
@@ -618,16 +856,32 @@ const TarefasView = {
         if (filePath) {
           const file = app.vault.getAbstractFileByPath(filePath);
           if (file) {
+            const novoChecked = cb.checked;
+            item.completed = novoChecked;
+            if (item.taskRef) item.taskRef.completed = novoChecked;
+
+            const idxPend = cacheTarefasPendentes.findIndex(x => x === item || (x.taskRef && t && x.taskRef.text === t.text) || x.cleanText === item.cleanText);
+            const idxConc = cacheTarefasConcluidasHoje.findIndex(x => x === item || (x.taskRef && t && x.taskRef.text === t.text) || x.cleanText === item.cleanText);
+
+            if (novoChecked) {
+              if (idxPend >= 0) cacheTarefasPendentes.splice(idxPend, 1);
+              if (idxConc < 0) cacheTarefasConcluidasHoje.push(item);
+            } else {
+              if (idxConc >= 0) cacheTarefasConcluidasHoje.splice(idxConc, 1);
+              if (idxPend < 0) cacheTarefasPendentes.push(item);
+            }
+
+            renderizarTarefasDoCache();
+
             await VaultStore.substituirLinha(
               app, 
               file, 
               l => l.includes(t.text), 
-              l => cb.checked 
+              l => novoChecked 
                 ? l.replace(/- \[ \]/, `- [x] ✅ ${todayStr}`) 
                 : l.replace(/- \[[xX]\]/, '- [ ]').replace(REGEX_CHECKED_TASKS, '').trim()
             );
-            if (typeof Notice !== 'undefined') new Notice(cb.checked ? `[Snoopy] Concluída: ${item.cleanText}` : `[Snoopy] Reaberta: ${item.cleanText}`);
-            await recarregarEAtualizarTarefas();
+            if (typeof Notice !== 'undefined') new Notice(novoChecked ? `[Snoopy] Concluída: ${item.cleanText}` : `[Snoopy] Reaberta: ${item.cleanText}`);
           }
         }
       };

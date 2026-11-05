@@ -41,7 +41,6 @@ return {
     }
 
     const HabitosView = await carregarSubmodulo("99_Meta/Snoopy/modulos/daily_tracker/habitos_view.js");
-    const CalendarioView = await carregarSubmodulo("99_Meta/Snoopy/modulos/daily_tracker/calendario_view.js");
     const TarefasModal = await carregarSubmodulo("99_Meta/Snoopy/modulos/daily_tracker/tarefas_modal.js");
     const TarefasView = await carregarSubmodulo("99_Meta/Snoopy/modulos/daily_tracker/tarefas_view.js");
 
@@ -139,7 +138,6 @@ return {
       controllerTarefas = await TarefasView.montar({
         tasksCard,
         ctx,
-        CalendarioView,
         abrirModalNovaTarefa,
         abrirModalTemplateTarefa,
         abrirModalMenuTarefa
