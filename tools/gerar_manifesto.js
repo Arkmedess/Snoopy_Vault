@@ -26,15 +26,14 @@ function listarArquivosRecursivo(dir, filtro = () => true) {
   return arquivos;
 }
 
-const versao = '0.9.1';
+const versao = '0.9.2';
 const changelog = [
-  'Popup de conclusão do ciclo Pomodoro (+5 min extras de foco ou início imediato de pausa com timer de 30s)',
-  'Dock de áudio com restauração completa de links e reprodução de vídeos do YouTube',
-  'Design tokens com alto contraste para modo Claro (Light), preservando legibilidade nos Hábitos e Heatmap',
-  'Toggle de ambiente e partículas (ANIM: ON/OFF) com propagação de background para todo o workspace do Obsidian',
-  'Persistência híbrida e reconciliação confiável de moedas, temas e itens da loja ao fechar e reabrir o app',
-  'Motor de verificação de atualizações (SHA-256) integrado nas Configurações com download atômico e backup',
-  'Notificação inteligente de atualização disponível na Home e modal pós-atualização com changelog e link para o GitHub'
+  'Suporte nativo a Drag and Drop no Kanban da Central de Tarefas com atualização otimista imediata a 60 FPS',
+  'Anti-Jump Gate na Home: preservação contínua de scroll e estabilização de altura (minHeight) durante re-renderizações',
+  'Alinhamento vertical esticado (stretch) do Planner Mensal com rolagem independente e truncamento de títulos',
+  'Normalização de loudness do dock de áudio em -16 LUFS e reparo de visibilidade do player do Cockpit Pomodoro',
+  'Refinamento visual minimalista do card botânico e densidade de informação otimizada no Jardim de Constância',
+  'Arquitetura otimista in-memory com eliminação de leituras prematuras ao cache do Dataview e I/O assíncrono em background'
 ];
 
 

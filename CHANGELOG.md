@@ -7,6 +7,21 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [0.9.2] - 2026-11-04
+
+### Adicionado
+- **Arrasto Fluido no Kanban da Central de Tarefas:** Implementação nativa de HTML5 Drag and Drop entre colunas (*A Fazer*, *Hoje / Em Andamento*, *Concluído*) com atualização otimista imediata do DOM e ordenação canônica sem saltos.
+- **Anti-Jump Gate na Dashboard Home:** Rastreamento contínuo de scroll do workspace ativo do Obsidian e estabilização de altura (`minHeight`) para impedir colapso de página e salto involuntário para o topo durante re-renderizações.
+- **Alinhamento Esticado & Scroll Vertical no Planner Mensal:** Calibração com `align-items: stretch` nivelando perfeitamente a grade do calendário e o painel lateral de *Próximos Blocos*, com rolagem vertical independente e truncamento elíptico de títulos longos.
+
+### Modificado & Corrigido
+- **Normalização de Loudness em Sons do Pomodoro:** Calibração empírica dos ruídos de foco (*Brown Noise*, *Forest Quiet*) em -16 LUFS, evitando disparidades sonoras ao soar o alarme de encerramento do ciclo.
+- **Refinamento Visual Minimalista no Jardim da Constância:** Remoção de áreas vazias, agrupamento da célula vegetal no topo do cartão da planta e compactação do histórico de 30 dias com métricas de constância harmonizadas.
+- **Arquitetura Otimista em Memória:** Eliminação de consultas prematuras ao cache do Dataview e desacoplamento do I/O de persistência em segundo plano, garantindo transições instantâneas a 60 FPS.
+- **Higienização de Tarefas Concluídas:** Remoção automática de prefixos e datas legadas (`✅ 2026-11-04`) do título de exibição em atividades concluídas.
+
+---
+
 ## [0.9.1] - 2026-11-03
 
 ### Adicionado
@@ -34,5 +49,6 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ---
 
+[0.9.2]: https://github.com/Arkmedess/Snoopy_Vault/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/Arkmedess/Snoopy_Vault/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/Arkmedess/Snoopy_Vault/releases/tag/v0.9.0
