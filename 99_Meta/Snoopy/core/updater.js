@@ -446,16 +446,46 @@ const Updater = {
     });
 
     const versaoRemota = manifestoRemoto.versao || versaoLocal;
-    const versaoDiferente = versaoRemota !== versaoLocal;
-    const requerAtualizacao = plano.requerAtualizacao || versaoDiferente;
+    const ehMaisNova = this.compararSemver(versaoRemota, versaoLocal) > 0;
+    const disponivel = ehMaisNova;
 
     return {
-      disponivel: requerAtualizacao,
+      disponivel,
       versaoLocal,
       versaoRemota,
       plano,
       manifestoRemoto
     };
+  },
+
+  /**
+   * Compara duas versões SemVer (ex.: "0.9.1", "v0.9.2").
+   * Retorna:
+   *   1 se v1 > v2 (v1 é mais recente)
+   *  -1 se v1 < v2 (v1 é mais antiga)
+   *   0 se v1 == v2 (versões idênticas)
+   *
+   * @param {string} v1
+   * @param {string} v2
+   * @returns {number}
+   */
+  compararSemver(v1, v2) {
+    if (!v1 && !v2) return 0;
+    if (!v1) return -1;
+    if (!v2) return 1;
+
+    const limpar = (str) => String(str).trim().replace(/^v/i, '').split('-')[0].split('+')[0];
+    const partes1 = limpar(v1).split('.').map(n => parseInt(n, 10) || 0);
+    const partes2 = limpar(v2).split('.').map(n => parseInt(n, 10) || 0);
+
+    const maxLen = Math.max(partes1.length, partes2.length, 3);
+    for (let i = 0; i < maxLen; i++) {
+      const num1 = partes1[i] || 0;
+      const num2 = partes2[i] || 0;
+      if (num1 > num2) return 1;
+      if (num1 < num2) return -1;
+    }
+    return 0;
   },
 
   /**

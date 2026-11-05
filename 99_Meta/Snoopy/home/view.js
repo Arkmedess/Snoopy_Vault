@@ -61,6 +61,41 @@ class SnoopyEventBus {
 // =============================================================================
 
 async function renderHome(dv, app) {
+  // 0. PRESERVAÇÃO DE SCROLL (Anti-Jump Gate na Recarga do Dataview)
+  let scrollContainer = null;
+  if (dv && dv.container) {
+    let cur = dv.container.parentElement;
+    while (cur) {
+      if (cur.classList && (
+        cur.classList.contains('markdown-preview-view') || 
+        cur.classList.contains('cm-scroller') || 
+        cur.classList.contains('view-content') || 
+        cur.classList.contains('workspace-leaf-content')
+      )) {
+        scrollContainer = cur;
+        break;
+      }
+      cur = cur.parentElement;
+    }
+  }
+
+  const globalWin = typeof window !== 'undefined' ? window : null;
+
+  if (scrollContainer && !scrollContainer._snoopyScrollBound) {
+    scrollContainer._snoopyScrollBound = true;
+    scrollContainer.addEventListener('scroll', () => {
+      if (globalWin) globalWin.__snoopySavedHomeScroll = scrollContainer.scrollTop;
+    }, { passive: true });
+  }
+
+  const scrollAnterior = (globalWin && globalWin.__snoopySavedHomeScroll) || (scrollContainer ? scrollContainer.scrollTop : 0);
+  const alturaAnterior = (globalWin && globalWin.__snoopySavedHomeHeight) || (dv && dv.container ? dv.container.offsetHeight : 0);
+
+  // Evita o colapso de altura para 0px que força o navegador a rolar a página para o topo
+  if (dv && dv.container && alturaAnterior > 0) {
+    dv.container.style.minHeight = `${alturaAnterior}px`;
+  }
+
 // Carregamento dinâmico do ModuleLoader (Cache V8 de Compilação & Economia de RAM)
 let ModuleLoader = null;
 try {
@@ -371,7 +406,11 @@ const modulosSnoopy = [
         if (!Updater || typeof Updater.verificarAtualizacaoDisponivel !== 'function') return;
 
         const checagem = await Updater.verificarAtualizacaoDisponivel(app);
-        if (checagem && checagem.disponivel && checagem.versaoRemota) {
+        const ehMaisNova = (Updater.compararSemver && checagem.versaoRemota && checagem.versaoLocal)
+          ? Updater.compararSemver(checagem.versaoRemota, checagem.versaoLocal) > 0
+          : (checagem.disponivel && checagem.versaoRemota !== checagem.versaoLocal);
+
+        if (checagem && checagem.disponivel && ehMaisNova) {
           window.__snoopyAvisoAtualizacaoExibido = true;
 
           if (ModalFactory && typeof ModalFactory.abrir === 'function') {
@@ -421,6 +460,27 @@ const modulosSnoopy = [
         }
       } catch (_) {}
     }, 1500);
+  }
+
+  // Restauração de scroll e estabilização de dimensões
+  if (dv && dv.container) {
+    const novaAltura = dv.container.offsetHeight;
+    if (novaAltura > 0 && globalWin) {
+      globalWin.__snoopySavedHomeHeight = novaAltura;
+    }
+    if (scrollContainer && scrollAnterior > 0) {
+      scrollContainer.scrollTop = scrollAnterior;
+      if (typeof requestAnimationFrame === 'function') {
+        requestAnimationFrame(() => {
+          if (scrollContainer && scrollAnterior > 0) scrollContainer.scrollTop = scrollAnterior;
+          dv.container.style.minHeight = '';
+        });
+      } else {
+        dv.container.style.minHeight = '';
+      }
+    } else {
+      dv.container.style.minHeight = '';
+    }
   }
 }
 

@@ -197,6 +197,9 @@ function createMockEl(tag = 'div', attrs = {}) {
       const results = [];
       findAllInSubtree(el, sel, results);
       return results;
+    },
+    [require('node:util').inspect.custom]() {
+      return `[MockEl <${el.tagName.toLowerCase()}> class="${el.className}" children=${el.children.length}]`;
     }
   };
 

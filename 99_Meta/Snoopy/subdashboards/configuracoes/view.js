@@ -357,6 +357,13 @@ async function renderConfiguracoes(dv, app) {
     size: 'md'
   });
 
+  const btnLimparDados = UIKit.criarBotao(rowBotoesMocks, {
+    label: 'Limpar Dados da Aplicação (Reset)',
+    icon: 'rotate-ccw',
+    variant: 'danger',
+    size: 'md'
+  });
+
   // Ação: Limpar Mocks
   btnLimparMocks.addEventListener('click', async () => {
     const total = statusCofre.mocks.length;
@@ -409,6 +416,41 @@ async function renderConfiguracoes(dv, app) {
       btnRestaurarMocks.innerHTML = '';
       UIKit.renderIcon(btnRestaurarMocks, 'sparkles', { size: 13 });
       btnRestaurarMocks.createEl('span', { text: 'Restaurar Exemplos (Modo Demonstração)' });
+    }
+  });
+
+  // Ação: Limpar Dados da Aplicação (Reset)
+  btnLimparDados.addEventListener('click', async () => {
+    const confirmar = confirm(
+      'Atenção: Deseja realmente redefinir todos os dados de aplicação do Snoopy Vault?\n\n' +
+      '• O saldo de moedas, itens da loja e árvore do jardim serão zerados.\n' +
+      '• O ciclo de estudos e histórico temporário serão redefinidos.\n' +
+      '• SUAS NOTAS PESSOAIS NUNCA SERÃO APAGADAS!\n\n' +
+      'Deseja prosseguir com o reset de dados?'
+    );
+    if (!confirmar) return;
+
+    btnLimparDados.disabled = true;
+    btnLimparDados.innerHTML = '';
+    UIKit.renderIcon(btnLimparDados, 'refresh-cw', { size: 13 });
+    btnLimparDados.createEl('span', { text: 'Redefinindo dados...' });
+
+    try {
+      const res = await ConfigController.limparDados(app);
+      if (typeof Notice !== 'undefined') {
+        new Notice('[Snoopy] Dados da aplicação redefinidos com sucesso!');
+      }
+      msgMocks.innerHTML = `<span style="color: var(--color-green, #4ade80); font-weight: 500;">Dados redefinidos com sucesso! Loja, jardim, ciclo e cache foram zerados.</span>`;
+    } catch (e) {
+      if (typeof Notice !== 'undefined') {
+        new Notice(`[Snoopy Erro] Falha ao limpar dados: ${e.message}`);
+      }
+      msgMocks.innerHTML = `<span style="color: var(--color-red, #f87171);">Erro ao limpar dados: ${e.message}</span>`;
+    } finally {
+      btnLimparDados.disabled = false;
+      btnLimparDados.innerHTML = '';
+      UIKit.renderIcon(btnLimparDados, 'rotate-ccw', { size: 13 });
+      btnLimparDados.createEl('span', { text: 'Limpar Dados da Aplicação (Reset)' });
     }
   });
 

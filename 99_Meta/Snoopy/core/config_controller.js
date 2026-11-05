@@ -107,6 +107,125 @@ const ConfigController = {
       backups,
       ultimoBackup: backups.length > 0 ? backups[0].id : null
     };
+  },
+
+  /**
+   * Executa a limpeza segura de dados e progresso da aplicação (loja, jardim, ciclo de estudos e storage local).
+   * Nunca remove anotações pessoais do usuário.
+   *
+   * @param {object} app - Instância do Obsidian.
+   * @param {object} [opcoes={}] - Opções customizadas (ex: storage injetado para testes).
+   * @returns {Promise<{ sucesso: boolean, arquivosResetados: string[], storageLimpo: boolean }>}
+   */
+  async limparDados(app, opcoes = {}) {
+    if (!app || !app.vault) {
+      throw new Error('Instância do Obsidian Vault necessária.');
+    }
+
+    const arquivosResetados = [];
+
+    // 1. Zera a Loja Snoopy (snoopy-shop.json)
+    const shopPath = '99_Meta/snoopy-shop.json';
+    const shopDefault = {
+      versao: 1,
+      saldo: 0,
+      totalGanhosHistoricos: 0,
+      colorScheme: 'dark',
+      ambientEnabled: false,
+      desbloqueados: [
+        'sprout',
+        'audio-white-noise',
+        'theme-preset-snoopy'
+      ],
+      equipados: {
+        botanical: 'sprout',
+        audio: 'audio-white-noise',
+        cosmetic: 'theme-preset-snoopy'
+      },
+      estatisticasBotanicas: {
+        totalPlantadas: 0
+      },
+      historicoTransacoes: []
+    };
+    const shopFile = app.vault.getAbstractFileByPath ? app.vault.getAbstractFileByPath(shopPath) : null;
+    const shopStr = JSON.stringify(shopDefault, null, 2);
+    if (shopFile) {
+      await app.vault.modify(shopFile, shopStr);
+      arquivosResetados.push(shopPath);
+    } else if (app.vault.create) {
+      await app.vault.create(shopPath, shopStr).catch(() => {});
+      arquivosResetados.push(shopPath);
+    }
+
+    // 2. Zera o Jardim de Constância (jardim-constancia.json)
+    const jardimPath = '99_Meta/jardim-constancia.json';
+    const jardimDefault = {
+      moedas: 0,
+      arvoreAtiva: 'sprout',
+      desbloqueadas: ['sprout'],
+      totalPlantadas: 0,
+      historicoCompras: []
+    };
+    const jardimFile = app.vault.getAbstractFileByPath ? app.vault.getAbstractFileByPath(jardimPath) : null;
+    const jardimStr = JSON.stringify(jardimDefault, null, 2);
+    if (jardimFile) {
+      await app.vault.modify(jardimFile, jardimStr);
+      arquivosResetados.push(jardimPath);
+    } else if (app.vault.create) {
+      await app.vault.create(jardimPath, jardimStr).catch(() => {});
+      arquivosResetados.push(jardimPath);
+    }
+
+    // 3. Zera o Ciclo de Estudos (ciclo-estudos.json)
+    const cicloPath = '99_Meta/ciclo-estudos.json';
+    const cicloDefault = {
+      disciplinaAtualIdx: 0,
+      cicloOrdem: [],
+      metaHorasSemanal: 20,
+      metaQuestoesSemanal: 150,
+      nomeMetaProva: "Meta Pessoal",
+      dataMetaProva: "",
+      historicoDiario: {},
+      revisoes: [],
+      planner: {}
+    };
+    const cicloFile = app.vault.getAbstractFileByPath ? app.vault.getAbstractFileByPath(cicloPath) : null;
+    const cicloStr = JSON.stringify(cicloDefault, null, 2);
+    if (cicloFile) {
+      await app.vault.modify(cicloFile, cicloStr);
+      arquivosResetados.push(cicloPath);
+    } else if (app.vault.create) {
+      await app.vault.create(cicloPath, cicloStr).catch(() => {});
+      arquivosResetados.push(cicloPath);
+    }
+
+    // 4. Limpa chaves snoopy_* do localStorage
+    let storageLimpo = false;
+    const storage = opcoes.storage || (typeof window !== 'undefined' ? window.localStorage : (typeof localStorage !== 'undefined' ? localStorage : null));
+    if (storage) {
+      try {
+        const chavesParaRemover = [];
+        const total = typeof storage.length === 'number' ? storage.length : 0;
+        for (let i = 0; i < total; i++) {
+          const k = typeof storage.key === 'function' ? storage.key(i) : null;
+          if (k && k.startsWith('snoopy_')) {
+            chavesParaRemover.push(k);
+          }
+        }
+        for (const k of chavesParaRemover) {
+          if (typeof storage.removeItem === 'function') storage.removeItem(k);
+        }
+        storageLimpo = true;
+      } catch (e) {
+        console.warn('[ConfigController] Falha ao limpar storage local:', e);
+      }
+    }
+
+    return {
+      sucesso: true,
+      arquivosResetados,
+      storageLimpo
+    };
   }
 };
 
