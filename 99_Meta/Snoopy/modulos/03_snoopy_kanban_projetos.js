@@ -304,7 +304,13 @@ return {
                   }
                   new Notice(`[Snoopy] "${nomeItem}" movido para ${col.label}!`);
                   fechar();
-                  renderKanban();
+                  if (itemOuFile) {
+                    itemOuFile.status = col.status;
+                    if (isTask) {
+                      itemOuFile.completed = (col.status === 'Concluído');
+                    }
+                  }
+                  renderKanban(false);
                 });
               }
             });
@@ -371,76 +377,82 @@ return {
       return { label: `Prazo: ${clean}`, isoDate: clean };
     }
 
-    async function renderKanban() {
+    let allItemsCache = [];
+
+    async function renderKanban(forcarRecarregar = true) {
       kanbanColsGrid.innerHTML = '';
       
-      let allItems = [];
+      if (forcarRecarregar || allItemsCache.length === 0) {
+        allItemsCache = [];
 
-      // 1. Coleta notas de projetos e estudos quando o escopo permitir
-      if (currentScope !== 'atividades' && dv && typeof dv.pages === 'function') {
-        let pagesQuery = [];
-        if (currentScope === 'projetos') {
-          pagesQuery = dv.pages('"02_Projetos"').where(p => !p.file.name.includes("Template") && !p.file.name.includes("Painel"));
-        } else if (currentScope === 'estudos') {
-          pagesQuery = dv.pages('"03_Estudos"').where(p => !p.file.name.includes("Template") && !p.file.name.includes("Painel"));
-        } else {
-          pagesQuery = dv.pages('"02_Projetos" or "03_Estudos"').where(p => !p.file.name.includes("Template") && !p.file.name.includes("Painel"));
-        }
-        pagesQuery.forEach(p => allItems.push(p));
-      }
-
-      // 2. Coleta atividades avulsas e tarefas marcadas para o Kanban
-      try {
-        if (dv && typeof dv.pages === 'function') {
-          let escopoBusca = null;
+        // 1. Coleta notas de projetos e estudos quando o escopo permitir
+        if (currentScope !== 'atividades' && dv && typeof dv.pages === 'function') {
+          let pagesQuery = [];
           if (currentScope === 'projetos') {
-            escopoBusca = dv.pages('"02_Projetos"');
+            pagesQuery = dv.pages('"02_Projetos"').where(p => !p.file.name.includes("Template") && !p.file.name.includes("Painel"));
           } else if (currentScope === 'estudos') {
-            escopoBusca = dv.pages('"03_Estudos"');
+            pagesQuery = dv.pages('"03_Estudos"').where(p => !p.file.name.includes("Template") && !p.file.name.includes("Painel"));
           } else {
-            escopoBusca = dv.pages('"01_Inbox" or "02_Projetos" or "03_Estudos"');
+            pagesQuery = dv.pages('"02_Projetos" or "03_Estudos"').where(p => !p.file.name.includes("Template") && !p.file.name.includes("Painel"));
           }
-
-          const rawTasks = escopoBusca.where(p => p.file && !p.file.name.includes("Template") && !p.file.name.includes("Painel")).file.tasks;
-          const tasksFiltradas = rawTasks.where(t => {
-            if (!t.text) return false;
-            const temTagKanban = /#kanban\b/i.test(t.text);
-            if (currentScope === 'atividades') {
-              return temTagKanban || (t.path && (t.path.includes('01_Inbox') || t.path.includes('Diário')));
-            }
-            return temTagKanban;
-          });
-
-          tasksFiltradas.forEach(t => {
-            let statusTarefa = 'Planejamento';
-            if (t.completed) {
-              statusTarefa = 'Concluído';
-            } else if (/#andamento\b/i.test(t.text) || /#foco\b/i.test(t.text)) {
-              statusTarefa = 'Em Andamento';
-            }
-
-            const cleanTitle = t.text.replace(/#\w+/g, '').replace(/📅[^\s]+/g, '').replace(/\[[^\]]+\]/g, '').replace(/🍅[^\s]+/g, '').replace(/[⏫🔼🔽]/g, '').trim();
-            const filePath = t.path || (t.link ? t.link.path : '');
-
-            allItems.push({
-              isTask: true,
-              taskRef: t,
-              file: {
-                name: cleanTitle,
-                path: filePath,
-                tasks: []
-              },
-              title: cleanTitle,
-              status: statusTarefa,
-              priority: t.text.includes('⏫') ? 'Alta' : (t.text.includes('🔽') ? 'Baixa' : 'Média'),
-              completed: t.completed,
-              due_date: (t.text.match(/(?:due:|📅)\s*(\d{4}-\d{2}-\d{2}|\d{2}[-/]\d{2}[-/]\d{4})/) || [])[1] || null
-            });
-          });
+          pagesQuery.forEach(p => allItemsCache.push(p));
         }
-      } catch (err) {
-        console.warn('[Kanban] Falha ao coletar tarefas avulsas:', err);
+
+        // 2. Coleta atividades avulsas e tarefas marcadas para o Kanban
+        try {
+          if (dv && typeof dv.pages === 'function') {
+            let escopoBusca = null;
+            if (currentScope === 'projetos') {
+              escopoBusca = dv.pages('"02_Projetos"');
+            } else if (currentScope === 'estudos') {
+              escopoBusca = dv.pages('"03_Estudos"');
+            } else {
+              escopoBusca = dv.pages('"01_Inbox" or "02_Projetos" or "03_Estudos"');
+            }
+
+            const rawTasks = escopoBusca.where(p => p.file && !p.file.name.includes("Template") && !p.file.name.includes("Painel")).file.tasks;
+            const tasksFiltradas = rawTasks.where(t => {
+              if (!t.text) return false;
+              const temTagKanban = /#kanban\b/i.test(t.text);
+              if (currentScope === 'atividades') {
+                return temTagKanban || (t.path && (t.path.includes('01_Inbox') || t.path.includes('Diário')));
+              }
+              return temTagKanban;
+            });
+
+            tasksFiltradas.forEach(t => {
+              let statusTarefa = 'Planejamento';
+              if (t.completed) {
+                statusTarefa = 'Concluído';
+              } else if (/#andamento\b/i.test(t.text) || /#foco\b/i.test(t.text)) {
+                statusTarefa = 'Em Andamento';
+              }
+
+              const cleanTitle = t.text.replace(/#\w+/g, '').replace(/📅[^\s]+/g, '').replace(/\[[^\]]+\]/g, '').replace(/🍅[^\s]+/g, '').replace(/[⏫🔼🔽]/g, '').trim();
+              const filePath = t.path || (t.link ? t.link.path : '');
+
+              allItemsCache.push({
+                isTask: true,
+                taskRef: t,
+                file: {
+                  name: cleanTitle,
+                  path: filePath,
+                  tasks: []
+                },
+                title: cleanTitle,
+                status: statusTarefa,
+                priority: t.text.includes('⏫') ? 'Alta' : (t.text.includes('🔽') ? 'Baixa' : 'Média'),
+                completed: t.completed,
+                due_date: (t.text.match(/(?:due:|📅)\s*(\d{4}-\d{2}-\d{2}|\d{2}[-/]\d{2}[-/]\d{4})/) || [])[1] || null
+              });
+            });
+          }
+        } catch (err) {
+          console.warn('[Kanban] Falha ao coletar tarefas avulsas:', err);
+        }
       }
+
+      const allItems = allItemsCache;
 
       const cols = await carregarColunas();
 
@@ -485,6 +497,23 @@ return {
           const file = app.vault.getAbstractFileByPath(dropItem.path);
           if (!file) return;
 
+          // 1. Atualização Otimista Imediata em Memória (0ms / 60 FPS)
+          const itemCache = allItemsCache.find(p => {
+            if (dropItem.isTask) {
+              return p.isTask && ((p.taskRef && p.taskRef.text === dropItem.taskText) || p.title === dropItem.taskText || (p.file && p.file.path === dropItem.path));
+            }
+            return !p.isTask && p.file && p.file.path === dropItem.path;
+          });
+          if (itemCache) {
+            itemCache.status = col.status;
+            if (itemCache.isTask) {
+              itemCache.completed = (col.status === 'Concluído');
+            }
+          }
+          new Notice(`[Snoopy] Item movido para ${col.label}!`);
+          renderKanban(false);
+
+          // 2. Persistência Assíncrona no Vault (Background Worker)
           if (dropItem.isTask && dropItem.taskText) {
             if (ctx.VaultStore && typeof ctx.VaultStore.substituirLinha === 'function') {
               await ctx.VaultStore.substituirLinha(app, file, l => l.includes(dropItem.taskText), l => {
@@ -512,8 +541,6 @@ return {
             }
             await app.vault.modify(file, updated);
           }
-          new Notice(`[Snoopy] Item movido para ${col.label}!`);
-          setTimeout(renderKanban, 150);
         });
 
         const filtered = allItems.filter(p => {

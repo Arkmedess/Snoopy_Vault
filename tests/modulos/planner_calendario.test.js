@@ -393,4 +393,24 @@ describe('Módulo 03 - Planner & Calendário Mensal (03_snoopy_planner_calendari
     const styleAttr = firstCell.getAttribute('style') || '';
     assert.ok(styleAttr.includes('min-height: 84px') || styleAttr.includes('min-height: 80px') || styleAttr.includes('height: auto'), 'Célula do calendário deve garantir altura mínima e responsiva');
   });
+
+  test('Garante alinhamento esticado (stretch) do grid e rolagem vertical do painel lateral de blocos', async () => {
+    const root = createMockEl('div');
+
+    const mockCtx = {
+      root,
+      app: { vault: { getAbstractFileByPath: () => null } },
+      dv: { pages: () => [] },
+      todayStr: '2026-10-26',
+      UIKit,
+      renderIcon: (el, name, opts) => UIKit.renderIcon(el, name, opts)
+    };
+
+    await moduloPlanner.render(mockCtx);
+
+    const mainGrid = root.querySelector('.snoopy-planner-grid');
+    assert.ok(mainGrid, 'Grid principal do planner deve existir');
+    const gridStyle = mainGrid.getAttribute('style') || '';
+    assert.ok(gridStyle.includes('align-items: stretch'), 'Grid do planner deve usar align-items: stretch para nivelamento de altura');
+  });
 });

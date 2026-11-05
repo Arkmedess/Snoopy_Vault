@@ -458,13 +458,13 @@ return {
       // =========================================================================
       const mainGrid = plannerSection.createEl('div', {
         cls: 'snoopy-planner-grid',
-        attr: { style: 'display: grid; grid-template-columns: 1fr 340px; gap: 12px; align-items: start;' }
+        attr: { style: 'display: grid; grid-template-columns: 1fr 340px; gap: 12px; align-items: stretch;' }
       });
 
       // 2.1. Grade Mensal
       const calWrapper = mainGrid.createEl('div', {
         cls: 'snoopy-card-box',
-        attr: { style: 'padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;' }
+        attr: { style: 'padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; height: 100%; box-sizing: border-box;' }
       });
 
       // Cabeçalho dos dias da semana
@@ -649,7 +649,7 @@ return {
       // =========================================================================
       const sidePanel = mainGrid.createEl('div', {
         cls: 'snoopy-card-box',
-        attr: { style: 'padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; min-height: 380px;' }
+        attr: { style: 'padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; height: 100%; box-sizing: border-box; min-height: 0;' }
       });
 
       // Coleta detalhada e unificada de todas as atividades
@@ -662,6 +662,9 @@ return {
             let cleanText = (t.text || '')
               .replace(/^-\s*\[[ xX]\]\s*/, '')
               .replace(/(?:due:|📅)\s*(?:\d{4}-\d{2}-\d{2}|\d{2}[-/]\d{2}[-/]\d{4})/, '')
+              .replace(/^✅\s*(?:\d{4}-\d{2}-\d{2}|\d{2}[-/]\d{2}[-/]\d{4})\s*/, '')
+              .replace(/✅\s*(?:\d{4}-\d{2}-\d{2}|\d{2}[-/]\d{2}[-/]\d{4})/, '')
+              .replace(/✅/g, '')
               .replace(/#\S+/g, '')
               .trim();
 
@@ -822,7 +825,7 @@ return {
         });
       } else {
         const listContainer = sidePanel.createEl('div', {
-          attr: { style: 'display: flex; flex-direction: column; gap: 7px; max-height: 480px; overflow-y: auto; padding-right: 2px;' }
+          attr: { style: 'display: flex; flex-direction: column; gap: 7px; flex: 1 1 0; min-height: 0; max-height: calc(100% - 42px); overflow-y: auto; padding-right: 4px;' }
         });
 
         atividadesExibir.slice(0, 15).forEach(item => {
@@ -898,8 +901,8 @@ return {
 
             <div style="display: flex; align-items: flex-start; gap: 6px;">
               ${item.categoria === 'tarefa' ? `<input type="checkbox" class="chk-task-toggle" ${isTaskChecked ? 'checked' : ''} style="cursor: pointer; margin-top: 2px;">` : ''}
-              <div style="display: flex; flex-direction: column; gap: 2px; flex: 1; overflow: hidden;">
-                <span class="activity-title" style="font-size: 11.5px; font-weight: 600; color: ${isTaskChecked ? 'var(--text-muted)' : 'var(--text-normal)'}; text-decoration: ${isTaskChecked ? 'line-through' : 'none'}; line-height: 1.3; cursor: pointer;">
+              <div style="display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; overflow: hidden;">
+                <span class="activity-title" title="${item.titulo}" style="font-size: 11.5px; font-weight: 600; color: ${isTaskChecked ? 'var(--text-muted)' : 'var(--text-normal)'}; text-decoration: ${isTaskChecked ? 'line-through' : 'none'}; line-height: 1.3; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">
                   ${item.titulo}
                 </span>
                 <span class="snoopy-meta" style="font-size: 9.5px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">

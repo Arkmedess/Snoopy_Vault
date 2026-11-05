@@ -49,4 +49,4 @@ O que é acoplamento em software?::É o nível de dependência ou entrelaçament
 
 
 ## 📋 Tarefas
-- [ ] Teste de tarefa 📅 2026-10-13 🔼
+- [x] ✅ 2026-11-04 Teste de tarefa 📅 2026-10-13 🔼
