@@ -131,8 +131,8 @@ describe('PomodoroAudio - Tarefas 1 e 2: Streaming YouTube via MPV & Preview', (
       // Validação de segurança no comando spawn
       assert.ok(argsRecebidos.cmd.includes('mpv'));
       assert.ok(argsRecebidos.args.includes('--no-video'));
-      assert.ok(argsRecebidos.args.includes('--ytdl-format=bestaudio'));
-      assert.ok(argsRecebidos.args.includes('--ytdl-raw-options=no-playlist='));
+      assert.ok(argsRecebidos.args.some(a => a.startsWith('--ytdl-format=bestaudio')));
+      assert.ok(argsRecebidos.args.some(a => a.includes('no-playlist=') && a.includes('player_client=android')));
       assert.ok(argsRecebidos.args.includes('--')); // Segurança: separador antes da URL
 
       // A URL deve ser o último argumento logo após o separador '--'

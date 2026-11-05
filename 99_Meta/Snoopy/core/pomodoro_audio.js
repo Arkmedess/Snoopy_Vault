@@ -647,8 +647,8 @@ class PomodoroAudioEngine {
 
     const args = [
       '--no-video',
-      '--ytdl-format=bestaudio',
-      '--ytdl-raw-options=no-playlist=',
+      '--ytdl-format=bestaudio/best',
+      '--ytdl-raw-options=no-playlist=,extractor-args=youtube:player_client=android',
       `--script-opts=ytdl_hook-ytdl_path=${ytdlBin}`,
       '--loop=inf',
       '--force-window=no',
@@ -955,6 +955,14 @@ class PomodoroAudioEngine {
 
     const storage = this._getStorage();
     storage.setItem(STORAGE_KEYS.TRACK, id);
+
+    // Se for link personalizado do YouTube, direciona estritamente para o MPV
+    if (id === 'custom_url') {
+      if (this._customUrl) {
+        return this.tocarLinkYoutube(this._customUrl);
+      }
+      return Promise.resolve({ sucesso: false, erro: 'Nenhuma URL informada.' });
+    }
 
     if (this._audioCtx) {
       const ctx = this._obterContexto();
