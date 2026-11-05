@@ -1278,28 +1278,29 @@ button.snoopy-nav-pill-btn:active,
   margin-top: 8px !important;
   padding: 6px 12px !important;
   border-radius: 6px !important;
-  background: var(--snoopy-card) !important;
+  background: rgba(255, 255, 255, 0.02) !important;
   border: 1px solid var(--snoopy-border) !important;
   font-size: 11.5px !important;
-  color: var(--snoopy-text) !important;
+  color: var(--snoopy-muted) !important;
   font-family: var(--snoopy-font-sans, inherit) !important;
-  text-align: center !important;
+  text-align: left !important;
   letter-spacing: 0.01em !important;
   user-select: none !important;
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
-  min-height: 24px !important;
+  min-height: 28px !important;
   display: flex !important;
   align-items: center !important;
-  justify-content: center !important;
+  justify-content: flex-start !important;
   transition: all 0.15s ease !important;
+  box-shadow: none !important;
 }
 
 /* Terrário do Jardim de Constância (Estilo Minimalista e Sóbrio) */
 .snoopy-planter-pot {
-  width: 42px !important;
-  height: 42px !important;
+  width: 38px !important;
+  height: 38px !important;
   border-radius: 50% !important;
   background: var(--snoopy-panel) !important;
   border: 1.5px solid var(--snoopy-border) !important;
@@ -1317,6 +1318,26 @@ button.snoopy-nav-pill-btn:active,
   transform: none !important;
   border-color: var(--snoopy-module-accent) !important;
   background: var(--snoopy-card-hover) !important;
+  box-shadow: none !important;
+}
+
+.snoopy-mini-tree-chip {
+  transition: border-color 0.15s ease, background 0.15s ease !important;
+  box-shadow: none !important;
+}
+
+.snoopy-mini-tree-chip:hover {
+  border-color: var(--snoopy-module-accent) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: none !important;
+}
+
+.snoopy-taxa-chip {
+  background: rgba(250, 204, 21, 0.08) !important;
+  border: 1px solid rgba(250, 204, 21, 0.22) !important;
+  padding: 1px 6px !important;
+  border-radius: 4px !important;
+  user-select: none !important;
   box-shadow: none !important;
 }
 
@@ -1340,10 +1361,10 @@ button.snoopy-nav-pill-btn:active,
 }
 
 .heat-lvl-0 { background-color: var(--snoopy-card) !important; border: 1px solid var(--snoopy-border) !important; }
-.heat-lvl-1 { background-color: #166534 !important; border: 1px solid rgba(22, 101, 52, 0.4) !important; }
-.heat-lvl-2 { background-color: #15803d !important; border: 1px solid rgba(21, 128, 61, 0.5) !important; }
-.heat-lvl-3 { background-color: #16a34a !important; border: 1px solid rgba(22, 163, 74, 0.6) !important; }
-.heat-lvl-4 { background-color: #22c55e !important; border: 1px solid #4ade80 !important; }
+.heat-lvl-1 { background-color: #14532d !important; border: 1px solid rgba(34, 197, 94, 0.3) !important; }
+.heat-lvl-2 { background-color: #166534 !important; border: 1px solid rgba(74, 222, 128, 0.45) !important; }
+.heat-lvl-3 { background-color: #15803d !important; border: 1px solid rgba(134, 239, 172, 0.6) !important; }
+.heat-lvl-4 { background-color: #22c55e !important; border: 1px solid #86efac !important; }
 
 /* Botões Padronizados Flat & Minimalistas (Compatíveis com Dark/Light) */
 .snoopy-container .snoopy-btn-action,
@@ -3007,6 +3028,7 @@ input[type="checkbox"].snoopy-circle-check:checked::after {
   flex-direction: column !important;
   gap: 8px !important;
   min-height: 220px !important;
+  transition: border-color 0.15s ease, background-color 0.15s ease !important;
 }
 
 .snoopy-task-kanban-col-header {
@@ -3046,12 +3068,27 @@ input[type="checkbox"].snoopy-circle-check:checked::after {
   display: flex !important;
   flex-direction: column !important;
   gap: 4px !important;
-  transition: border-color 0.15s ease, background 0.15s ease !important;
+  will-change: transform, opacity;
+  transition: transform 0.15s ease, opacity 0.15s ease, border-color 0.15s ease, background 0.15s ease !important;
+}
+
+.snoopy-task-kanban-card[draggable="true"] {
+  cursor: grab !important;
+}
+
+.snoopy-task-kanban-card.is-dragging {
+  cursor: grabbing !important;
+  opacity: 0.45 !important;
 }
 
 .snoopy-task-kanban-card:hover {
   border-color: rgba(255, 255, 255, 0.18) !important;
   background: #1a1a27 !important;
+}
+
+.snoopy-task-kanban-col.snoopy-kanban-dragover {
+  border-color: var(--snoopy-module-accent) !important;
+  background: rgba(74, 222, 128, 0.04) !important;
 }
 
 /* =========================================================================
@@ -3065,7 +3102,7 @@ input[type="checkbox"].snoopy-circle-check:checked::after {
   background: var(--snoopy-card) !important;
   border-radius: 8px !important;
   border: 1px solid var(--snoopy-border) !important;
-  margin: 4px 0 10px 0 !important;
+  margin: 0 !important;
   cursor: pointer !important;
   transition: border-color 0.15s ease, background 0.15s ease !important;
   box-shadow: none !important;

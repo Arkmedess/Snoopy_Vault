@@ -269,6 +269,7 @@ const PomodoroJardim = {
     const pTaxa = root.querySelector('#snoopy-card-taxa-foco');
     const cLabel = root.querySelector('#snoopy-cycle-label');
     const tStats = root.querySelector('#snoopy-today-stats');
+    const groveStrip = root.querySelector('#snoopy-today-grove-strip');
 
     if (!pAv) return;
 
@@ -278,41 +279,78 @@ const PomodoroJardim = {
     const estagio = this.calcularEstagioPlanta(completedCyclesToday);
 
     const mapaCustom = {
-      sprout: { icon: 'sprout', cor: '#86efac' },
-      cherry: { icon: 'flower-2', cor: '#f472b6' },
-      pine: { icon: 'tree-pine', cor: '#34d399' },
-      star: { icon: 'sparkles', cor: '#60a5fa' },
-      bonsai: { icon: 'leaf', cor: '#a78bfa' },
-      ancient: { icon: 'trees', cor: '#4ade80' }
+      sprout: { icon: 'sprout', cor: '#86efac', bg: 'rgba(134, 239, 172, 0.12)', border: 'rgba(134, 239, 172, 0.35)' },
+      cherry: { icon: 'flower-2', cor: '#f472b6', bg: 'rgba(244, 114, 182, 0.12)', border: 'rgba(244, 114, 182, 0.35)' },
+      pine: { icon: 'tree-pine', cor: '#34d399', bg: 'rgba(52, 211, 153, 0.12)', border: 'rgba(52, 211, 153, 0.35)' },
+      star: { icon: 'sparkles', cor: '#60a5fa', bg: 'rgba(96, 165, 250, 0.12)', border: 'rgba(96, 165, 250, 0.35)' },
+      bonsai: { icon: 'leaf', cor: '#a78bfa', bg: 'rgba(167, 139, 250, 0.12)', border: 'rgba(167, 139, 250, 0.35)' },
+      ancient: { icon: 'trees', cor: '#4ade80', bg: 'rgba(74, 222, 128, 0.12)', border: 'rgba(74, 222, 128, 0.35)' }
     };
 
+    const treeKey = (arvoreAtiva && mapaCustom[arvoreAtiva]) ? arvoreAtiva : 'sprout';
+    const configAtiva = mapaCustom[treeKey];
     let iconName = estagio.iconName;
-    let iconColor = '#86efac';
-    if (arvoreAtiva && mapaCustom[arvoreAtiva]) {
-      iconName = mapaCustom[arvoreAtiva].icon;
-      iconColor = mapaCustom[arvoreAtiva].cor;
-    }
+    let iconColor = configAtiva.cor;
+
+    pAv.setAttribute('data-tree', treeKey);
+    pAv.style.borderColor = configAtiva.border;
+    pAv.style.background = configAtiva.bg;
 
     if (renderIcon) {
       pAv.innerHTML = '';
-      renderIcon(pAv, iconName, { size: 22, color: iconColor });
+      renderIcon(pAv, iconName, { size: 20, color: iconColor });
     }
     if (pTit) pTit.textContent = estagio.titulo;
-    if (pBdg) pBdg.textContent = estagio.badge;
+    if (pBdg) {
+      pBdg.textContent = 'NV. ' + estagio.badge.replace(/^NÍVEL\s*/i, '');
+      pBdg.style.whiteSpace = 'nowrap';
+    }
     if (pBar) pBar.style.width = `${estagio.pct}%`;
 
     if (pNextChip) {
       if (estagio.proximoNivel) {
         const plural = estagio.proximoNivel.ciclosFaltantes > 1 ? 's' : '';
-        pNextChip.innerHTML = `Próximo: <strong style="color: #86efac;">${estagio.proximoNivel.nome}</strong> (+${estagio.proximoNivel.ciclosFaltantes} foco${plural})`;
+        pNextChip.innerHTML = `<span style="color: var(--snoopy-muted);">+${estagio.proximoNivel.ciclosFaltantes} foco${plural} p/</span> <strong style="color: var(--snoopy-module-accent);">${estagio.proximoNivel.nome}</strong>`;
       } else {
-        pNextChip.innerHTML = `<strong style="color: #86efac;">Nível Mestre Atingido!</strong>`;
+        pNextChip.innerHTML = `<strong style="color: var(--snoopy-module-accent);">Nível Mestre Atingido</strong>`;
       }
     }
 
     if (pTaxa) {
-      const ganhoCiclo = Math.max(1, Math.floor(focusMin / 5));
-      pTaxa.textContent = `Ciclo ${focusMin}m = +${ganhoCiclo} seiva`;
+      pTaxa.innerHTML = '';
+    }
+
+    if (groveStrip) {
+      const arvoresHoje = this.obterArvoresDoBosque(completedCyclesToday, sessoesHoje);
+      groveStrip.innerHTML = '';
+      if (arvoresHoje.length > 0) {
+        groveStrip.style.display = 'inline-flex';
+        const htmlChips = arvoresHoje.slice(0, 8).map((arv) => {
+          return `<div class="snoopy-mini-tree-chip" title="${arv.label}" style="display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: rgba(255, 255, 255, 0.04); border: 1px solid ${arv.cor}55; flex-shrink: 0; cursor: pointer;" data-icon="${arv.iconName}" data-color="${arv.cor}"></div>`;
+        }).join('');
+
+        const maisContador = arvoresHoje.length > 8
+          ? `<span class="snoopy-micro" style="color: var(--snoopy-muted); font-size: 9.5px; font-weight: 700; align-self: center;">+${arvoresHoje.length - 8}</span>`
+          : '';
+
+        groveStrip.innerHTML = `
+          <div style="display: inline-flex; align-items: center; gap: 4px; overflow: hidden;">
+            ${htmlChips}
+            ${maisContador}
+          </div>
+        `;
+
+        if (renderIcon) {
+          groveStrip.querySelectorAll('.snoopy-mini-tree-chip').forEach(chip => {
+            const ic = chip.getAttribute('data-icon');
+            const cor = chip.getAttribute('data-color') || '#86efac';
+            renderIcon(chip, ic, { size: 10, color: cor });
+          });
+        }
+      } else {
+        groveStrip.style.display = 'none';
+        groveStrip.innerHTML = '';
+      }
     }
   },
 
@@ -404,7 +442,7 @@ const PomodoroJardim = {
             const statusCor = info.ciclos > 0 ? 'var(--snoopy-module-accent)' : 'var(--snoopy-muted)';
             const prefixo = d.dataStr === todayStr ? `Hoje (${info.dataFormatada})` : info.dataFormatada;
             const metaTxt = info.atingiuMeta ? ' • Meta Diária' : '';
-            inspectionEl.innerHTML = `<span style="color: ${statusCor}; font-weight: 600;">${prefixo} • ${info.ciclos} ciclos (${info.minutos} min)${metaTxt}</span>`;
+            inspectionEl.innerHTML = `<span style="display: inline-flex; align-items: center; gap: 5px; color: ${statusCor}; font-weight: 500;"><span style="width: 5px; height: 5px; border-radius: 50%; background: ${statusCor}; display: inline-block;"></span> <span>${prefixo} • ${info.ciclos} ciclos (${info.minutos} min)${metaTxt}</span></span>`;
           };
 
           celula.onclick = ativarInspecao;
@@ -413,7 +451,7 @@ const PomodoroJardim = {
             const statusCor = info.ciclos > 0 ? 'var(--snoopy-module-accent)' : 'var(--snoopy-muted)';
             const prefixo = d.dataStr === todayStr ? `Hoje (${info.dataFormatada})` : info.dataFormatada;
             const metaTxt = info.atingiuMeta ? ' • Meta Diária' : '';
-            inspectionEl.innerHTML = `<span style="color: ${statusCor}; font-weight: 600;">${prefixo} • ${info.ciclos} ciclos (${info.minutos} min)${metaTxt}</span>`;
+            inspectionEl.innerHTML = `<span style="display: inline-flex; align-items: center; gap: 5px; color: ${statusCor}; font-weight: 500;"><span style="width: 5px; height: 5px; border-radius: 50%; background: ${statusCor}; display: inline-block;"></span> <span>${prefixo} • ${info.ciclos} ciclos (${info.minutos} min)${metaTxt}</span></span>`;
           };
           celula.onkeydown = (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
@@ -432,7 +470,7 @@ const PomodoroJardim = {
         const statusCor = info.ciclos > 0 ? 'var(--snoopy-module-accent)' : 'var(--snoopy-muted)';
         const prefixo = dataAlvo === todayStr ? `Hoje (${info.dataFormatada})` : info.dataFormatada;
         const metaTxt = info.atingiuMeta ? ' • Meta Diária' : '';
-        inspectionEl.innerHTML = `<span style="color: ${statusCor}; font-weight: 600;">${prefixo} • ${info.ciclos} ciclos (${info.minutos} min)${metaTxt}</span>`;
+        inspectionEl.innerHTML = `<span style="display: inline-flex; align-items: center; gap: 5px; color: ${statusCor}; font-weight: 500;"><span style="width: 5px; height: 5px; border-radius: 50%; background: ${statusCor}; display: inline-block;"></span> <span>${prefixo} • ${info.ciclos} ciclos (${info.minutos} min)${metaTxt}</span></span>`;
       };
     }
 
@@ -440,7 +478,7 @@ const PomodoroJardim = {
       const infoHoje = this.obterDetalhesDiaHeatmap(mapaFoco, todayStr, focusMin, dailyGoal);
       const statusCor = infoHoje.ciclos > 0 ? 'var(--snoopy-module-accent)' : 'var(--snoopy-muted)';
       const metaTxt = infoHoje.atingiuMeta ? ' • Meta Diária' : '';
-      inspectionEl.innerHTML = `<span style="color: ${statusCor}; font-weight: 600;">Hoje (${infoHoje.dataFormatada}) • ${infoHoje.ciclos} ciclos (${infoHoje.minutos} min)${metaTxt}</span>`;
+      inspectionEl.innerHTML = `<span style="display: inline-flex; align-items: center; gap: 5px; color: ${statusCor}; font-weight: 500;"><span style="width: 5px; height: 5px; border-radius: 50%; background: ${statusCor}; display: inline-block;"></span> <span>Hoje (${infoHoje.dataFormatada}) • ${infoHoje.ciclos} ciclos (${infoHoje.minutos} min)${metaTxt}</span></span>`;
     }
 
     const mWeek = root.querySelector('#metric-week');
